@@ -17,19 +17,19 @@ Q1 answer: egrep "Member for W" parliament.txt
 2) Write an egrep command that will list all the lines in the file where the MP's
 first name is Andrew.
 
-Q2 answer: egrep "Andrew" parliament.txt
+Q2 answer: egrep "Andrew .+:" parliament.txt
 
 
 3) Write an egrep command that will print all the lines in the file where the MP's
 surname (last name) ends in the letter 'y'.
 
-Q3 answer: egrep "y:" parliament.txt
+Q3 answer: egrep ".+ .+y[ A-Z]*:" parliament.txt
 
 
 4) Write an egrep command that will print all the lines in the file where the MP's name and the electorate
 ends in the letter 'y'.
 
-Q4 answer: egrep "y:" parliament.txt  | egrep "y,"
+Q4 answer: egrep ".+ .+y[ A-Z]*:" parliament.txt  | egrep "y,"
 
 
 5) Write an egrep command that will print all the lines in the file where the MP's name or the electorate
