@@ -12,7 +12,7 @@ Q1 answer: egrep Andrew words.txt
 1) Write a egrep command  that prints the lines in a file named input.txt containing
 containing at least one A and at least one B.
 
-Q1 answer:
+Q1 answer: egrep -i "a.*b|b.*a" input.txt
 
 
 2) Write a egrep command  that prints the lines in a file named input.txt containing
