@@ -62,7 +62,7 @@ Q8 answer: egrep "Member for .*[ -].*," parliament.txt
 It should print only the names of the states/territories.
 It should print them one per line
 
-Q9 answer: cut -d, -f2 parliament.txt | sort | uniq | cut -c2-
+Q9 answer: cut -d, -f2 parliament.txt | sort | uniq -c | sort -n | cut -c10-
 
 
 10) Challenge: The most common first name for an MP is Andrew.
