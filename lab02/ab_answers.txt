@@ -21,14 +21,14 @@ all pairs of adjacent A's occur before any pairs of adjacent B's.
 In other words if there is pair of B's on the line , there can not be
 a pair of A's afterwards.
 
-Q2 answer:
+Q2 answer: egrep -iv "[ c-z]|(bb[ab]*aa+)$" input.txt
 
 
 3) Write a egrep command  that prints the lines in a file named input.txt containing
 only the characters A and  B such that
 the number of A's is divisible by 4.
 
-Q3 answer:
+Q3 answer: egrep -i "b*ab*ab*ab*ab*b*" input.txt 
 
 
 4) Write a egrep command  that prints the lines in a file named input.txt containing
@@ -36,5 +36,4 @@ only the characters A and  B such that
 there are exactly n A's followed by
 exactly n B's and no other characters.
 
-Q4 answer:
-
+Q4 answer: 
