@@ -36,4 +36,4 @@ only the characters A and  B such that
 there are exactly n A's followed by
 exactly n B's and no other characters.
 
-Q4 answer: 
+Q4 answer: grep -P "^(a(?1)?b)$"
