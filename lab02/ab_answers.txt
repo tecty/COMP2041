@@ -12,7 +12,7 @@ Q1 answer: egrep Andrew words.txt
 1) Write a egrep command  that prints the lines in a file named input.txt containing
 containing at least one A and at least one B.
 
-Q1 answer: egrep -i "a.*b|b.*a" input.txt
+Q1 answer: egrep  "A.*B|B.*A" input.txt
 
 
 2) Write a egrep command  that prints the lines in a file named input.txt containing
@@ -28,7 +28,7 @@ Q2 answer: egrep -iv "[ c-z]|(bb[ab]*aa+)$" input.txt
 only the characters A and  B such that
 the number of A's is divisible by 4.
 
-Q3 answer: egrep -i "b*ab*ab*ab*ab*b*" input.txt 
+Q3 answer: egrep -i "^(b*ab*ab*ab*ab*)+$|^b*$" input.txt 
 
 
 4) Write a egrep command  that prints the lines in a file named input.txt containing
@@ -36,4 +36,4 @@ only the characters A and  B such that
 there are exactly n A's followed by
 exactly n B's and no other characters.
 
-Q4 answer: grep -P "^(a(?1)?b)$"
+Q4 answer: grep -iP "^(a(?1)?b)$"
