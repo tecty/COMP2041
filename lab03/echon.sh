@@ -9,7 +9,7 @@ fi
 
 
 # check whether the argument 1 is a positive integer
-if  (($1 <= 0 ))
+if  (($1 < 0 ))
 then 
     # echo the given message to the stderr 
     echo "$0: argument 1 must be a non-negative integer" 1>&2
