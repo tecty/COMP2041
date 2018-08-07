@@ -50,7 +50,7 @@ fi
 
 # download web page
 wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Undergraduate\&descr\=All
-wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Postgraduate\&descr\=All
+wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Postgraduate\&descr\=All
 # wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp?StudyLevel=Postgraduate&descr=All
 
 # try to generate a db that contain the couses' info
