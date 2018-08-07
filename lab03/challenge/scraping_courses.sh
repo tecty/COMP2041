@@ -12,6 +12,9 @@ function fetch_info() {
   sed "s/<TD class=\".*\" align=\".*\">//g" |
   sed "s/<TD class=\".*\">//g" |
   sed "s/<\/.*>//g" |
+  # trim the last space in the description
+  # I don't know why this happens
+  sed "s/ $//g" |
   # remove UOC info
   egrep -v "^[0-9]{1,2}$|^[0-9]{1,2}\.[0-9]$"
 
@@ -36,7 +39,7 @@ function generate_db() {
     paste course_name.tmp course_detail.tmp -d" " >> course.db.tmp
 
     # remove the duplicate course
-    sort course.db.tmp | uniq > course.db
+    sort course.db.tmp | uniq | cat > course.db
     # delete the tempory file
     rm *.tmp
   fi
@@ -49,17 +52,17 @@ if [[ $# != 1 ]]; then
 fi
 
 # download web page
-wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Undergraduate\&descr\=All &
+wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Undergraduate\&descr\=All
 wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Postgraduate\&descr\=All
-# wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp?StudyLevel=Postgraduate&descr=All
 
 # try to generate a db that contain the couses' info
 generate_db
 
 # remove the temporary page
-# rm "UG_all.html" "PG_all.html"
+rm "UG_all.html" "PG_all.html"
 
 # grep the name given
 egrep "$1[0-9]{4}" course.db
+
 
 # rm course.db
