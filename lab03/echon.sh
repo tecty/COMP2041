@@ -4,12 +4,13 @@
 if (($# != 2))
 then
     echo "Usage: $0 <number of lines> <string>" 1>&2
+    exit 1
 fi
 
 
 
 # check whether the argument 1 is a positive integer
-if  (($1 < 0 ))
+if ! test $1 -ge 0  2>/dev/null
 then 
     # echo the given message to the stderr 
     echo "$0: argument 1 must be a non-negative integer" 1>&2
