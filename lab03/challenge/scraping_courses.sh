@@ -38,7 +38,7 @@ function generate_db() {
     # remove the duplicate course
     sort course.db.tmp | uniq > course.db
     # delete the tempory file
-    # rm *.tmp
+    rm *.tmp
   fi
 }
 
@@ -49,7 +49,7 @@ if [[ $# != 1 ]]; then
 fi
 
 # download web page
-wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Undergraduate\&descr\=All
+wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Undergraduate\&descr\=All &
 wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Postgraduate\&descr\=All
 # wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp?StudyLevel=Postgraduate&descr=All
 
@@ -62,4 +62,4 @@ generate_db
 # grep the name given
 egrep "$1[0-9]{4}" course.db
 
-rm course.db
+# rm course.db
