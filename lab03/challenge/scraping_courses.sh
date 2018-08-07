@@ -5,11 +5,11 @@ function fetch_info() {
   cat $1 | \
   # grep all the course detail
   egrep \
-  "<TD class=\".*\" align=\"left\">|<TD class=\".*\"><A href=\".*\">.*</A></TD>"|
+  "<TD class=\".*\" align=\".*\">|<TD class=\".*\"><A href=\".*\">.*</A></TD>"|
   #  remove the indent
   cut -f9 |
   # remove the html tags
-  sed "s/<TD class=\".*\" align=\"left\">//g" |
+  sed "s/<TD class=\".*\" align=\".*\">//g" |
   sed "s/<TD class=\".*\">//g" |
   sed "s/<\/.*>//g" |
   # remove UOC info
@@ -33,7 +33,7 @@ function generate_db() {
     egrep "^[A-Z]{4}[0-9]{4}$"    PG.tmp > course_name.tmp
     egrep -v "^[A-Z]{4}[0-9]{4}$" PG.tmp > course_detail.tmp
     # append the PG course after the UG course
-    paste course_name.tmp course_detail.tmp -d" " >> course.tmp
+    paste course_name.tmp course_detail.tmp -d" " >> course.db.tmp
 
     # remove the duplicate course
     sort course.db.tmp | uniq > course.db
