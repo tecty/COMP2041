@@ -11,33 +11,33 @@ Q1 answer: egrep Andrew words.txt
 
 1) Write a shell pipeline to print how many classes there are.
 
-Q1 answer: cut -f1 classes.txt | sort | uniq | wc -w
+Q1 answer: wc classes.txt -l | cut -f1 -d' '
 
 
 2) Write a shell pipeline to print how many different courses have classes?
 
-Q2 answer:
+Q2 answer: cut -f1 classes.txt | sort | uniq | wc -w
 
 
 3) Write a shell pipeline which will print the course with the most classes (and no
 other courses) and how many classes are in this course? 
 
-Q3 answer:
+Q3 answer: cut -f1 classes.txt|sort | uniq -c | sort -n  | tail -n1
 
 
 4) Write a shell pipeline that prints the room most frequently-used room by CSE classes and how often it is used?
 
-Q4 answer:
+Q4 answer: cut classes.txt -f5 | egrep -vi "k17" | sort |uniq -c | sort -n  | tail -n1 
 
 
 5) Write a shell pipeline  that prints the most popular time-of-day for classes to
 start and how many classes start at that time?
 
-Q5 answer:
+Q5 answer: cut classes.txt -f4 | cut -f1 -d"-" | sort  | uniq -c  | sort -n  | tail -n1 
 
 
 6) Challenge: Write a shell pipeline that prints a list of the course codes (only) of COMP courses that
 run 2 or more  classes of the same type starting at the same time on the same day? (e.g. three tut-labs starting Monday at 10:00)
 
-Q6 answer:
+Q6 answer: cut classes.txt -f1,3,4 | uniq -D | cut -f1 | uniq  | grep "COMP"
 
