@@ -48,8 +48,15 @@ if [[ $# != 1 ]]; then
   exit 1
 fi
 
+# download web page
+wget -q -O"UG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp\?StudyLevel\=Undergraduate\&descr\=All 
+wget -q -O"PG_all.html" http://www.handbook.unsw.edu.au/vbook2018/brCoursesByAtoZ.jsp?StudyLevel=Postgraduate&descr=All
+
 # try to generate a db that contain the couses' info
 generate_db
+
+# remove the temporary page
+rm "UG_all.html" "PG_all.html"
 
 # grep the name given
 grep $1 course.db
