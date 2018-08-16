@@ -1,10 +1,10 @@
-#/bin/bash
+#!/bin/bash
 
 
 # change the directory to the directory we need to change id
 # cd  "$dirName"
 
-
+OLDPWD=$PWD
 
 for dir in "$@"; do
   cd - >/dev/null
@@ -17,7 +17,7 @@ for dir in "$@"; do
     # extract the information from the file name
     track=`echo $musicFile | cut -d'-' -f1 | sed "s/ $//g"`
     title=`echo $musicFile | cut -d'-' -f2 | sed "s/^ //g" | sed "s/ $//g"`
-    artist=`echo $musicFile | cut -d'-' -f3 | sed "s/^ //g" | sed "s/.mp3//g"`
+    artist=`echo $musicFile | cut -d'-' -f3- | sed "s/^ //g" | sed "s/.mp3//g"`
 
     # set the id
     id3 -t "$title" -T "$track" -a "$artist" -A "$album" \
