@@ -15,9 +15,9 @@ for dir in "$@"; do
 
   for musicFile in * ; do
     # extract the information from the file name
-    track=`echo $musicFile | sed "s/ - /\[/g" | cut -d'[' -f1 "`
-    title=`echo $musicFile | sed "s/ - /\[/g" | cut -d'[' -f2 "`
-    artist=`echo $musicFile | sed "s/ - /\[/g" | cut -d'[' -f3 "`
+    track=`echo $musicFile | sed "s/ - /\[/g" | cut -d'[' -f1 `
+    title=`echo $musicFile | sed "s/ - /\[/g" | cut -d'[' -f2 `
+    artist=`echo $musicFile | sed "s/ - /\[/g" | cut -d'[' -f3 `
 
     # set the id
     id3 -t "$title" -T "$track" -a "$artist" -A "$album" \
