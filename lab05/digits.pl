@@ -3,7 +3,7 @@
 # read from stdin
 foreach my $line (<STDIN>) {
   $line =~ tr/0-4/</;
-  $line =~ tr/5-9/>/;
+  $line =~ tr/6-9/>/;
   print $line;
 }
 

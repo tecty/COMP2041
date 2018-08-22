@@ -43,3 +43,15 @@ foreach $file (@files) {
 
     close F;
 }
+
+#Accept the stdin 
+@lines = <STDIN>;
+close STDIN;
+
+if ($#lines < $linePrint ) {
+  # prevent index over bound
+  print @lines;
+} else {
+  print @lines[-$linePrint..-1];
+}
+
