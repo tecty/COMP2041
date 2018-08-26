@@ -6,14 +6,14 @@ for htm in *.htm ; do
     exit 0
   fi
 
-  if echo "$htm" | egrep ".html$"; then
+  if echo  "$htm" | egrep ".html$"; then
     # pass those file already change to html
     continue;
   fi
-  html=`echo $htm |sed "s/.htm$/.html/g"`
+  html=`echo  "$htm" |sed "s/.htm$/.html/g"`
   if  ls $html 2>/dev/null >/dev/null ; then
     # break the loop if the file is exist
-    echo "$html exists" 1>&2
+    echo  "$html" "exists" 1>&2
     exit 1
   fi
   mv -- "$htm" "$html"
