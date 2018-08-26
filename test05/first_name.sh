@@ -1,16 +1,23 @@
 #!/usr/bin/env bash
 
 # fetch by course name
-egrep "^COMP[29]041" $1 |
-# fetch all the last name
-egrep -o ", [a-zA-Z ]*"   |
-# remove the "," and " " at the end of line
+cat $1 |
+egrep "^COMP[29]041"  |
+# fetch the names
+cut -d"|"  -f3 |
+sort| uniq|
+
+# fetch the name
+cut -d"," -f2 |
+# remove the dummy space
+sed "s/^ //g"|
 sed "s/[ ]*$//g" |
-sed "s/^,[ ]*//g" |
-cut -d" " -f1-  |
-# remove new line to space
-sed "s/\n/ /g" |
-# let the space to new line
-sed "s/ /\n/g" |
-sort | uniq -c | sort -n | tail -n 1 |
-sed "s/[\t ]*[0-9]*//g"
+# fetch the first name " the last string after , "
+cut -d" " -f-1 |
+# make every word into new line
+# sed "s/ /\n/g" |
+sort | uniq -c | sort -n |
+ # fetch the most common one
+tail -1 |
+egrep -o "[a-zA-Z]*" |
+cat
