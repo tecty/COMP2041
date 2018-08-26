@@ -6,7 +6,7 @@ for file in "$@"; do
     egrep -v "include"`
 
   for include_file in $included; do
-    if ! ls  include_file  >/dev/null 2>/dev/null; then
+    if ! ls  "$include_file"  >/dev/null 2>/dev/null; then
       # this file is not exist
       echo "$include_file included into $file does not exist"
     fi
