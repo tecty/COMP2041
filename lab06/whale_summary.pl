@@ -7,7 +7,7 @@ $file = $ARGV[0];
 open F ,"<" , $file;
 
 while ($line = <F>){
-  print $line;
+	#print $line;
   # fetch the specie
   if($line =~ /([\D ]+)$/i){
 
@@ -21,7 +21,7 @@ while ($line = <F>){
     $whale_specie = lc $whale_specie;
 
     print "$whale_specie\n";
-    $podCount{$whale_specie} ++;
+	#$podCount{$whale_specie} ++;
     # fetch the the numbers of the identify observations
     $line =~ /\s(\d+)\s/;
     $count{$whale_specie} += $1;
