@@ -25,10 +25,11 @@ function test() {
 # sort the numbers
 sort "$testInput" > "sorted_Input.tmp"
 
-for (( i = 0; i < 1; i++ )); do
+for (( i = 0; i < 10; i++ )); do
   # do 10 times of test
   test $1 $i
 done
 
 # remove the sorted input
 rm   sorted_Input.tmp
+exit 0 
