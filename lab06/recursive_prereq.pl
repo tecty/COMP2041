@@ -2,7 +2,18 @@
 
 use warnings;
 
-$root_course = $ARGV[0];
+
+if ($ARGV[0] eq "-r") {
+  # we need to recursive serch
+  $root_course = $ARGV[1];
+  $recursive = 1;
+}
+else {
+  # we don't need recursive search
+  $root_course = $ARGV[0];
+  $recursive = 0;
+}
+
 
 sub find_pre {
   my (@file) = @_;
@@ -29,9 +40,9 @@ sub find_pre {
 }
 
 sub visit_course {
-  push @unvisited, $ARGV[0];
+  push @unvisited, $_[0];
 
-  # use a queue to check which course we need to visit 
+  # use a queue to check which course we need to visit
   while (@unvisited) {
     $course = shift @unvisited;
 
@@ -48,14 +59,27 @@ sub visit_course {
     # close those files
     close UG;
     close PG;
+
+    if ($recursive ==0 ) {
+      # push all the unvisited to visited so it could be print at the end
+      foreach my $course (@unvisited) {
+        $visited{$course} = 1;
+      }
+
+
+      last;
+    }
+
+
   }
 
 
   $unvisited{$course}  = 1;
 }
 
+# print("$root_course");
 
-visit_course($ARGV[0]);
+visit_course($root_course);
 
 foreach my $key (sort keys %visited) {
   if ($root_course ne  $key ) {
