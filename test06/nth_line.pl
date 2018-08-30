@@ -3,7 +3,7 @@
 use warnings;
 
 
-open F ,"<", $ARGV[1];
+open F ,"<", $ARGV[1] or die;
 
 @lines = <F>;
 
