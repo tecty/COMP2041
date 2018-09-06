@@ -18,4 +18,5 @@ while (<STDIN>) {
 }
 
 # print the  $total_words added
+$word_array{$ARGV[0]} = 0 if (! defined $word_array{$ARGV[0]});
 print "$ARGV[0] occurred $word_array{$ARGV[0]} times\n";
