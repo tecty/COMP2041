@@ -58,6 +58,10 @@ foreach $file (glob "lyrics/*.txt") {
 
 # print the  $total_words added
 foreach my $file_name (sort keys %word_array) {
+  # guard for undefined value
+  $word_array{$file_name}{$ARGV[0]} = 0
+    if (!defined $word_array{$file_name}{$ARGV[0]});
+  # print the outcome 
   printf("%4d/%6d = %.9f %s\n",  $word_array{$file_name}{$ARGV[0]},
     $total_words{$file_name},
     $word_array{$file_name}{$ARGV[0]}/$total_words{$file_name},
