@@ -31,6 +31,10 @@ sub dispatch {
     # call the init function
     init_legit(@ARGV);
   }
+  elsif($command eq "commit"){
+
+  }
+
 }
 
 dispatch();
