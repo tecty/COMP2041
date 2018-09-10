@@ -8,8 +8,22 @@ use File::Spec;
 # add current directory on the fly
 use lib File::Spec->catfile($FindBin::Bin);
 # include our base lib
-use Base_lib;
+use baseLib;
 
+#
+# Required the actions
+#
+
+sub commit {
+  my @list_arg=@_;
+
+  # pop all the options
+  my $options = pop_options(@list_arg);
+
+  if ($options =~ /m/ ) {
+
+  }
+}
 
 
 sub dispatch {

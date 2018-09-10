@@ -1,13 +1,21 @@
 #!/usr/bin/env perl
-package Base_lib;
+package baseLib;
 use warnings;
 use strict;
 use Exporter;
 
 
+use FindBin;
+use File::Spec;
+# add current directory on the fly
+use lib File::Spec->catfile($FindBin::Bin);
+# include our database lib
+use dbLib;
+
+
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw( init_legit commit pop_options);
+our @EXPORT = qw(pop_options init_legit);
 
 
 sub pop_options(\@) {
@@ -27,25 +35,15 @@ sub pop_options(\@) {
   return join("", @options);;
 }
 
-
-
 sub init_legit {
   # create a folder and some routine work
 
-  # create a folder
-  if (mkdir ".legit" ) {
-    # init success fully
-    open my $F, ">", ".legit/history";
-    close $F;
-
+  if (init_db ){
     # print the promt
     print "Initialized empty legit repository in .legit\n";
   }
 }
 
-sub commit {
-  my @list_arg=@_;
 
-
-
-}
+# defualt return mark
+1;

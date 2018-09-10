@@ -8,9 +8,15 @@ use File::Spec;
 # add current directory on the fly
 use lib File::Spec->catfile($FindBin::Bin);
 # include our base lib
-use Base_lib;
+use baseLib;
 
 my @array = ("-m","-a","sss");
-print pop_options(@array);
-print "\n";
-print @array;
+my $option  =  pop_options(@array);
+
+if( $option =~ /m/){
+  print "this arg is true\n";
+}
+
+if ($option !~ /k/) {
+  print "this is false\n";
+}
