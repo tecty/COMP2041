@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-use warnings;
+#use warnings;
 
 sub max {
   my ($x, $y) = @_;
