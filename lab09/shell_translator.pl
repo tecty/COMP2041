@@ -54,8 +54,8 @@ foreach (<>) {
 
 
   # replace the "do" and "done" by brackets
-  s/(done|fi)/\}/;
-  s/(do|then)/\{/;
+  s/(done|fi)$/\}/;
+  s/(do|then)$/\{/;
 
   # replace else as }{ since else will alway has another sections of codes
   s/else/\} else \{/;
