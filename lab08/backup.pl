@@ -15,3 +15,4 @@ while (-e $back) {
 }
 
 copy("$ARGV[0]","$back");
+print "Backup of '$ARGV[0]' saved as '$back'\n";

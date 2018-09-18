@@ -10,3 +10,4 @@ while [[ -f $back ]]; do
   back=".$1.$i";
 done
 cp "$1" "$back"
+echo "Backup of '$1' saved as '$back'"
