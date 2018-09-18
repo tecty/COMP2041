@@ -14,6 +14,30 @@ sub add_dolar{
   return $var;
 }
 
+sub process_test {
+  my ( $test_parms )=  @_;
+  # print( "imhere");
+
+  my @params = $test_parms  =~ /(\w+|[*\/+-<>=!%]+)/g;
+  # init a empty string for returned value
+  my $ret = "";
+
+  foreach my $param (@params) {
+    if ($param =~ /^\w+$/) {
+      # this is an arg name
+      $ret .= add_dolar($param);
+    } elsif ($param =~ /[*\/+-<>=!%]+/) {
+      # this is an operation
+      # pass and add indent
+      $ret .= " $param ";
+    }
+  }
+
+  # return the processed expression
+  return $ret
+}
+
+
 foreach (<>) {
   # remove the styleish things
   s/;//;
@@ -30,17 +54,27 @@ foreach (<>) {
 
 
   # replace the "do" and "done" by brackets
-  s/done/\}/;
-  s/do/\{/;
+  s/(done|fi)/\}/;
+  s/(do|then)/\{/;
+
+  # replace else as }{ since else will alway has another sections of codes
+  s/else/\} else \{/;
+
+  # process elif replacement
+  s/elif(.*)/} elsif $1 \{/;
+
+
+
 
   # replace the variable representation
   s/(\w+)=/\$$1 = /;
 
-  if (s/[\$]?\(\((\w+)[ ]?([*\/+-<>=!%]+)[ ]?(\w+)\)\)//) {
+
+  if (s/\$?\(\(([^)]*)\)\)//) {
     # replace the operation representation
 
     # check and add the $ symbol
-    $_= $_.add_dolar($1)." $2 ".add_dolar($3);
+    $_= $_.process_test($1);
 
   }
 
