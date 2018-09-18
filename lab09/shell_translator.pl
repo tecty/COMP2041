@@ -30,17 +30,17 @@ foreach (<>) {
 
 
   # replace the "do" and "done" by brackets
-  s/^do$/\{/;
-  s/^done$/\}/;
+  s/done/\}/;
+  s/do/\{/;
 
   # replace the variable representation
   s/(\w+)=/\$$1 = /;
 
-  if (s/[\$]?\(\((\w+)[ ]?([*\/+-<>=]+)[ ]?(\w+)\)\)//) {
+  if (s/[\$]?\(\((\w+)[ ]?([*\/+-<>=!%]+)[ ]?(\w+)\)\)//) {
     # replace the operation representation
 
     # check and add the $ symbol
-    $_= $_.add_dolar($1)." $2 ".add_dolar($3); 
+    $_= $_.add_dolar($1)." $2 ".add_dolar($3);
 
   }
 
