@@ -4,7 +4,10 @@ use warnings;
 
 # the initial print
 $lines[0] = "#!/usr/bin/env perl\n";
+$input = $ARGV[1];
 $input =~ s/("|\\)/\\$1/g;
+# normalise the newline 
+$input =~ s/\n/\\n/g;
 $lines[1] = "print \"$input\\n\";\n";
 
 
