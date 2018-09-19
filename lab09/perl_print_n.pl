@@ -4,7 +4,8 @@ use warnings;
 
 # the initial print
 $lines[0] = "#!/usr/bin/env perl\n";
-$lines[1] = "print \"$ARGV[1]\\n\";\n";
+$input =~ s/("|\\)/\\$1/g;
+$lines[1] = "print \"$input\\n\";\n";
 
 
 
