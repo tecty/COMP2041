@@ -1,2 +1,3 @@
 2018-9-8|23:21|2:13|coding|Startup of the project, using multiple file, test routine.
 2018-9-9|16:46|17:20|coding|Create a db library to handle mata data storage.
+2018-9-23|02:21|02:39|coding|modify the test scripts 

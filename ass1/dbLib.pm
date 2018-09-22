@@ -29,7 +29,8 @@ sub init_db {
 
     return 1;
   }
-  # else
+  # else: some error occoured 
+
   return 0;
 }
 
@@ -42,12 +43,14 @@ sub add_key {
   open my $F, "<", ".legit/__meta__/$db_name";
   foreach my $line (<F>) {
     # pop the key and remove the sperator 
-    $key = $lines =~ /^(.*):/;
-    $key = $lines =~ s/://g;
+    $key = $line =~ /^(.*):/;
+    $key = $line =~ s/://g;
 
-    $lines{} =
+    # $lines{} =
   }
 
+  # close the data file 
+  close F;
 
 
 }

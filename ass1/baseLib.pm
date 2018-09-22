@@ -42,6 +42,10 @@ sub init_legit {
     # print the promt
     print "Initialized empty legit repository in .legit\n";
   }
+  else {
+    # error occoured
+    print STDERR "$0: error: .legit already exists\n"; 
+  }
 }
 
 

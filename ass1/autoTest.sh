@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # init the counter value
 fail_count=0;
@@ -11,22 +11,24 @@ function cleanEnv() {
   fail=0;
 }
 
-for test in `ls tests`; do
+for test in `ls tests/*.sh`; do
   # clean the state
   cleanEnv;
   # atttach the test folder name to excute
   echo "Test:" $test;
-  test=`echo "tests/$test"`;
+  testCorrect=`echo "$test"|  sed  s/.sh/.correct/g`;
 
   # give the file a premission to execute
   chmod u+x $test;
 
   # excute the command;
-  if  ! $test ; then
-    ((fail_count ++));
-  fi;
+  bash $test &>/tmp/autoTest.tmp;
 
-  ((count ++));
+  
+  if ! diff /tmp/autoTest.tmp $testCorrect ; then
+    ((fail_count ++))
+  fi
+  ((count ++)); 
 done;
 
 
