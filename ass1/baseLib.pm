@@ -55,6 +55,11 @@ sub add_files (\@) {
 
   # copy all files to working directory
   map { copy($_, get_working_directory())} @$files;
+
+  # track the operations to
+  open  my $f, ">>", get_working_ops_file();
+  map { print $f "A $_\n"} @$files;
+  close $f;
 }
 
 sub commit_files{
@@ -67,7 +72,7 @@ sub commit_files{
 sub show_log {
   # get the logs file of current branch and print
   open my $log,"<",get_branch_path("","__meta__/commits");
-  print <$log>;
+  print reverse <$log>;
 }
 
 

@@ -10,15 +10,31 @@ use File::Copy;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
-get_working_directory add_commit get_cur_ver get_latest_file_path);
+get_working_directory add_commit get_cur_ver get_latest_file_path
+get_working_ops_file uniq);
 
 sub get_working_directory {
   return ".legit/__meta__/work"
 }
 
+sub uniq {
+  my %seen;
+  return grep { !$seen{$_}++ } @_;
+  return sort keys %seen;
+}
+
 sub touch {
   # a quick version of map
   map {open my $f,">>",$_; close $f } @_;
+}
+
+sub get_working_ops_file {
+  # if there's no exist, then touch the file
+  my $op_file = ".legit/__meta__/ops";
+  if (! -e $op_file){
+    touch($op_file);
+  }
+  return $op_file;
 }
 
 sub get_value_from_file {
@@ -138,7 +154,28 @@ sub add_commit {
   make_path($archive_dir);
   # move all the working file to archive folder
   map {move($_,$archive_dir)} glob("$working_dir/*");
+
+  # ----
+  # add the track operations
+  copy_op_file();
 }
+
+sub copy_op_file {
+  my $cur_ver = get_cur_ver();
+  open my $f,"<", get_working_ops_file();
+  # print <$f>;
+  my @lines = uniq(<$f>);
+  close $f;
+  # delete the old operations file
+  unlink get_working_ops_file();
+
+  # generate this version's option track
+  open my $opt, ">", get_branch_path("","__meta__/$cur_ver.ops");
+  # print @lines;
+  print $opt @lines;
+  close $opt
+}
+
 
 # ----
 # show file function

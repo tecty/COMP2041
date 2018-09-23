@@ -59,6 +59,9 @@ sub dispatch {
     # parse the command line arguments
     my $options = pop_options(@ARGV);
     my $commit = join " ",@ARGV;
+    if ($options =~ /a/){
+      # fetch all the tracked file 
+    }
     if ($options =~ /m/){
       # commit as message
       commit_files($commit);
