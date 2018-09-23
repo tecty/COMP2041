@@ -11,6 +11,4 @@ use lib File::Spec->catfile($FindBin::Bin);
 use baseLib;
 use dbLib;
 
-init_db();
-
-add_key("ass", "ss","ss");
+print get_track_files(3);

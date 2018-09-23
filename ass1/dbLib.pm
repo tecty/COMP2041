@@ -11,7 +11,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
 get_working_directory add_commit get_cur_ver get_latest_file_path
-get_working_ops_file uniq);
+get_working_ops_file uniq get_track_files);
 
 sub get_working_directory {
   return ".legit/__meta__/work"
@@ -20,7 +20,6 @@ sub get_working_directory {
 sub uniq {
   my %seen;
   return grep { !$seen{$_}++ } @_;
-  return sort keys %seen;
 }
 
 sub touch {
@@ -128,7 +127,7 @@ sub add_commit {
 
   # ----
   # get the current branch's meta
-  my $meta_path = get_branch_path(get_cur_branch(),"__meta__");
+  my $meta_path = get_branch_path("","__meta__");
 
   # fetch the current version
   my $cur_ver = get_cur_ver();
@@ -174,6 +173,33 @@ sub copy_op_file {
   # print @lines;
   print $opt @lines;
   close $opt
+}
+
+sub get_track_files {
+  my ($version) = @_;
+  # version has a default is current version
+  $version = (defined $version and $version ne "")?$version: get_cur_ver();
+
+  # fetch all the tracked file from ops
+  my @opfiles = glob get_branch_path("","__meta__/*.ops");
+  # print join "\n",@opfiles;
+  # filter out those not valid for selected version
+  @opfiles = grep {$_ =~ /(\d+)/; $1 <= $version} @opfiles;
+
+  my %trackfiles;
+  foreach my $file (@opfiles) {
+    open my $f,"<", $file;
+    map {
+      $_=~/([AD]) (.*)/;
+      $trackfiles{$2} = 1 if $1 eq "A";
+      $trackfiles{$2} = 0 if $1 eq "D";
+    } <$f>;
+
+    close $f;
+  }
+
+  # return all the currently tracking files
+  return keys %trackfiles;
 }
 
 
