@@ -56,7 +56,20 @@ sub dispatch {
     add(@ARGV);
   }
   elsif($command eq "commit"){
+    # parse the command line arguments
+    my $options = pop_options(@ARGV);
+    my $commit = join " ",@ARGV;
+    if ($options =~ /m/){
+      # commit as message
+      commit_files($commit);
+    }
 
+  }
+  elsif($command eq "log"){
+    show_log();
+  }
+  elsif($command eq "show"){
+    show_file_by_ver(@ARGV);
   }
 
 }

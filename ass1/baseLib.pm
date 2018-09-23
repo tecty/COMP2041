@@ -16,7 +16,8 @@ use dbLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(pop_options init_legit add_files);
+our @EXPORT = qw(pop_options init_legit add_files commit_files show_log
+show_file_by_ver);
 
 
 sub pop_options(\@) {
@@ -53,10 +54,39 @@ sub add_files (\@) {
   my ($files) = @_;
 
   # copy all files to working directory
-  map { copy($_, ".legit/__meta__/work/$_")} @$files;
+  map { copy($_, get_working_directory())} @$files;
+}
+
+sub commit_files{
+  my ($commit) = @_;
+  add_commit($commit);
+  print "Committed as commit ",get_cur_ver(),"\n";
+  # print ;
+}
+
+sub show_log {
+  # get the logs file of current branch and print
+  open my $log,"<",get_branch_path("","__meta__/commits");
+  print <$log>;
 }
 
 
+
+sub show_file_by_ver{
+  my ($arg) = @_;
+  $arg =~ /([0-9]*):(.*)/;
+  # get the version and file by regrex result
+  my $path = get_latest_file_path($1, $2);
+  if ($path ne ""){
+    # cat the file
+    open my $f, "<", $path;
+    print <$f>;
+    close $f;
+  }
+  else{
+    print "$2 desn't exist \n"
+  }
+}
 
 # defualt return mark
 1;
