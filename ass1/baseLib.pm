@@ -7,6 +7,7 @@ use Exporter;
 
 use FindBin;
 use File::Spec;
+use File::Copy;
 # add current directory on the fly
 use lib File::Spec->catfile($FindBin::Bin);
 # include our database lib
@@ -15,7 +16,7 @@ use dbLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(pop_options init_legit);
+our @EXPORT = qw(pop_options init_legit add_files);
 
 
 sub pop_options(\@) {
@@ -44,9 +45,17 @@ sub init_legit {
   }
   else {
     # error occoured
-    print STDERR "$0: error: .legit already exists\n"; 
+    print STDERR "$0: error: .legit already exists\n";
   }
 }
+
+sub add_files (\@) {
+  my ($files) = @_;
+
+  # copy all files to working directory
+  map { copy($_, ".legit/__meta__/work/$_")} @$files;
+}
+
 
 
 # defualt return mark

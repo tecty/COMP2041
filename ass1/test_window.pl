@@ -9,14 +9,8 @@ use File::Spec;
 use lib File::Spec->catfile($FindBin::Bin);
 # include our base lib
 use baseLib;
+use dbLib;
 
-my @array = ("-m","-a","sss");
-my $option  =  pop_options(@array);
+init_db();
 
-if( $option =~ /m/){
-  print "this arg is true\n";
-}
-
-if ($option !~ /k/) {
-  print "this is false\n";
-}
+add_key("ass", "ss","ss");

@@ -25,6 +25,12 @@ sub commit {
   }
 }
 
+sub add {
+  # pop all the actions, hence it would only contain the files
+  pop_options(@_);
+  add_files @_;
+}
+
 
 sub dispatch {
   # a big switch to dispatch to inter function
@@ -44,6 +50,10 @@ sub dispatch {
   if ($command eq "init") {
     # call the init function
     init_legit(@ARGV);
+  }
+  elsif($command eq "add"){
+    # add the files to working directory
+    add(@ARGV);
   }
   elsif($command eq "commit"){
 
