@@ -10,8 +10,8 @@ use File::Copy;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
-get_working_directory add_commit get_cur_ver get_latest_file_path
-get_working_ops_file uniq get_track_files get_latest_file_content);
+get_working_directory add_commit get_cur_ver get_file_path_by_ver
+get_working_ops_file uniq get_track_files get_file_content_by_ver);
 
 sub get_working_directory {
   return ".legit/__meta__/work"
@@ -206,7 +206,7 @@ sub get_track_files {
 # ----
 # show file function
 
-sub get_latest_file_path{
+sub get_file_path_by_ver{
   my ($version, $file)  = @_;
   # the default value of version is current version
   $version = (defined $version and $version ne "")? $version : get_cur_ver();
@@ -223,13 +223,13 @@ sub get_latest_file_path{
   return "";
 }
 
-sub get_latest_file_content {
+sub get_file_content_by_ver {
   # return the content array of the file
   my ($version, $file) = @_;
   # the default value of version is current version
   $version = (defined $version and $version ne "")? $version : get_cur_ver();
   # fetch the path
-  my $path = get_latest_file_path($version, $file);
+  my $path = get_file_path_by_ver($version, $file);
   if ($path eq "") {
     print STDERR "UNDEFINED MESSAGE, FILE IS NOT INDEXED\n";
     exit 1 ;

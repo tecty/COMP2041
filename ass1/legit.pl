@@ -81,13 +81,18 @@ sub main {
     my @args = map {$_ =~ s/--force/-f/g; $_ =! s/--cached/-c/g} @ARGV;
     # we loved option list
     my $options = pop_options(@args);
+    if ($options =~ /f/) {
+      # the user not performing force delete, we need to have a consist
+
+    }
+
+
+
     if ($options !~ /c/ ) {
       # remove the current directory's file
       unlink @args;
     }
-    else{
-      
-    }
+
 
 
 

@@ -75,15 +75,37 @@ sub show_log {
   print reverse <$log>;
 }
 
-
-
-
 sub show_file_by_ver{
   my ($arg) = @_;
   $arg =~ /([0-9]*):(.*)/;
   # get the version and file by regrex result
-  print get_latest_file_content($1, $2);
+  print get_file_content_by_ver($1, $2);
 }
+
+# return a hash table of status
+sub file_status  {
+  # DS - The version is different from woring dir
+  # ST - The version is same as in working dir
+  # NS - The change is not staged, have tracked
+  # FD - Only deleted in fs
+  # DE - Deleted in index and fs
+  # SA - Same as record
+  # AD - Indexed in working section
+  # UC - Not tracking
+  my @files = @_;
+  # hash array for status
+  my %status ;
+
+  # check all specified file status
+  foreach my $file  (@files) {
+    # perform a status check
+    
+  }
+
+}
+
+
+
 
 # defualt return mark
 1;
