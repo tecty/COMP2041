@@ -1,0 +1,6 @@
+Initialized empty legit repository in .legit
+Committed as commit 0
+Committed as commit 1
+1
+./legit.pl: error: 'a' not found in commit 1
+./legit.pl: error: 'a' not found in index
