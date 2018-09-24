@@ -4,8 +4,7 @@ use List::Util qw(reduce max);
 
 sub get_max_from_line {
   my ($in) = @_;
-  my @out = $in=~ /(-?[0-9]*\.?[0-9]+)/;
-
+  my @out = $in=~ /(-?[0-9]*\.?[0-9]+)/g;
   # only max when there is a number
   return max(@out)  if @out != 0;
 }

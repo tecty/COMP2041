@@ -6,7 +6,6 @@ my @lines = <>;
 
 if ($#lines == -1 ) {
   # do nothing
-  print "imhere";
 }
 else{
   # even line numbers
