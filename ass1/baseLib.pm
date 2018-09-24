@@ -17,7 +17,7 @@ use dbLib;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(pop_options init_legit add_files commit_files show_log
-show_file_by_ver);
+show_file_by_ver get_track_files);
 
 
 sub pop_options(\@) {
@@ -77,20 +77,12 @@ sub show_log {
 
 
 
+
 sub show_file_by_ver{
   my ($arg) = @_;
   $arg =~ /([0-9]*):(.*)/;
   # get the version and file by regrex result
-  my $path = get_latest_file_path($1, $2);
-  if ($path ne ""){
-    # cat the file
-    open my $f, "<", $path;
-    print <$f>;
-    close $f;
-  }
-  else{
-    print "$2 desn't exist \n"
-  }
+  print get_latest_file_content($1, $2);
 }
 
 # defualt return mark

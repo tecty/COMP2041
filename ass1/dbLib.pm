@@ -11,7 +11,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
 get_working_directory add_commit get_cur_ver get_latest_file_path
-get_working_ops_file uniq get_track_files);
+get_working_ops_file uniq get_track_files get_latest_file_content);
 
 sub get_working_directory {
   return ".legit/__meta__/work"
@@ -222,6 +222,26 @@ sub get_latest_file_path{
   # ile not found
   return "";
 }
+
+sub get_latest_file_content {
+  # return the content array of the file
+  my ($version, $file) = @_;
+  # the default value of version is current version
+  $version = (defined $version and $version ne "")? $version : get_cur_ver();
+  # fetch the path
+  my $path = get_latest_file_path($version, $file);
+  if ($path eq "") {
+    print STDERR "UNDEFINED MESSAGE, FILE IS NOT INDEXED\n";
+    exit 1 ;
+  }
+
+  open my $f, "<", $path;
+  my @content = <$f>;
+  close $f;
+  # return the read content
+  return @content
+}
+
 
 
 1;

@@ -32,7 +32,7 @@ sub add {
 }
 
 
-sub dispatch {
+sub main {
   # a big switch to dispatch to inter function
   # dispatch by command line args
 
@@ -60,7 +60,9 @@ sub dispatch {
     my $options = pop_options(@ARGV);
     my $commit = join " ",@ARGV;
     if ($options =~ /a/){
-      # fetch all the tracked file 
+      # fetch all the tracked file
+      my @files = get_track_files();
+      add_files(@files);
     }
     if ($options =~ /m/){
       # commit as message
@@ -74,7 +76,22 @@ sub dispatch {
   elsif($command eq "show"){
     show_file_by_ver(@ARGV);
   }
+  elsif($command eq "rm"){
+    # we can only handle the show args, we replace them
+    my @args = map {$_ =~ s/--force/-f/g; $_ =! s/--cached/-c/g} @ARGV;
+    # we loved option list
+    my $options = pop_options(@args);
+    if ($options !~ /c/ ) {
+      # remove the current directory's file
+      unlink @args;
+    }
+    else{
+      
+    }
 
+
+
+  }
 }
 
-dispatch();
+main();
