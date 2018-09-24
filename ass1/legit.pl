@@ -9,6 +9,7 @@ use File::Spec;
 use lib File::Spec->catfile($FindBin::Bin);
 # include our base lib
 use baseLib;
+use dbLib;
 
 #
 # Required the actions
@@ -30,6 +31,58 @@ sub add {
   pop_options(@_);
   add_files @_;
 }
+sub remove {
+  # we can only handle the show args, we replace them
+  my @args =@_;
+  map {$_ =~ s/--force/-f/g; $_ =~ s/--cached/-c/g} @args;
+
+
+  # we loved option list
+  my $options = pop_options(@args);
+  # integrety test
+  if ($options !~ /f/) {
+    # only the not apply -f, we don't perform the integrety test
+    # check the integrety
+    my %status = file_status(@args);
+    map {
+      if ($_ ne "ST" and $_ ne "SA" and $_ ne "FD" and $_ ne "UC") {
+        print "the file is not same as record, we couldn't delete \n";
+        exit 1;
+      }
+    } values %status;
+  }
+  if ($options !~ /c/ ) {
+    # remove the current directory's file
+    unlink @args;
+  }
+  # remove the archived file by adding a operation in record
+  remove_files(@args);
+}
+
+sub show_status {
+  my @indexed_files = get_track_files();
+  push (@indexed_files,glob("*"));
+  @indexed_files = uniq(sort @indexed_files);
+  my %status = file_status(@indexed_files);
+  map {
+    $status{$_}=~s/DS/file changed, different changes staged for commit/;
+    $status{$_}=~s/ST/file changed, changes staged for commit/;
+    $status{$_}=~s/NS/file changed, changes not staged for commit/;
+    $status{$_}=~s/FD/file deleted/;
+    $status{$_}=~s/DE/deleted/;
+    $status{$_}=~s/SA/same as repo/;
+    $status{$_}=~s/AD/added to index/;
+    $status{$_}=~s/UC/untracked/;
+  } keys %status;
+
+
+  # show the replaced message
+  foreach my $key (keys %status) {
+    print "$key - $status{$key}\n";
+  }
+
+}
+
 
 
 sub main {
@@ -68,7 +121,6 @@ sub main {
       # commit as message
       commit_files($commit);
     }
-
   }
   elsif($command eq "log"){
     show_log();
@@ -77,25 +129,10 @@ sub main {
     show_file_by_ver(@ARGV);
   }
   elsif($command eq "rm"){
-    # we can only handle the show args, we replace them
-    my @args = map {$_ =~ s/--force/-f/g; $_ =! s/--cached/-c/g} @ARGV;
-    # we loved option list
-    my $options = pop_options(@args);
-    if ($options =~ /f/) {
-      # the user not performing force delete, we need to have a consist
-
-    }
-
-
-
-    if ($options !~ /c/ ) {
-      # remove the current directory's file
-      unlink @args;
-    }
-
-
-
-
+    remove(@ARGV);
+  }
+  elsif($command eq "status"){
+    show_status();
   }
 }
 

@@ -20,7 +20,7 @@ use File::Copy;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(pop_options init_legit add_files commit_files show_log
-show_file_by_ver get_track_files);
+show_file_by_ver get_track_files remove_files file_status);
 
 
 sub pop_options(\@) {
@@ -65,6 +65,16 @@ sub add_files (\@) {
   close $f;
 }
 
+
+sub remove_files {
+  # option file from global file
+  open  my $f, ">>", get_working_ops_file();
+  # add a delete operation to operation tree
+  map {print $f "D $_\n"} @_ ;
+  # remove the file from working directory
+  map {if (-e ".legit/__meta__/work/$_") {unlink ".legit/__meta__/work/$_"}} @_;
+}
+
 sub commit_files{
   my ($commit) = @_;
   add_commit($commit);
@@ -98,7 +108,6 @@ sub file_status  {
   my @files = @_;
   # hash array for status
   my %status ;
-
   # check all specified file status
   foreach my $file  (@files) {
     # perform a status check
@@ -157,9 +166,8 @@ sub file_status  {
       }
       else {
         # fetch the content in the record
-        if (is_diff(
-          get_file_content_by_ver("",$file), @current_file_content)
-        ) {
+        my @archived_content = get_file_content_by_ver("",$file);
+        if (is_diff(@archived_content, @current_file_content)) {
           # there is a difference between tracking an the current content
           $status{$file} = "NS";
         }
@@ -168,15 +176,9 @@ sub file_status  {
           $status{$file} = "SA";
         }
       }
-
     }
-
-
-
-
-
   }
-
+  return %status;
 }
 
 

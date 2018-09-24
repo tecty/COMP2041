@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package testLib;
+package textLib;
 use warnings;
 use strict;
 use Exporter;
