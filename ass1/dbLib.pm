@@ -228,6 +228,16 @@ sub get_file_content_by_ver {
   my ($version, $file) = @_;
   # the default value of version is current version
   $version = (defined $version and $version ne "")? $version : get_cur_ver();
+
+  # pop all the tracking files for this version
+  my @track_files = get_track_files($version);
+  my %track_files = map { $_ => 1 } @track_files;
+
+  # this is not tracking for this version;
+  if (! exists $track_files{$file}) {
+    return "";
+  }
+
   # fetch the path
   my $path = get_file_path_by_ver($version, $file);
   if ($path eq "") {

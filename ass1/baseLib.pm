@@ -3,15 +3,18 @@ package baseLib;
 use warnings;
 use strict;
 use Exporter;
-
-
-use FindBin;
 use File::Spec;
-use File::Copy;
+
 # add current directory on the fly
 use lib File::Spec->catfile($FindBin::Bin);
 # include our database lib
 use dbLib;
+use textLib;
+
+
+use FindBin;
+
+use File::Copy;
 
 
 our @ISA= qw( Exporter );
@@ -84,14 +87,14 @@ sub show_file_by_ver{
 
 # return a hash table of status
 sub file_status  {
-  # DS - The version is different from woring dir
-  # ST - The version is same as in working dir
-  # NS - The change is not staged, have tracked
-  # FD - Only deleted in fs
-  # DE - Deleted in index and fs
-  # SA - Same as record
-  # AD - Indexed in working section
-  # UC - Not tracking
+  # DS - The version is different from woring dir |
+  # ST - The version is same as in working dir and this file is tracking |
+  # NS - The change is not staged, have tracked |
+  # FD - Only deleted in fs |
+  # DE - Deleted in index and fs |
+  # SA - Same as record |
+  # AD - Indexed in working section but not tracking |
+  # UC - Not tracking |
   my @files = @_;
   # hash array for status
   my %status ;
@@ -99,7 +102,79 @@ sub file_status  {
   # check all specified file status
   foreach my $file  (@files) {
     # perform a status check
-    
+    if (! -e $file) {
+      # file system is deleted
+      if(get_file_path_by_ver("",$file) eq ""){
+        # not exist in index
+        $status{$file} = "DE";
+      }
+      else{
+        # only delected in fs
+        $status{$file}= "FD";
+      }
+      # continue
+      next;
+    }
+
+    # file path in the workign directory
+    my $working_file_path = ".legit/__meta__/work/$file";
+    # file path for the latest version is tracking
+    my $track_path = get_file_path_by_ver("",$file);
+
+    # the file is exist, but it might not tracked
+    if ($track_path eq "") {
+      if (-e $working_file_path) {
+        # there is indexed
+        $status{$file} = "AD";
+      }
+      else{
+        # file is not tracked
+        $status{$file} = "UC";
+      }
+    }
+    else{
+      # the file is tracked
+
+      # read the current content in the file system file
+      open my $fs, "<",$file;
+      my @current_file_content = <$fs>;
+      close $fs;
+
+      if (-e $working_file_path) {
+        # working dectory has a record
+        open my $wk, "<",$working_file_path;
+        my @working_content = <$wk>;
+        close $wk;
+
+        if (is_diff(@current_file_content, @working_content)) {
+          # different from working content
+          $status{$file} = "DS";
+        }
+        else {
+          # same as index in working dir
+          $status{$file} = "ST";
+        }
+      }
+      else {
+        # fetch the content in the record
+        if (is_diff(
+          get_file_content_by_ver("",$file), @current_file_content)
+        ) {
+          # there is a difference between tracking an the current content
+          $status{$file} = "NS";
+        }
+        else {
+          # same as tracking version
+          $status{$file} = "SA";
+        }
+      }
+
+    }
+
+
+
+
+
   }
 
 }
