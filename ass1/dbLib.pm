@@ -186,6 +186,8 @@ sub get_track_files {
   # filter out those not valid for selected version
   @opfiles = grep {$_ =~ /(\d+)/; $1 <= $version} @opfiles;
 
+  # print @opfiles;
+
   my %trackfiles;
   foreach my $file (@opfiles) {
     open my $f,"<", $file;
@@ -199,7 +201,7 @@ sub get_track_files {
   }
 
   # return all the currently tracking files
-  return keys %trackfiles;
+  return map {$_ if $trackfiles{$_} == 1 } keys %trackfiles;
 }
 
 
@@ -210,6 +212,15 @@ sub get_file_path_by_ver{
   my ($version, $file)  = @_;
   # the default value of version is current version
   $version = (defined $version and $version ne "")? $version : get_cur_ver();
+
+  # pop all the tracking files for this version
+  my @track_files = get_track_files($version);
+  my %track_files = map { $_ => 1 } @track_files;
+
+  # this is not tracking for this version;
+  if (! exists $track_files{$file}) {
+    return "";
+  }
 
   # search till i found the latest version of this file
   for (my $ver = $version; $ver >= 0; $ver--) {
@@ -229,20 +240,10 @@ sub get_file_content_by_ver {
   # the default value of version is current version
   $version = (defined $version and $version ne "")? $version : get_cur_ver();
 
-  # pop all the tracking files for this version
-  my @track_files = get_track_files($version);
-  my %track_files = map { $_ => 1 } @track_files;
-
-  # this is not tracking for this version;
-  if (! exists $track_files{$file}) {
-    return "";
-  }
-
   # fetch the path
   my $path = get_file_path_by_ver($version, $file);
   if ($path eq "") {
-    print STDERR "UNDEFINED MESSAGE, FILE IS NOT INDEXED\n";
-    exit 1 ;
+    return "";
   }
 
   open my $f, "<", $path;
