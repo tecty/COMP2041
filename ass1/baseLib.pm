@@ -185,7 +185,6 @@ sub file_status  {
   my %status ;
   # check all specified file status
   foreach my $file  (uniq sort @files) {
-    # print ("imhere",$file );
     if (-e $file ) {
       $status{$file} .= "A";
     }
@@ -196,8 +195,12 @@ sub file_status  {
         $status{$file} .= "A" :$status{$file} .= "R";
 
       # whether it's track in repository
-      get_file_path_by_ver("",$file) ne ""?
-        $status{$file} .= "A" :$status{$file} .= "R";
+      if (get_file_path_by_ver("",$file) ne ""){
+        $status{$file} .= "A";
+      }
+      else{
+        $status{$file} .= "R";
+      }
 
       # short circute remain checks
       next;
@@ -240,7 +243,9 @@ sub file_status  {
     else{
       $status{$file} .= "R";
     }
+
   }
+
   return %status;
 }
 
