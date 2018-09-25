@@ -15,17 +15,6 @@ use dbLib;
 # Required the actions
 #
 
-sub commit {
-  my @list_arg=@_;
-
-  # pop all the options
-  my $options = pop_options(@list_arg);
-
-  if ($options =~ /m/ ) {
-
-  }
-}
-
 sub add {
   # pop all the actions, hence it would only contain the files
   pop_options(@_);

@@ -81,7 +81,7 @@ sub remove_files {
   # add a delete operation to operation tree
   map {print $f "D $_\n"} @_ ;
   # remove the file from working directory
-  map {if (-e ".legit/__meta__/work/$_") {unlink ".legit/__meta__/work/$_"}} @_;
+  map {if (-e get_working_directory($_)) {unlink get_working_directory($_)}} @_;
 }
 
 sub commit_files{
@@ -135,7 +135,7 @@ sub file_status  {
     else {
       $status{$file} .= "R";
       # only need to check wether it's Appear in the $working_dir or repository
-      (-e ".legit/__meta__/work/$file") ?
+      (-e get_working_directory($file)) ?
         $status{$file} .= "A" :$status{$file} .= "R";
 
       # whether it's track in repository
@@ -155,8 +155,8 @@ sub file_status  {
 
 
     # check the content in working directory
-    if (-e ".legit/__meta__/work/$file") {
-      open my $work, "<", ".legit/__meta__/work/$file";
+    if (-e get_working_directory($file)) {
+      open my $work, "<", get_working_directory($file);
       my @work_content = <$work>;
       close $work;
       if(is_diff(@work_content,@fs_content)){

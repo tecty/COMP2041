@@ -14,7 +14,9 @@ get_working_directory add_commit get_cur_ver get_file_path_by_ver
 get_working_ops_file uniq get_track_files get_file_content_by_ver);
 
 sub get_working_directory {
-  return ".legit/__meta__/work"
+  my ($file) = @_;
+  $file = (defined $file) ? $file : "";
+  return ".legit/__meta__/work/$file"
 }
 
 sub uniq {
@@ -96,7 +98,7 @@ sub init_db {
   # create legit file sturecture
   # create a default branch name master
   if (
-      make_path(".legit/__meta__/work") and
+      make_path(get_working_directory()) and
       create_branch("master") and
       set_cur_branch("master")
     ) {
