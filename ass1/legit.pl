@@ -134,7 +134,12 @@ sub main {
     # call the init function
     init_legit(@ARGV);
   }
-  elsif($command eq "add"){
+  if (! -d ".legit"){
+    # not exist error abort all the actions
+    print STDERR "legit.pl: error: no .legit directory containing legit repository exists\n";
+    exit 1;
+  }
+  if($command eq "add"){
     # add the files to working directory
     add(@ARGV);
   }
