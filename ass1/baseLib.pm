@@ -66,7 +66,7 @@ sub add_files (\@) {
   my ($files) = @_;
 
   # copy all files to working directory
-  map { copy($_, get_working_directory())} @$files;
+  map { copy($_, get_working_file_path())} @$files;
 
   # track the operations to
   open  my $f, ">>", get_working_ops_file();
@@ -81,11 +81,12 @@ sub remove_files {
   # add a delete operation to operation tree
   map {print $f "D $_\n"} @_ ;
   # remove the file from working directory
-  map {if (-e get_working_directory($_)) {unlink get_working_directory($_)}} @_;
+  map {if (-e get_working_file_path($_)) {unlink get_working_file_path($_)}} @_;
 }
 
 sub commit_files{
   my ($commit) = @_;
+
   add_commit($commit);
   print "Committed as commit ",get_cur_ver(),"\n";
   # print ;
@@ -135,7 +136,7 @@ sub file_status  {
     else {
       $status{$file} .= "R";
       # only need to check wether it's Appear in the $working_dir or repository
-      (-e get_working_directory($file)) ?
+      (-e get_working_file_path($file)) ?
         $status{$file} .= "A" :$status{$file} .= "R";
 
       # whether it's track in repository
@@ -155,8 +156,8 @@ sub file_status  {
 
 
     # check the content in working directory
-    if (-e get_working_directory($file)) {
-      open my $work, "<", get_working_directory($file);
+    if (-e get_working_file_path($file)) {
+      open my $work, "<", get_working_file_path($file);
       my @work_content = <$work>;
       close $work;
       if(is_diff(@work_content,@fs_content)){
@@ -186,8 +187,6 @@ sub file_status  {
   }
   return %status;
 }
-
-
 
 
 # defualt return mark

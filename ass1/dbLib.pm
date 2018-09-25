@@ -10,10 +10,10 @@ use File::Copy;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
-get_working_directory add_commit get_cur_ver get_file_path_by_ver
+get_working_file_path add_commit get_cur_ver get_file_path_by_ver
 get_working_ops_file uniq get_track_files get_file_content_by_ver);
 
-sub get_working_directory {
+sub get_working_file_path {
   my ($file) = @_;
   $file = (defined $file) ? $file : "";
   return ".legit/__meta__/work/$file"
@@ -98,7 +98,7 @@ sub init_db {
   # create legit file sturecture
   # create a default branch name master
   if (
-      make_path(get_working_directory()) and
+      make_path(get_working_file_path()) and
       create_branch("master") and
       set_cur_branch("master")
     ) {
@@ -148,7 +148,7 @@ sub add_commit {
   #create a dir for current version
   my $archive_dir = get_branch_path("",$cur_ver);
   # get the global directory
-  my $working_dir = get_working_directory();
+  my $working_dir = get_working_file_path();
   # touch the archive folder
   make_path($archive_dir);
   # move all the working file to archive folder
