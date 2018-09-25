@@ -79,8 +79,17 @@ sub add_files (\@) {
   map {
     if (! -e $_) {
       # this file is not exists
-      delete_value_in_array(@$files, $_);
-      push @need_untrack, $_;
+      if ($track_files{$_} == 1) {
+        # and this file is tracking
+        delete_value_in_array(@$files, $_);
+        push @need_untrack, $_;
+      }
+      else{
+        # throw the error and abort the actions
+        print STDERR "legit.pl: error: can not open '$_'\n";
+        exit 1;
+      }
+
     }
   } @$files;
 
