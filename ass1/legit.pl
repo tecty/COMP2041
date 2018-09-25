@@ -54,7 +54,7 @@ sub remove {
         print STDERR "$0: error: '$file' in index is different to both working file and repository\n";
         $error_flag = 1;
       }
-      elsif ($this_status =~/AAR/) {
+      elsif ($this_status =~/AA[DR]/) {
         print STDERR "$0: error: '$file' has changes staged in the index\n";
         $error_flag = 1;
       }
