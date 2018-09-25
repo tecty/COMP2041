@@ -86,9 +86,16 @@ sub remove_files {
 
 sub commit_files{
   my ($commit) = @_;
-
-  add_commit($commit);
-  print "Committed as commit ",get_cur_ver(),"\n";
+  my @files = glob get_working_file_path("*");
+  if ($#files == -1) {
+    # commit fail 
+    print STDERR "nothing to commit\n";
+    exit 1;
+  }
+  else {
+    add_commit($commit);
+    print "Committed as commit ",get_cur_ver(),"\n";
+  }
   # print ;
 }
 

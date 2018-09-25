@@ -12,4 +12,7 @@ use lib File::Spec->catfile($FindBin::Bin);
 use baseLib;
 use dbLib;
 
-glob get_working_directory("*");
+
+my @files = glob get_working_file_path("*");
+
+print $#();
