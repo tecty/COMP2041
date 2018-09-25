@@ -58,7 +58,7 @@ sub init_legit {
   }
   else {
     # error occoured
-    print STDERR "$0: error: .legit already exists\n";
+    print STDERR "legit.pl: error: .legit already exists\n";
   }
 }
 
