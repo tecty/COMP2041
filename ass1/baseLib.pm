@@ -65,6 +65,29 @@ sub init_legit {
 sub add_files (\@) {
   my ($files) = @_;
 
+  # change the track file as an hash table
+  my %track_files ;
+  my @track = get_track_files();
+  grep {!$track_files{$_} ++} @track;
+
+  # array to be files need to untrack
+  my @need_untrack;
+
+  # the not exist file but still tracking
+  # see it as the delete action
+  # push it into untrack array
+  map {
+    if (! -e $_) {
+      # this file is not exists
+      delete_value_in_array(@$files, $_);
+      push @need_untrack, $_;
+    }
+  } @$files;
+
+  # perform the delete action
+  remove_files(@need_untrack);
+
+
   # copy all files to working directory
   map { copy($_, get_working_file_path())} @$files;
 
@@ -86,9 +109,15 @@ sub remove_files {
 
 sub commit_files{
   my ($commit) = @_;
-  my @files = glob get_working_file_path("*");
-  if ($#files == -1) {
-    # commit fail 
+
+  # get the content in the operation file, to decide whether there's things
+  # to commit
+  open my $op,"<", get_working_ops_file();
+  my @op_content = <$op>;
+  close $op;
+
+  if ($#op_content == -1) {
+    # commit fail
     print STDERR "nothing to commit\n";
     exit 1;
   }
