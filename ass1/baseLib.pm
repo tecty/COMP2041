@@ -96,14 +96,25 @@ sub add_files (\@) {
   # perform the delete action
   remove_files(@need_untrack);
 
+  # track the operations to
+  open  my $op_file, ">>", get_working_ops_file();
 
   # copy all files to working directory
-  map { copy($_, get_working_file_path())} @$files;
+  map {
+    # open the current file
+    open my $src_file,"<", $_;
+    my @src =<$src_file>;
+    close $src_file;
 
-  # track the operations to
-  open  my $f, ">>", get_working_ops_file();
-  map { print $f "A $_\n"} @$files;
-  close $f;
+    my @dest = get_file_content_by_ver("",$_);
+    if (is_diff(@src, @dest )) {
+      copy($_, get_working_file_path());
+      print $op_file "A $_\n";
+    }
+  } @$files;
+
+  # close the operation file
+  close $op_file;
 }
 
 
