@@ -12,5 +12,12 @@ use lib File::Spec->catfile($FindBin::Bin);
 use baseLib;
 use dbLib;
 
-my %status = file_status(qw(b));
-print %status;
+my @indexed_files = get_track_files();
+print $#indexed_files;
+push (@indexed_files,glob("*"));
+# print join "\n", glob ("*");
+
+print join "\n", @indexed_files;
+@indexed_files = uniq(sort @indexed_files);
+my %status = file_status(@indexed_files);
+# print %status;

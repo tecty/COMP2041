@@ -9,6 +9,7 @@ function cleanEnv() {
   rm -rf .legit;
   # a common variable to return
   fail=0;
+  rm -rf a b c d e f g h;
 }
 
 for test in `ls tests/*.sh`; do
