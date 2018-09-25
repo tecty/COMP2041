@@ -221,14 +221,24 @@ sub get_file_path_by_ver{
   my %track_files = map { $_ => 1 } @track_files;
 
   # this is not tracking for this version;
-  if (! exists $track_files{$file}) {
+  if (! exists $track_files{$file} and ! -e get_working_file_path($file)) {
     return "";
   }
 
-  $version = (defined $version and $version ne "") ? $version : get_cur_ver();
+  if (! (defined $version and $version ne "")) {
+    # check whether there is a newer verion in working dir
+    my $working_file =get_working_file_path($file);
+    if (-e $working_file and $version eq ""){
+      return $working_file;
+    }
+    else{
+      # fetch the latest verion
+      $version = get_cur_ver();
+    }
+  }
 
   if( int($version) >  int(get_cur_ver())){
-    # die for fetch error 
+    # die for fetch error
     print STDERR "legit.pl: error: unknown commit '$version'\n";
     exit 1 ;
   }

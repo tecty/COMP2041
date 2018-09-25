@@ -16,7 +16,7 @@ for test in `ls tests/*.sh`; do
   cleanEnv;
   # atttach the test folder name to excute
   echo "Test:" $test;
-  testCorrect=`echo "$test"|  sed  s/.sh/.correct/g`;
+  testCorrect=`echo "$test"|  sed  s/.sh$/.correct/g`;
 
   # give the file a premission to execute
   chmod u+x $test;
@@ -24,11 +24,11 @@ for test in `ls tests/*.sh`; do
   # excute the command;
   bash $test &>/tmp/autoTest.tmp;
 
-  
+
   if ! diff /tmp/autoTest.tmp $testCorrect ; then
     ((fail_count ++))
   fi
-  ((count ++)); 
+  ((count ++));
 done;
 
 

@@ -16,4 +16,3 @@ echo line 4 >>a
 cat a
 ./legit.pl show 0:b
 ./legit.pl show 1:b
-rm a b 
