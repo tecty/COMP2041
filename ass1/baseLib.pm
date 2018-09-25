@@ -97,85 +97,68 @@ sub show_file_by_ver{
 
 # return a hash table of status
 sub file_status  {
-  # DS - The version is different from woring dir |
-  # ST - The version is same as in working dir and this file is tracking |
-  # NS - The change is not staged, have tracked |
-  # FD - Only deleted in fs |
-  # DE - Deleted in index and fs |
-  # SA - Same as record |
-  # AD - Indexed in working section but not tracking |
-  # UC - Not tracking |
+  #  F I R (File system, Indexed, Repository)
+  #        Appear
+  #  -     Different
+  #        Remove
   my @files = @_;
   # hash array for status
   my %status ;
   # check all specified file status
-  foreach my $file  (@files) {
-    # perform a status check
-    if (! -e $file) {
-      # file system is deleted
-      if(get_file_path_by_ver("",$file) eq ""){
-        # not exist in index
-        $status{$file} = "DE";
-      }
-      else{
-        # only delected in fs
-        $status{$file}= "FD";
-      }
-      # continue
+  foreach my $file  (uniq sort @files) {
+    if (-e $file ) {
+      $status{$file} .= "A";
+    }
+    else {
+      $status{$file} .= "R";
+      # only need to check wether it's Appear in the $working_dir or repository
+      (-e ".legit/__meta__/work/$file") ?
+        $status{$file} .= "A" :$status{$file} .= "R";
+
+      # whether it's track in repository
+      get_file_path_by_ver("",$file) ne ""?
+        $status{$file} .= "A" :$status{$file} .= "R";
+
+      # short circute remain checks
       next;
     }
 
-    # file path in the workign directory
-    my $working_file_path = ".legit/__meta__/work/$file";
-    # file path for the latest version is tracking
-    my $track_path = get_file_path_by_ver("",$file);
+    # the file exist, we need to perform difference check
 
-    # the file is exist, but it might not tracked
-    if ($track_path eq "") {
-      if (-e $working_file_path) {
-        # there is indexed
-        $status{$file} = "AD";
+    # open the file and read the content inside
+    open my $f, "<", $file;
+    my @fs_content =  <$f>;
+    close $f;
+
+
+    # check the content in working directory
+    if (-e ".legit/__meta__/work/$file") {
+      open my $work, "<", ".legit/__meta__/work/$file";
+      my @work_content = <$work>;
+      close $work;
+      if(is_diff(@work_content,@fs_content)){
+        $status{$file} .= "D";
       }
       else{
-        # file is not tracked
-        $status{$file} = "UC";
+        $status{$file} .= "A";
       }
     }
     else{
-      # the file is tracked
+      $status{$file} .= "R";
+    }
 
-      # read the current content in the file system file
-      open my $fs, "<",$file;
-      my @current_file_content = <$fs>;
-      close $fs;
-
-      if (-e $working_file_path) {
-        # working dectory has a record
-        open my $wk, "<",$working_file_path;
-        my @working_content = <$wk>;
-        close $wk;
-
-        if (is_diff(@current_file_content, @working_content)) {
-          # different from working content
-          $status{$file} = "DS";
-        }
-        else {
-          # same as index in working dir
-          $status{$file} = "ST";
-        }
+    # checking the content in repository
+    if (get_file_path_by_ver("", $file) ne "") {
+      my @rep_content = get_file_content_by_ver("",$file);
+      if (is_diff(@rep_content, @fs_content)) {
+        $status{$file} .= "D";
       }
-      else {
-        # fetch the content in the record
-        my @archived_content = get_file_content_by_ver("",$file);
-        if (is_diff(@archived_content, @current_file_content)) {
-          # there is a difference between tracking an the current content
-          $status{$file} = "NS";
-        }
-        else {
-          # same as tracking version
-          $status{$file} = "SA";
-        }
+      else{
+        $status{$file} .= "A";
       }
+    }
+    else{
+      $status{$file} .= "R";
     }
   }
   return %status;
