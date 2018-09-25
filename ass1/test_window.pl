@@ -2,6 +2,7 @@
 use warnings;
 use strict;
 
+use Error;
 # use Text::Diff;
 use FindBin;
 use File::Spec;
@@ -19,4 +20,20 @@ use dbLib;
 # print get_track_files(),"\n";
 # print file_status(qw("a"));
 
-print file_status(qw(e));
+# print file_status(qw(b));
+my @list = qw(heee sass);
+delete_value_in_array(@list,"sass");
+
+print @list;
+
+
+# sub ff {
+#   throw  Error("heee");
+# }
+#
+# try {
+#   ff;
+# }
+# catch Error with {
+#   my $ex = shift;
+# };

@@ -31,53 +31,73 @@ sub add {
   pop_options(@_);
   add_files @_;
 }
+
+our %status;
+sub show_remove_error{
+  my ($file) = @_;
+  my $this_status = $status{$file};
+  if ($this_status =~/ADD/) {
+    print STDERR "$0: error: '$file' in index is different to both working file and repository\n";
+  }
+  elsif ($this_status =~/AA[DR]/) {
+    print STDERR "$0: error: '$file' has changes staged in the index\n";
+  }
+  elsif ($this_status =~/A[AR]D/) {
+    print STDERR "$0: error: '$file' in repository is different to working file\n";
+  }
+  elsif ($this_status =~/ARR/) {
+    print STDERR "$0: error: '$file' is not in the legit repository\n";
+  }
+}
+
+
 sub remove {
   # we can only handle the show args, we replace them
   my @args =@_;
   map {$_ =~ s/--force/-f/g; $_ =~ s/--cached/-c/g} @args;
+  my $error_flag = 0;
 
 
   # we loved option list
   my $options = pop_options(@args);
-  # integrety test
-  if ($options !~ /f/) {
-    # only the not apply -f, we don't perform the integrety test
-    # check the integrety
-    my %status = file_status(@args);
-    # if ($_ ne "ST" and $_ ne "SA" and $_ ne "FD" and $_ ne "UC") {
 
-    my $error_flag = 0;
+  %status = file_status(@args);
 
-    foreach my $file (keys %status) {
-      my $this_status = $status{$file};
-      if ($this_status =~/ADD/) {
-        print STDERR "$0: error: '$file' in index is different to both working file and repository\n";
-        $error_flag = 1;
-      }
-      elsif ($this_status =~/AA[DR]/) {
-        print STDERR "$0: error: '$file' has changes staged in the index\n";
-        $error_flag = 1;
-      }
-      elsif ($this_status =~/A[AR]D/) {
-        print STDERR "$0: error: '$file' in repository is different to working file\n";
-        $error_flag = 1;
-      }
-      elsif ($this_status =~/ARR/) {
-        print STDERR "$0: error: '$file' is not in the legit repository\n";
-        $error_flag = 1;
-      }
 
+  foreach my $file (keys %status) {
+    # integrety test
+    if ($options !~ /f/) {
+      # only the not apply -f, we don't perform the integrety test
+      # check the integrety
+
+        if ($options =~/c/) {
+          if ($status{$file} !~/.[AR]./ or $status{$file} =~/ARR/){
+            # prevent this from deleting
+            delete_value_in_array(@args, $file);
+            # and show the error message
+            show_remove_error($file);
+          }
+        }
+        else{
+          if($status{$file} !~ /ARA/){
+            show_remove_error($file);
+            delete_value_in_array(@args, $file);
+          }
+        }
     }
-
-    if ($error_flag == 1){
-      # couldn't perform the delete, exit incorrectly
-      exit 1;
+    else {
+      # show error if it's not exist in repo
+      if ($status{$file} =~ /ARR/){
+        show_remove_error($file);
+        delete_value_in_array(@args, $file);
+      }
     }
   }
-  if ($options !~ /c/ ) {
+  if ($options !~ /c/ and $error_flag != 1) {
     # remove the current directory's file
     unlink @args;
   }
+  # Alway remove the cached files
   # remove the archived file by adding a operation in record
   remove_files(@args);
 }

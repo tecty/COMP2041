@@ -54,8 +54,6 @@ sub set_value_to_file {
   close F;
 }
 
-
-
 sub create_branch {
   my ($branch) = @_;
 
@@ -177,16 +175,21 @@ sub copy_op_file {
 
 sub get_track_files {
   my ($version) = @_;
-  # version has a default is current version
-  $version = (defined $version and $version ne "")?$version: get_cur_ver();
 
   # fetch all the tracked file from ops
   my @opfiles = glob get_branch_path("","__meta__/*.ops");
-  # print join "\n",@opfiles;
-  # filter out those not valid for selected version
-  @opfiles = grep {$_ =~ /(\d+)/; $1 <= $version} @opfiles;
+  if (!(defined $version and $version ne "")) {
+    # version has a default is current version
+    $version = get_cur_ver();
+    # filter out those not valid for selected version
+    @opfiles = grep {$_ =~ /(\d+)/; $1 <= $version} @opfiles;
+    push @opfiles, get_working_ops_file();
+  }
+  else{
+    # filter out those not valid for selected version
+    @opfiles = grep {$_ =~ /(\d+)/; $1 <= $version} @opfiles;
+  }
 
-  # print @opfiles;
 
   my %trackfiles;
   foreach my $file (@opfiles) {
@@ -210,8 +213,6 @@ sub get_track_files {
 
 sub get_file_path_by_ver{
   my ($version, $file)  = @_;
-  # the default value of version is current version
-  $version = (defined $version and $version ne "")? $version : get_cur_ver();
 
   # pop all the tracking files for this version
   my @track_files = get_track_files($version);
@@ -221,6 +222,8 @@ sub get_file_path_by_ver{
   if (! exists $track_files{$file}) {
     return "";
   }
+
+  $version = (defined $version and $version ne "") ? $version : get_cur_ver();
 
   # search till i found the latest version of this file
   for (my $ver = $version; $ver >= 0; $ver--) {

@@ -20,8 +20,17 @@ use File::Copy;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(pop_options init_legit add_files commit_files show_log
-show_file_by_ver get_track_files remove_files file_status);
+show_file_by_ver get_track_files remove_files file_status delete_value_in_array);
 
+
+sub delete_value_in_array (\@$) {
+  my ($arr_ref , $value) = @_;
+  for (my $index = 0; $index <= $#$arr_ref; $index++) {
+    if ($$arr_ref[$index] eq $value) {
+      splice @$arr_ref, $index, 1;
+    }
+  }
+}
 
 sub pop_options(\@) {
   # pop all the option in the array
