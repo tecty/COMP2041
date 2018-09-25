@@ -52,7 +52,7 @@ sub pop_options(\@) {
 sub init_legit {
   # create a folder and some routine work
 
-  if (init_db ){
+  if (! -d ".legit" and init_db ){
     # print the promt
     print "Initialized empty legit repository in .legit\n";
   }
