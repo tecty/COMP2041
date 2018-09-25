@@ -2,4 +2,5 @@
 2018-9-9|16:46|17:20|coding|Create a db library to handle mata data storage.
 2018-9-23|02:21|03:12|coding|modify the test scripts
 2018-9-23|17:59|22:01|coding|committing features,
-2018-9-23|17:32|00:34|coding|finish subset 1 
+2018-9-24|17:32|00:34|coding|finish subset 1
+2018-9-25|22:05|00:34|debug|debug the error message  

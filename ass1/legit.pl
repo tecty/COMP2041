@@ -118,7 +118,6 @@ sub show_status {
     $status{$_}=~s/ARR/untracked/;
   } keys %status;
 
-
   # show the replaced message
   foreach my $key (sort keys %status) {
     print "$key - $status{$key}\n";

@@ -101,7 +101,20 @@ sub show_file_by_ver{
   my ($arg) = @_;
   $arg =~ /([0-9]*):(.*)/;
   # get the version and file by regrex result
-  print get_file_content_by_ver($1, $2);
+  my $path = get_file_path_by_ver($1,$2);
+  if ($path eq "") {
+    # clouldn't find the file
+    if ($1 eq "") {
+      print STDERR "$0: error: '$2' not found in index\n";
+    }
+    else{
+      print STDERR "$0: error: '$2' not found in commit $1\n";
+    }
+  }
+  else{
+    # find the file in repo
+    print get_file_content_by_ver($1, $2);
+  }
 }
 
 # return a hash table of status
