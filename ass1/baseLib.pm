@@ -105,10 +105,10 @@ sub show_file_by_ver{
   if ($path eq "") {
     # clouldn't find the file
     if ($1 eq "") {
-      print STDERR "$0: error: '$2' not found in index\n";
+      print STDERR "legit.pl: error: '$2' not found in index\n";
     }
     else{
-      print STDERR "$0: error: '$2' not found in commit $1\n";
+      print STDERR "legit.pl: error: '$2' not found in commit $1\n";
     }
   }
   else{

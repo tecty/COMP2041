@@ -37,16 +37,16 @@ sub show_remove_error{
   my ($file) = @_;
   my $this_status = $status{$file};
   if ($this_status =~/ADD/) {
-    print STDERR "$0: error: '$file' in index is different to both working file and repository\n";
+    print STDERR "legit.pl: error: '$file' in index is different to both working file and repository\n";
   }
   elsif ($this_status =~/AA[DR]/) {
-    print STDERR "$0: error: '$file' has changes staged in the index\n";
+    print STDERR "legit.pl: error: '$file' has changes staged in the index\n";
   }
   elsif ($this_status =~/A[AR]D/) {
-    print STDERR "$0: error: '$file' in repository is different to working file\n";
+    print STDERR "legit.pl: error: '$file' in repository is different to working file\n";
   }
   elsif ($this_status =~/ARR/) {
-    print STDERR "$0: error: '$file' is not in the legit repository\n";
+    print STDERR "legit.pl: error: '$file' is not in the legit repository\n";
   }
 }
 
