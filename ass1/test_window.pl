@@ -12,7 +12,5 @@ use lib File::Spec->catfile($FindBin::Bin);
 use baseLib;
 use dbLib;
 
-
-my @files = glob get_working_file_path("*");
-
-print $#();
+my %status = file_status(qw(b));
+print %status;

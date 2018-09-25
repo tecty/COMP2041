@@ -28,7 +28,7 @@ sub show_remove_error{
   if ($this_status =~/ADD/) {
     print STDERR "legit.pl: error: '$file' in index is different to both working file and repository\n";
   }
-  elsif ($this_status =~/AA[DR]/) {
+  elsif ($this_status =~/AA./) {
     print STDERR "legit.pl: error: '$file' has changes staged in the index\n";
   }
   elsif ($this_status =~/A[AR]D/) {

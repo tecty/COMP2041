@@ -242,8 +242,6 @@ sub get_file_path_by_ver{
 sub get_file_content_by_ver {
   # return the content array of the file
   my ($version, $file) = @_;
-  # the default value of version is current version
-  $version = (defined $version and $version ne "")? $version : get_cur_ver();
 
   # fetch the path
   my $path = get_file_path_by_ver($version, $file);
