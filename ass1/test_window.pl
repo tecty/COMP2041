@@ -13,8 +13,9 @@ use baseLib;
 use dbLib;
 
 my @indexed_files = get_track_files();
-print $#indexed_files;
 push (@indexed_files,glob("*"));
+# print $#indexed_files;
+
 # print join "\n", glob ("*");
 
 print join "\n", @indexed_files;

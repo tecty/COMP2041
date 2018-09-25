@@ -206,7 +206,7 @@ sub get_track_files {
   }
 
   # return all the currently tracking files
-  return map {$_ if $trackfiles{$_} == 1 } keys %trackfiles;
+  return grep {$_ if $trackfiles{$_} == 1 } keys %trackfiles;
 }
 
 
