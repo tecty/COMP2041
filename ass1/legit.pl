@@ -40,45 +40,44 @@ sub remove {
   # we loved option list
   my $options = pop_options(@args);
   # integrety test
-  # if ($options !~ /f/) {
-  #   # only the not apply -f, we don't perform the integrety test
-  #   # check the integrety
-  #   my %status = file_status(@args);
-  #   # if ($_ ne "ST" and $_ ne "SA" and $_ ne "FD" and $_ ne "UC") {
-  #
-  #   my $error_flag = 0;
-  #
-  #   foreach my $file (keys %status) {
-  #     # match each file status
-  #     if ($status{$file} eq  "ST") {
-  #       print STDERR "$0: error: '$file' has changes staged in the index\n";
-  #       $error_flag = 1;
-  #     }
-  #     elsif($status{$file} eq "AD" or $status{$file} eq "UC"){
-  #       print STDERR "$0: error: '$file' is not in the legit repository\n";
-  #       $error_flag = 1;
-  #     }
-  #     elsif(){
-  #       print STDERR "$0: error: '$file' in repository is different to working file\n";
-  #       $error_flag = 1;
-  #     }
-  #     elsif(){
-  #       print STDERR "$0: error: '$file' in index is different to both working file and repository\n";
-  #       $error_flag = 1;
-  #     }
-  #
-  #
-  #   }
-  #
-  #   if ($error_flag == 1){
-  #     # couldn't perform the delete, exit incorrectly
-  #     exit 1;
-  #   }
-  # }
-  # if ($options !~ /c/ ) {
-  #   # remove the current directory's file
-  #   unlink @args;
-  # }
+  if ($options !~ /f/) {
+    # only the not apply -f, we don't perform the integrety test
+    # check the integrety
+    my %status = file_status(@args);
+    # if ($_ ne "ST" and $_ ne "SA" and $_ ne "FD" and $_ ne "UC") {
+
+    my $error_flag = 0;
+
+    foreach my $file (keys %status) {
+      my $this_status = $status{$file};
+      if ($this_status =~/ADD/) {
+        print STDERR "$0: error: '$file' in index is different to both working file and repository\n";
+        $error_flag = 1;
+      }
+      elsif ($this_status =~/AAR/) {
+        print STDERR "$0: error: '$file' has changes staged in the index\n";
+        $error_flag = 1;
+      }
+      elsif ($this_status =~/A[AR]D/) {
+        print STDERR "$0: error: '$file' in repository is different to working file\n";
+        $error_flag = 1;
+      }
+      elsif ($this_status =~/ARR/) {
+        print STDERR "$0: error: '$file' is not in the legit repository\n";
+        $error_flag = 1;
+      }
+
+    }
+
+    if ($error_flag == 1){
+      # couldn't perform the delete, exit incorrectly
+      exit 1;
+    }
+  }
+  if ($options !~ /c/ ) {
+    # remove the current directory's file
+    unlink @args;
+  }
   # remove the archived file by adding a operation in record
   remove_files(@args);
 }
@@ -101,7 +100,7 @@ sub show_status {
 
 
   # show the replaced message
-  foreach my $key (keys %status) {
+  foreach my $key (sort keys %status) {
     print "$key - $status{$key}\n";
   }
 
@@ -119,7 +118,6 @@ sub main {
     print "Usage: $0 [commands]\n";
     exit 1;
   }
-
 
   # shift out the first word as sub command
   my $command = shift @ARGV;

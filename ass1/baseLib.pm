@@ -106,6 +106,7 @@ sub file_status  {
   my %status ;
   # check all specified file status
   foreach my $file  (uniq sort @files) {
+    # print ("imhere",$file );
     if (-e $file ) {
       $status{$file} .= "A";
     }

@@ -16,7 +16,7 @@ sub is_diff(\@\@) {
     return 1;
   }
 
-  for (my $index = 0; $index < $#$a; $index ++) {
+  for (my $index = 0; $index <= $#$a; $index ++) {
     if ($$a[$index] ne $$b[$index]) {
       # there is an different in this $lines
       return 1;
