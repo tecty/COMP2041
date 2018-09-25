@@ -13,4 +13,4 @@ echo 4 >d
 ./legit.pl show :a
 
 # clean up
-rm a b c d 
+rm -f a b c d 

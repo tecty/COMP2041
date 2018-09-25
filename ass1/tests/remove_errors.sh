@@ -28,4 +28,4 @@ echo 9 >b
 ./legit.pl rm --force e
 
 # clean up
-rm a b c d e 
+rm -f a b c d e 
