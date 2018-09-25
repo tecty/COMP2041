@@ -227,6 +227,12 @@ sub get_file_path_by_ver{
 
   $version = (defined $version and $version ne "") ? $version : get_cur_ver();
 
+  if( int($version) >  int(get_cur_ver())){
+    # die for fetch error 
+    print STDERR "legit.pl: error: unknown commit '$version'\n";
+    exit 1 ;
+  }
+
   # search till i found the latest version of this file
   for (my $ver = $version; $ver >= 0; $ver--) {
     # show the version of this file;
