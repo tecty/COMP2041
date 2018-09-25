@@ -79,7 +79,7 @@ sub add_files (\@) {
   map {
     if (! -e $_) {
       # this file is not exists
-      if ($track_files{$_} == 1) {
+      if ($track_files{$_}) {
         # and this file is tracking
         delete_value_in_array(@$files, $_);
         push @need_untrack, $_;
