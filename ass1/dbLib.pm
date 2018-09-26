@@ -5,7 +5,7 @@ use strict;
 use Exporter;
 
 # ues path to create a path more easily
-use File::Path qw(make_path);
+use File::Path qw(make_path rmtree);
 use File::Copy;
 our @ISA= qw( Exporter );
 # these are exported by default.
@@ -13,7 +13,7 @@ our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
 get_working_file_path add_commit get_cur_ver get_file_path_by_ver
 get_working_ops_file uniq get_track_files get_file_content_by_ver
 get_working_delete woring_ops_duplicate_remove
-get_content write_content);
+get_content write_content get_cur_branch_id remove_branch);
 
 sub get_working_file_path {
   my ($file) = @_;
@@ -142,6 +142,13 @@ sub create_branch {
   return 0;
 }
 
+sub remove_branch {
+  # remove the branch specified
+  my ($branch) = @_;
+  rmtree(get_branch_path($branch));
+}
+
+
 sub set_cur_branch {
   return set_value_to_file(".legit/__meta__/cur_branch",@_);
 }
@@ -189,6 +196,15 @@ sub get_cur_ver {
   my $cur_ver = get_value_from_file("$meta_path/currentVer");
   return int(defined $cur_ver? $cur_ver: -1);
 }
+
+sub get_cur_branch_id {
+  # get the status of this branch
+  my $curr_br = get_cur_branch();
+  my $curr_ver = get_cur_ver();
+  # wrap with our repesentation
+  return "$curr_br:$curr_ver";
+}
+
 
 sub add_commit {
   my ($commit) = @_;

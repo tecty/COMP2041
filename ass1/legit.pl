@@ -113,8 +113,30 @@ sub show_status {
   foreach my $key (sort keys %status) {
     print "$key - $status{$key}\n";
   }
-
 }
+
+sub branch {
+  my @args = @_;
+  # we loved option list
+  my $options = pop_options(@args);
+
+  if ($options !~ /d/) {
+    # creating branch
+    create_branch($args[0],get_cur_branch_id());
+  }
+  else{
+    # deleting branch
+    remove_branch($args[0]);
+  }
+}
+
+
+sub checkout {
+  my @args = @_;
+  # we loved option list
+  my $options = pop_options(@args);
+}
+
 
 
 
@@ -135,6 +157,8 @@ sub main {
   if ($command eq "init") {
     # call the init function
     init_legit(@ARGV);
+    # break the rest of match
+    exit 0;
   }
   if (! -d ".legit"){
     # not exist error abort all the actions
@@ -170,6 +194,19 @@ sub main {
   }
   elsif($command eq "status"){
     show_status();
+  }
+  elsif($command eq "branch"){
+    branch(@ARGV);
+  }
+  elsif($command eq "checkout"){
+    checkout(@ARGV);
+  }
+  elsif($command eq "merge"){
+
+  }
+  else{
+    print STDERR "legit.pl: error: not valid legit command\n";
+    exit 1;
   }
 }
 
