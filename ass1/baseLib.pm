@@ -134,6 +134,29 @@ sub remove_files {
   map {if (-e get_working_file_path($_)) {unlink get_working_file_path($_)}} @_;
 }
 
+# deprecate
+# sub remove_cache {
+#   my (@files) = @_;
+#   # file hash for remove operation quicker
+#   my %file_hash;
+#   map {!$file_hash{$_} ++ } @files;
+#
+#   # remove the cached file in working
+#   map {
+#     unlink get_working_file_path($_) if -e get_working_file_path($_)
+#   } @files;
+#
+#   # remove the record action of this working version
+#   my @content = get_content(get_working_ops_file());
+#
+#   @content = grep  {
+#     $_ =~ /[AD] (.*)\\n/;
+#     # return those not we want to delete
+#     $_ if ! exists $file_hash{$1}
+#   } @content;
+# }
+
+
 sub commit_files{
   my ($commit) = @_;
 

@@ -26,6 +26,3 @@ echo 9 >b
 ./legit.pl rm --force c
 ./legit.pl rm --force d
 ./legit.pl rm --force e
-
-# clean up
-rm -f a b c d e 

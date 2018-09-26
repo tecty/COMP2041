@@ -12,7 +12,7 @@ our @ISA= qw( Exporter );
 our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
 get_working_file_path add_commit get_cur_ver get_file_path_by_ver
 get_working_ops_file uniq get_track_files get_file_content_by_ver
-get_working_delete woring_ops_duplicate_remove remove_cache
+get_working_delete woring_ops_duplicate_remove
 get_content write_content);
 
 sub get_working_file_path {
@@ -42,9 +42,6 @@ sub write_content($\@) {
   print $f @$content_ref;
   close $f;
 }
-
-
-
 
 sub touch {
   # a quick version of map
@@ -94,28 +91,6 @@ sub woring_ops_duplicate_remove {
   );
 }
 
-sub remove_cache {
-  my (@files) = @_;
-  # file hash for remove operation quicker
-  my %file_hash;
-  map {!$file_hash{$_} ++ } @files;
-
-  # remove the cached file in working
-  map {
-    unlink get_working_file_path($_) if -e get_working_file_path($_)
-  } @files;
-
-  # remove the record action of this working version
-  my @content = get_content(get_working_ops_file());
-
-  @content = grep  {
-    $_ =~ /[AD] (.*)\\n/;
-    # return those not we want to delete
-    $_ if ! exists $file_hash{$1}
-  } @content;
-
-
-}
 
 
 

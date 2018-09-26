@@ -34,7 +34,7 @@ sub show_remove_error{
   elsif ($this_status =~/A[AR]D/) {
     print STDERR "legit.pl: error: '$file' in repository is different to working file\n";
   }
-  elsif ($this_status =~/[DA]RR/) {
+  elsif ($this_status =~/[DA]R[RD]/) {
     print STDERR "legit.pl: error: '$file' is not in the legit repository\n";
   }
 }
@@ -103,10 +103,10 @@ sub show_status {
     $status{$_}=~s/AAD/file changed, changes staged for commit/;
     $status{$_}=~s/ARD/file changed, changes not staged for commit/;
     $status{$_}=~s/R.A/file deleted/;
-    $status{$_}=~s/R.R/deleted/;
+    $status{$_}=~s/(R.R|DRR)/deleted/;
     $status{$_}=~s/A.A/same as repo/;
     $status{$_}=~s/AAR/added to index/;
-    $status{$_}=~s/(ARR)/untracked/;
+    $status{$_}=~s/(ARR|DRD)/untracked/;
   } keys %status;
 
   # show the replaced message

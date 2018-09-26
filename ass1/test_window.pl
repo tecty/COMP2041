@@ -31,5 +31,7 @@ use dbLib;
 # map {$deleting{$_}=1 } get_working_delete;
 
 # print file_status(qw(a));
-woring_ops_duplicate_remove();
-print get_content(get_working_ops_file());
+# woring_ops_duplicate_remove();
+# print get_content(get_working_ops_file());
+
+print file_status(qw(a c));
