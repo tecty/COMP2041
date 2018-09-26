@@ -3,4 +3,5 @@
 2018-9-23|02:21|03:12|coding|modify the test scripts
 2018-9-23|17:59|22:01|coding|committing features,
 2018-9-24|17:32|00:34|coding|finish subset 1
-2018-9-25|22:05|00:34|debug|debug the error message  
+2018-9-25|22:05|04:43|debug|debug the error message
+2018-9-27|01:23|04:43|debug|debug the rm errors

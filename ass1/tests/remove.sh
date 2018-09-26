@@ -11,6 +11,3 @@ echo 4 >d
 ./legit.pl show 0:a
 ./legit.pl show 1:a
 ./legit.pl show :a
-
-# clean up
-rm -f a b c d 

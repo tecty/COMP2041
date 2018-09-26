@@ -121,8 +121,15 @@ sub add_files (\@) {
 sub remove_files {
   # option file from global file
   open  my $f, ">>", get_working_ops_file();
+
   # add a delete operation to operation tree
   map {print $f "D $_\n"} @_ ;
+
+  # remove those duplicate record
+  # like add and delete at same time but without commit
+  # also this will prevent those remvoe without tracking
+  woring_ops_duplicate_remove;
+
   # remove the file from working directory
   map {if (-e get_working_file_path($_)) {unlink get_working_file_path($_)}} @_;
 }
@@ -178,18 +185,33 @@ sub show_file_by_ver{
 sub file_status  {
   #  F I R (File system, Indexed, Repository)
   #        Appear
-  #  -     Different
+  #        Different
   #        Remove
+  # FD - special case, the file is removing
+
   my @files = @_;
   # hash array for status
   my %status ;
+
+  # hashing of deleting files;
+  my %deleting;
+  map {$deleting{$_}=1 } get_working_delete;
+
+  # print %deleting ,"\n";
   # check all specified file status
   foreach my $file  (uniq sort @files) {
     if (-e $file ) {
       $status{$file} .= "A";
+      if (exists $deleting{$file}) {
+        $status{$file} = "D";
+      }
     }
     else {
-      $status{$file} .= "R";
+      $status{$file} = "R";
+      # mark this file as deleting
+      if (exists $deleting{$file}) {
+        $status{$file} = "D";
+      }
       # only need to check wether it's Appear in the $working_dir or repository
       (-e get_working_file_path($file)) ?
         $status{$file} .= "A" :$status{$file} .= "R";
@@ -205,6 +227,7 @@ sub file_status  {
       # short circute remain checks
       next;
     }
+
 
     # the file exist, we need to perform difference check
 
@@ -231,8 +254,8 @@ sub file_status  {
     }
 
     # checking the content in repository
-    if (get_file_path_by_ver("", $file) ne "") {
-      my @rep_content = get_file_content_by_ver("",$file);
+    if (get_file_path_by_ver(get_cur_ver, $file) ne "") {
+      my @rep_content = get_file_content_by_ver(get_cur_ver,$file);
       if (is_diff(@rep_content, @fs_content)) {
         $status{$file} .= "D";
       }

@@ -34,7 +34,7 @@ sub show_remove_error{
   elsif ($this_status =~/A[AR]D/) {
     print STDERR "legit.pl: error: '$file' in repository is different to working file\n";
   }
-  elsif ($this_status =~/ARR/) {
+  elsif ($this_status =~/[DA]RR/) {
     print STDERR "legit.pl: error: '$file' is not in the legit repository\n";
   }
 }
@@ -76,7 +76,7 @@ sub remove {
     }
     else {
       # show error if it's not exist in repo
-      if ($status{$file} =~ /ARR/){
+      if ($status{$file} =~ /ARR/ or $status{$file} =~ /D../){
         show_remove_error($file);
         delete_value_in_array(@args, $file);
       }
@@ -92,7 +92,9 @@ sub remove {
 }
 
 sub show_status {
-  my @indexed_files = get_track_files();
+  # use $cur_ver to let the deleted flag work, if use "", that make op to ""
+  # "" has different meaning
+  my @indexed_files = get_track_files(get_cur_ver());
   push (@indexed_files,glob("*"));
   @indexed_files = uniq(sort @indexed_files);
   my %status = file_status(@indexed_files);
@@ -104,7 +106,7 @@ sub show_status {
     $status{$_}=~s/R.R/deleted/;
     $status{$_}=~s/A.A/same as repo/;
     $status{$_}=~s/AAR/added to index/;
-    $status{$_}=~s/ARR/untracked/;
+    $status{$_}=~s/(ARR)/untracked/;
   } keys %status;
 
   # show the replaced message
