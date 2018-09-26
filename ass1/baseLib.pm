@@ -101,12 +101,10 @@ sub add_files (\@) {
 
   # copy all files to working directory
   map {
-    # open the current file
-    open my $src_file,"<", $_;
-    my @src =<$src_file>;
-    close $src_file;
-
+    # get content of both filesystem file and in repo one, compare both
+    my @src =get_content($_);
     my @dest = get_file_content_by_ver("",$_);
+
     if (is_diff(@src, @dest )) {
       copy($_, get_working_file_path());
       print $op_file "A $_\n";
@@ -134,37 +132,12 @@ sub remove_files {
   map {if (-e get_working_file_path($_)) {unlink get_working_file_path($_)}} @_;
 }
 
-# deprecate
-# sub remove_cache {
-#   my (@files) = @_;
-#   # file hash for remove operation quicker
-#   my %file_hash;
-#   map {!$file_hash{$_} ++ } @files;
-#
-#   # remove the cached file in working
-#   map {
-#     unlink get_working_file_path($_) if -e get_working_file_path($_)
-#   } @files;
-#
-#   # remove the record action of this working version
-#   my @content = get_content(get_working_ops_file());
-#
-#   @content = grep  {
-#     $_ =~ /[AD] (.*)\\n/;
-#     # return those not we want to delete
-#     $_ if ! exists $file_hash{$1}
-#   } @content;
-# }
-
-
 sub commit_files{
   my ($commit) = @_;
 
   # get the content in the operation file, to decide whether there's things
   # to commit
-  open my $op,"<", get_working_ops_file();
-  my @op_content = <$op>;
-  close $op;
+  my @op_content = get_content(get_working_ops_file());
 
   if ($#op_content == -1) {
     # commit fail
@@ -180,8 +153,8 @@ sub commit_files{
 
 sub show_log {
   # get the logs file of current branch and print
-  open my $log,"<",get_branch_path("","__meta__/commits");
-  print reverse <$log>;
+  my @log = get_content(get_branch_path("","__meta__/commits"));
+  print reverse @log;
 }
 
 sub show_file_by_ver{
@@ -255,16 +228,12 @@ sub file_status  {
     # the file exist, we need to perform difference check
 
     # open the file and read the content inside
-    open my $f, "<", $file;
-    my @fs_content =  <$f>;
-    close $f;
-
+    my @fs_content =  get_content($file);
 
     # check the content in working directory
     if (-e get_working_file_path($file)) {
-      open my $work, "<", get_working_file_path($file);
-      my @work_content = <$work>;
-      close $work;
+      my @work_content = get_content( get_working_file_path($file));
+
       if(is_diff(@work_content,@fs_content)){
         $status{$file} .= "D";
       }

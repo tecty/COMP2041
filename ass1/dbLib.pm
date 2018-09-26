@@ -91,14 +91,9 @@ sub woring_ops_duplicate_remove {
   );
 }
 
-
-
-
 sub get_working_delete {
   # read all the pending operations
-  open my $f, "<". get_working_ops_file;
-  my @content = <$f>;
-  close $f;
+  my @content =get_content(get_working_ops_file());
 
   # remove duplicate and grep those with D startup
   @content = uniq sort @content;
@@ -109,11 +104,8 @@ sub get_working_delete {
 
 
 sub get_value_from_file {
-  my ($file) = @_;
   # create a file to record the current branch
-  open my $f, "<", $file;
-  my @lines = <$f>;
-  close $f;
+  my @lines = get_content($_[0]);
   # return the first line, since it only has one line
   return $lines[0];
 }
@@ -121,13 +113,14 @@ sub get_value_from_file {
 sub set_value_to_file {
   my ($file, $value) = @_;
   # create a file to record the current branch
-  open F, ">", $file;
-  print F $value;
-  close F;
+
+  # convert this single value to array
+  my @value_array =($value);
+  write_content($file,@value_array)
 }
 
 sub create_branch {
-  my ($branch) = @_;
+  my ($branch, $src) = @_;
 
   # path to meta data for master branch
   my $path = get_branch_path($branch, "__meta__");
@@ -136,6 +129,11 @@ sub create_branch {
   if (make_path($path)){
     # create an empty file for commits and operations
     touch("$path/commits","$path/ops","$path/currentVer");
+
+    if (defined $src) {
+      # we need to have a link to parent
+      set_value_to_file("$path/parent",$src);
+    }
 
     # successfully
     return 1;
@@ -231,18 +229,16 @@ sub add_commit {
 
 sub copy_op_file {
   my $cur_ver = get_cur_ver();
-  open my $f,"<", get_working_ops_file();
-  # print <$f>;
-  my @lines = uniq(<$f>);
-  close $f;
+
+  # operation uniq copying
+  my @lines = get_content(get_working_ops_file());
+  @lines = uniq(@lines);
+
   # delete the old operations file
   unlink get_working_ops_file();
 
   # generate this version's option track
-  open my $opt, ">", get_branch_path("","__meta__/$cur_ver.ops");
-  # print @lines;
-  print $opt @lines;
-  close $opt
+  write_content(get_branch_path("","__meta__/$cur_ver.ops"),@lines);
 }
 
 sub get_track_files {
@@ -264,15 +260,14 @@ sub get_track_files {
 
 
   my %trackfiles;
+
+  # track the option history, to get all the file's state
   foreach my $file (@opfiles) {
-    open my $f,"<", $file;
     map {
       $_=~/([AD]) (.*)/;
       $trackfiles{$2} = 1 if $1 eq "A";
       $trackfiles{$2} = 0 if $1 eq "D";
-    } <$f>;
-
-    close $f;
+    } get_content($file);
   }
 
   # return all the currently tracking files
@@ -332,16 +327,13 @@ sub get_file_content_by_ver {
   # fetch the path
   my $path = get_file_path_by_ver($version, $file);
   if ($path eq "") {
+    # don't have the record.
     return "";
   }
 
-  open my $f, "<", $path;
-  my @content = <$f>;
-  close $f;
   # return the read content
-  return @content
+  return get_content($path);
 }
-
 
 
 1;
