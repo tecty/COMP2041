@@ -202,9 +202,6 @@ sub get_parent_branch_info {
   return ("",);
 }
 
-
-
-
 sub set_cur_branch {
   if (! -d get_branch_path($_[0])){
     # error checking

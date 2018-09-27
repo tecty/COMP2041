@@ -12,5 +12,4 @@ use controller;
 use fileLib;
 use helperLib;
 use typeLib;
-
-# holding for main function 
+# this script for testing 
