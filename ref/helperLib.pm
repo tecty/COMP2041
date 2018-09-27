@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package dbLib;
+package helperLib;
 use warnings;
 use strict;
 our @ISA= qw( Exporter );
