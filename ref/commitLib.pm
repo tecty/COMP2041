@@ -7,4 +7,5 @@ our @ISA= qw( Exporter );
 our @EXPORT = qw();
 
 # higer level lib
-# add remove commit log actions 
+# add remove commit log actions
+1;

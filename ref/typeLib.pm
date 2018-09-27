@@ -26,3 +26,4 @@ sub delete_value_in_array (\@$) {
     }
   }
 }
+1;
