@@ -153,8 +153,6 @@ sub create_branch {
         my @need_copy = glob(get_branch_path($src_branch, "$index/*"));
         push @need_copy,glob(get_branch_path($src_branch, "$index/.*"));
 
-        print "imhere",get_branch_path($src_branch, "$index/*");
-
         # path to replace
         my $src_path = get_branch_path($src_branch);
 

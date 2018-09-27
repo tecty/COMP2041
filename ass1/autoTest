@@ -56,7 +56,8 @@ foreach my $testfile (@tests) {
   @diff_out = `diff $testfile $correct_file`;
   if (@diff_out) {
     $fail_count ++;
-    print @diff_out,"\n";
+    print @diff_out,"\n---TestWindow---\n";
+    print `$script_path/test_window.pl`, "\n";
   }
 
 }

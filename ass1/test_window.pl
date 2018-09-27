@@ -14,4 +14,5 @@ use dbLib;
 
 use File::Path 'rmtree';
 
-print join ("\n",glob(".legit/__meta__/*")),"\n";
+# print join ("\n",glob(".legit/__meta__/*")),"\n";
+print get_cur_ver();
