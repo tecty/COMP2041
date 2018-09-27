@@ -7,3 +7,4 @@
 2018-9-27|01:23|04:08|debug|debug the rm errors, milestone - finish subset 1
 2018-9-27|04:08|04:52|coding|start subset 2
 2018-9-27|18:25|20:00|coding|create branch and checkout
+2018-9-28|05:49|20:00|Refactoring|Re-creating the functionality of subset 1 and 2
