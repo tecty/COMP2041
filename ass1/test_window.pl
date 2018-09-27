@@ -13,4 +13,5 @@ use baseLib;
 use dbLib;
 
 use File::Path 'rmtree';
-rmtree(".legit/");
+
+print join ("\n",glob(".legit/__meta__/*")),"\n";

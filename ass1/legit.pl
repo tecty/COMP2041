@@ -135,6 +135,9 @@ sub checkout {
   my @args = @_;
   # we loved option list
   my $options = pop_options(@args);
+
+  set_cur_branch($args[0]);
+  print "Switched to branch '$args[0]'\n";
 }
 
 

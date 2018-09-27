@@ -13,7 +13,8 @@ our @EXPORT = qw(init_db get_branch_path set_cur_branch get_cur_branch
 get_working_file_path add_commit get_cur_ver get_file_path_by_ver
 get_working_ops_file uniq get_track_files get_file_content_by_ver
 get_working_delete woring_ops_duplicate_remove
-get_content write_content get_cur_branch_id remove_branch);
+get_content write_content get_cur_branch_id remove_branch
+create_branch get_parent_branch_info);
 
 sub get_working_file_path {
   my ($file) = @_;
@@ -126,13 +127,51 @@ sub create_branch {
   my $path = get_branch_path($branch, "__meta__");
 
   # make a directory for this branch
-  if (make_path($path)){
+  # also create a lastest folder to perform quick switch branch
+  if (make_path($path) ){
     # create an empty file for commits and operations
     touch("$path/commits","$path/ops","$path/currentVer");
 
-    if (defined $src) {
+    if (defined $src and $src ne "") {
       # we need to have a link to parent
       set_value_to_file("$path/parent",$src);
+
+      # fetch the src with branch and version
+      $src =~ /^([^:]*):([0-9]*)/;
+
+      # nameing the result for better understanding
+      my ($src_branch, $src_ver)= ($1, $2);
+
+      # copy the commit tree to make log work better
+      copy(get_branch_path("$src_branch","__meta__/commits"),"$path/commits");
+
+      # copy all the file record
+      for (my $index = $src_ver; $index >= 0 ; $index--) {
+        # make the path to store the record
+        make_path(get_branch_path($branch, $index));
+        # fetch all the file need to be copy
+        my @need_copy = glob(get_branch_path($src_branch, "$index/*"));
+        push @need_copy,glob(get_branch_path($src_branch, "$index/.*"));
+
+        print "imhere",get_branch_path($src_branch, "$index/*");
+
+        # path to replace
+        my $src_path = get_branch_path($src_branch);
+
+        # copy all the file record
+        map {
+          # fetch the file name we need to copy
+          $_ =~ /\/([^\/]*)$/;
+          # construct  dest path
+          my $dest = get_branch_path($branch,"$index/$1");
+          # copy to dest
+          copy ($_, $dest);
+        } @need_copy;
+      }
+
+
+      # and we set the current version to the version we skipped from
+      set_value_to_file("$path/currentVer",$2);
     }
 
     # successfully
@@ -148,9 +187,33 @@ sub remove_branch {
   rmtree(get_branch_path($branch));
 }
 
+sub get_parent_branch_info {
+  my ($branch)= @_;
+  if (!(defined $branch and $branch ne "")) {
+    # default value guard
+    $branch = get_cur_branch();
+  }
+
+  if (-e get_branch_path($branch,"__meta__/parent")) {
+    my $value = get_value_from_file(get_branch_path($branch,"__meta__/parent"));
+    $value =~ /^([^:]*):([0-9]*)/;
+    # return the tuple of branch name and id
+    return($1, int($2));
+  }
+  # return an empty tuple
+  return ("",);
+}
+
+
+
 
 sub set_cur_branch {
-  return set_value_to_file(".legit/__meta__/cur_branch",@_);
+  if (! -d get_branch_path($_[0])){
+    # error checking
+    print STDERR "Couldn't find branch '$_[0]'\n";
+    exit 1;
+  }
+  return set_value_to_file(".legit/__meta__/cur_branch",$_[0]);
 }
 sub get_cur_branch {
   return get_value_from_file(".legit/__meta__/cur_branch");
@@ -262,6 +325,24 @@ sub get_track_files {
 
   # fetch all the tracked file from ops
   my @opfiles = glob get_branch_path("","__meta__/*.ops");
+  my ($branch,$src_ver) = (get_cur_branch(),"");
+
+  # recursively get all the tracking files
+  while (
+    ($branch,$src_ver) = get_parent_branch_info($branch) and
+    # successfully fetch a parent branch
+    $branch ne ""
+  ) {
+    my @parent_ops = glob get_branch_path($branch,"__meta__/*.ops");
+    # only fetch those has greater version than checkout
+    @parent_ops = grep {$_ =~ /(\d+)/; $1 <= $src_ver} @parent_ops;
+
+    # prepend these ops file at @op_file
+    unshift @opfiles, @parent_ops;
+  }
+
+
+
   if (!(defined $version and $version ne "")) {
     # version has a default is current version
     $version = get_cur_ver();
@@ -273,7 +354,6 @@ sub get_track_files {
     # filter out those not valid for selected version
     @opfiles = grep {$_ =~ /(\d+)/; $1 <= $version} @opfiles;
   }
-
 
   my %trackfiles;
 
@@ -325,14 +405,14 @@ sub get_file_path_by_ver{
   }
 
   # search till i found the latest version of this file
-  for (my $ver = $version; $ver >= 0; $ver--) {
+  for (my $ver = $version;$ver >= 0;$ver--) {
     # show the version of this file;
-    # print("searched",get_branch_path("", "$ver/$file"),"\n");
     if(-e get_branch_path("", "$ver/$file")){
       return get_branch_path("", "$ver/$file");
     }
   }
-  # ile not found
+
+  # file not found
   return "";
 }
 
