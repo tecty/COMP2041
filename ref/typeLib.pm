@@ -61,14 +61,20 @@ sub dd_err{
 }
 
 sub dd_val {
-  print STDERR "> $_[0]:$_[1]\n";
+  print STDERR "> Dump Value:\n";
+  if (@_ == 0 or ! defined $_[1]) {
+    print STDERR ">> $_[0]\n";
+  }
+  else {
+    print STDERR ">> $_[0]:$_[1]\n";
+  }
   exit 1;
 }
 
-sub dd_arr($\@) {
-  print STDERR "> Array $_[0]:\n";
-  foreach (@{$_[1]}) {
-    print STDERR ">> $_";
+sub dd_arr {
+  print STDERR "> Array ",shift @_,":\n";
+  foreach (@_) {
+    print STDERR ">> $_\n";
   }
   exit 1;
 }

@@ -7,19 +7,21 @@ use File::Spec;
 use lib File::Spec->catfile($FindBin::Bin);
 # import all
 use branchLib;
-use commitLib;
 use controller;
 use fileLib;
 use helperLib;
 use typeLib;
 # this script for testing
 my %hash;
-$hash{1}= "a";
-$hash{2}= "b";
-$hash{3}= "c";
-$hash{4}= "d";
+$hash{0}= "-1";
+$hash{1}= "0";
+$hash{2}= "1,0";
+$hash{3}= "2";
+$hash{4}= "3";
+my $COMMIT_RECORD_FILE = get_meta_path("commit");
 
-# dd_hash("hash",%hash);
-my @arr  = hashSerializer(%hash);
-%hash =  hashParse(@arr);
-dd_hash("array to hash",%hash);
+add_hash_to_file($COMMIT_RECORD_FILE, %hash);
+# dd_val(get_curr_commit());
+
+# dd_arr("commit_link",get_commit_link());
+get_track_files()

@@ -6,16 +6,15 @@ use FindBin;
 use File::Spec;
 # add current directory on the fly
 use lib File::Spec->catfile($FindBin::Bin);
-#  this file need to use all our basic lib except this one 
+#  this file need to use all our basic lib except this one
 use branchLib;
-use commitLib;
 use fileLib;
 use helperLib;
 use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_legit );
+our @EXPORT = qw(init_legit add);
 
 
 sub init_legit {
@@ -31,6 +30,10 @@ sub init_legit {
   }
 }
 
-
+sub add {
+  # pop all the actions, hence it would only contain the files
+  pop_options(@_);
+  add_files (@_);
+}
 # Highest level lib
 1;
