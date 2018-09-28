@@ -8,7 +8,7 @@ use lib File::Spec->catfile($FindBin::Bin);
 # import all
 use branchLib;
 use commitLib;
-use controllerLib;
+use controller;
 use fileLib;
 use helperLib;
 use typeLib;

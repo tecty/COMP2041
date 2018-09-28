@@ -6,7 +6,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(to_hash uniq delete_value_in_array
 hashParse hashSerializer
-dd_val dd_arr dd_hash
+dd_val dd_err dd_arr dd_hash
 );
 
 sub to_hash {
@@ -53,6 +53,11 @@ sub hashSerializer(\%) {
   }
   # return the serialized array
   return @arr
+}
+
+sub dd_err{
+  print STDERR "$_[0]\n";
+  exit 1;
 }
 
 sub dd_val {
