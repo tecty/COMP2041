@@ -21,4 +21,4 @@ $hash{4}= "3";
 $hash{5} = undef;
 my %track = get_file_tracks();
 
-dd_arr("b_track", $track{"b"})
+dd_arr("b_track", @{$track{"b"}})

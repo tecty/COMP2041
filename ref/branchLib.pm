@@ -134,17 +134,18 @@ sub get_commit_link {
   # get the commit tree
   my %commit_hash = get_hash_from_file($COMMIT_RECORD_FILE);
   # travel throught hash table
-  while (my $this_node = shift @unvisited) {
+  while (@unvisited) {
+    my $this_node = shift @unvisited;
     # add this node to visited
-    unshift @visited, $this_node;
+    unshift @visited,$this_node;
     # fetch this node's parent
     my @this_par = split ",",$commit_hash{$this_node} ;
+    # push it's parent to @unvisited
+    push @unvisited, $this_par[0];
     if (@this_par == 2 or $this_par[0] == -1) {
       # stop search when meeting (merge node or the very first node)
       last;
     }
-    # else, push it's parent to @unvisited
-    push @unvisited, $this_par[0];
   }
   # return all it's parent
   return @visited;
@@ -190,6 +191,7 @@ sub get_file_tracks {
       }
     }
   } @ops_files;
+
 
   # return the whole track
   return %track;
@@ -347,8 +349,6 @@ sub get_file_content_by_commit {
 
   return get_file_content_by_tracks($file, @{ $file_track{$file}} );
 }
-
-
 
 sub get_log {
   # return the parsed array of log
