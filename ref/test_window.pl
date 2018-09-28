@@ -19,9 +19,6 @@ $hash{2}= "1,0";
 $hash{3}= "2";
 $hash{4}= "3";
 $hash{5} = undef;
+my %track = get_file_tracks();
 
-delete $hash{5};
-
-if (exists $hash{5}) {
-  print "5 exists";
-}
+dd_arr("b_track", $track{"b"})

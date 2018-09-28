@@ -14,7 +14,7 @@ use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_legit add remove commit show_log);
+our @EXPORT = qw(init_legit add remove commit show_log show);
 
 # Highest level lib
 
@@ -111,9 +111,13 @@ sub show_log {
 }
 
 sub show {
-  my ($arg) = @_;
-  
-
+  if(@_ != 1){
+    # couldn't correctly parse the show
+    return 0;
+  }
+  my ($file_id) = @_;
+  $file_id =~ /([^:]*):(.*)/;
+  print get_file_content_by_commit($2,$1);
 }
 
 1;

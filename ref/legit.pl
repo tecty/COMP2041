@@ -75,6 +75,7 @@ sub main {
   }
 
   if($command eq "show"){
+    dd_err("usage: legit.pl show <commit>:<filename>") if ! show(@ARGV);
   }
   elsif($command eq "rm"){
     remove(@ARGV);
