@@ -14,7 +14,7 @@ use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_legit add remove);
+our @EXPORT = qw(init_legit add remove commit);
 
 # Highest level lib
 

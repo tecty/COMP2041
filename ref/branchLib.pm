@@ -102,7 +102,6 @@ sub init_db {
   return 0;
 }
 
-
 # ==== COMMIT PART ====
 
 sub get_commit_link {
@@ -143,7 +142,6 @@ sub get_commit_link {
   return @visited;
 }
 
-
 sub get_file_tracks {
   # not defined or "" is mean latest,
   # which will include the result in indexed
@@ -182,7 +180,6 @@ sub get_file_tracks {
   # return the whole track
   return %track;
 }
-
 
 sub remove_files {
   # store the operation need to write
@@ -253,17 +250,44 @@ sub add_files (\@) {
   add_hash_to_file($INDEX_OPERATION_RECORD_FILE,%add_hash);
 }
 
+sub add_commit {
+  # #pre: there's things to commit
+  my ($message) = @_;
+
+  # this commit's id
+  # increment it and store
+  my $commit_id = int(get_key($MAX_COMMIT_KEY));
+  set_key($MAX_COMMIT_KEY, $commit_id +1);
+
+  # point this branch's head to this commit
+  my %branch_id = (get_key($CURR_BRANCH_KEY) =>  $commit);
+  add_hash_to_file($BRANCH_RECORD_FILE, %branch_id);
+
+  # move all the thing from index to commit dir
+  make_path(get_commit_file_path($commit_id));
+  map {
+    move($_,get_commit_file_path($commit_id))
+  } glob("$working_dir/*","$working_dir/.*");
+
+  # rename the operation's file and create a new one
+  move($INDEX_OPERATION_RECORD_FILE, get_ops_file_path($commit_id));
+  touch($INDEX_OPERATION_RECORD_FILE);
+
+  # record the commit message
+  my %message_hash = ($commit_id => $message);
+  add_hash_to_file($LOG_RECORD_FILE, %message_hash);
+}
+
 sub commit_files{
   my ($commit) = @_;
 
   # get the content in the operation file, to decide whether there's things
   # to commit
-  my @op_content = get_content(get_working_ops_file());
+  my %op_content = get_hash_from_file($INDEX_OPERATION_RECORD_FILE);
 
-  if ($#op_content == -1) {
+  if (keys %op_content == 0) {
     # commit fail
-    print STDERR "nothing to commit\n";
-    exit 1;
+    dd_err("nothing to commit");
   }
   else {
     add_commit($commit);
