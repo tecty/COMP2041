@@ -57,14 +57,24 @@ sub main {
   }
   if($command eq "add"){
     # add the files to working directory
-    add(@ARGV);
+    dd_err("usage: legit.pl add <filenames>") if ! add(@ARGV);
+    exit 0;
   }
   elsif($command eq "commit"){
-    commit(@ARGV);
+    dd_err("usage: legit.pl commit [-a] -m commit-message") if ! commit(@ARGV);
+    exit 0;
   }
   elsif($command eq "log"){
+    show_log();
+    exit 0;
   }
-  elsif($command eq "show"){
+
+  # remainning action need to have at least one commit
+  if (get_max_commit() == -1) {
+    dd_err("legit.pl: error: your repository does not have any commits yet");
+  }
+
+  if($command eq "show"){
   }
   elsif($command eq "rm"){
     remove(@ARGV);

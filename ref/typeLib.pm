@@ -55,6 +55,9 @@ sub hashSerializer(\%) {
   return @arr
 }
 
+# Debug helper
+# dd - die and dump 
+
 sub dd_err{
   print STDERR "$_[0]\n";
   exit 1;

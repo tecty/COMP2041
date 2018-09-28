@@ -17,7 +17,8 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_curr_commit
 get_commit_link add_files get_file_tracks
-commit_files
+commit_files get_max_commit
+get_log get_file_content_by_commit
 );
 
 #
@@ -70,6 +71,11 @@ sub create_branch {
 sub get_curr_commit{
   my %branches = get_hash_from_file($BRANCH_RECORD_FILE);
   return $branches{get_key($CURR_BRANCH_KEY)};
+}
+
+sub get_max_commit{
+  # a wrapper for error checking
+  return int(get_key($MAX_COMMIT_KEY));
 }
 
 sub init_db {
@@ -155,6 +161,12 @@ sub get_file_tracks {
     # push the index record file
     push @ops_files, "index";
   }
+  elsif (int($commit) > int(get_key($MAX_COMMIT_KEY))) {
+    # prevent the commit > max_commit
+    dd_err("legit.pl: error: unknown commit '$commit'")
+  }
+
+
   my @commit_link = get_commit_link($commit);
   # get the file name of operations
   unshift @ops_files, @commit_link;
@@ -316,5 +328,42 @@ sub get_file_content_by_tracks($\@) {
   # there's no track
   return "";
 }
+
+sub get_file_content_by_commit {
+  my ($file, $commit) = @_;
+  # this is just get the file content fronend function
+  # use this a lot will cost performance issue
+  my %file_track = get_file_tracks($commit);
+  if (! defined $file_track{$file}) {
+    if (defined $commit and $commit ne "" ) {
+      # (commit == null and path == null ) => couldn't find in index
+      dd_err("legit.pl: error: '$file' not found in index");
+    }
+    else{
+      # (commit != null and path == null ) => couldn't find in commit
+      dd_err("legit.pl: error: '$file' not found in commit $commit");
+    }
+  }
+
+  return get_file_content_by_tracks($file, @{ $file_track{$file}} );
+}
+
+
+
+sub get_log {
+  # return the parsed array of log
+  my %log_hash = get_hash_from_file($LOG_RECORD_FILE);
+  # for storing the parsed log
+  my @log_arr;
+  foreach my $key (
+    # numeric sort of the hash keys
+    reverse sort {$a <=> $b} keys %log_hash
+  ) {
+    push @log_arr, "$key $log_hash{$key}\n";
+  }
+  # return the parsed array
+  return @log_arr;
+}
+
 
 1;

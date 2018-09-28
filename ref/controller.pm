@@ -14,7 +14,7 @@ use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_legit add remove commit);
+our @EXPORT = qw(init_legit add remove commit show_log);
 
 # Highest level lib
 
@@ -101,4 +101,19 @@ sub remove {
   # # remove the archived file by adding a operation in record
   # remove_files(@args);
 }
+
+sub show_log {
+  # get the logs file of current branch and print
+  foreach (get_log()) {
+    # print all the lines in log
+    print $_;
+  }
+}
+
+sub show {
+  my ($arg) = @_;
+  
+
+}
+
 1;
