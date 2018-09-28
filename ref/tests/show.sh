@@ -16,5 +16,5 @@ echo line 4 >>a
 ./legit.pl show 0:b
 ./legit.pl show 1:b
 
-# cleanning code 
+# cleanning code
 rm a b -rf
