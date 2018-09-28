@@ -33,7 +33,9 @@ my $CURR_BRANCH_KEY = get_meta_path("curr_branch");
 my $MAX_COMMIT_KEY = get_meta_path("max_commit");
 # location of some file
 my $BRANCH_RECORD_FILE = get_meta_path("branch");
+# record the path of commit
 my $COMMIT_RECORD_FILE = get_meta_path("commit");
+# record the message of commit
 my $LOG_RECORD_FILE = get_meta_path("log");
 my $INDEX_OPERATION_RECORD_FILE = get_ops_file_path("index");
 
@@ -259,15 +261,20 @@ sub add_commit {
   my $commit_id = int(get_key($MAX_COMMIT_KEY));
   set_key($MAX_COMMIT_KEY, $commit_id +1);
 
+  # point commit_id to current commit (HEAD)
+  my %commit_link = ( $commit_id => get_curr_commit());
+  add_hash_to_file($COMMIT_RECORD_FILE, %commit_link);
+
+
   # point this branch's head to this commit
-  my %branch_id = (get_key($CURR_BRANCH_KEY) =>  $commit);
+  my %branch_id = (get_key($CURR_BRANCH_KEY) =>  $commit_id);
   add_hash_to_file($BRANCH_RECORD_FILE, %branch_id);
 
   # move all the thing from index to commit dir
   make_path(get_commit_file_path($commit_id));
   map {
     move($_,get_commit_file_path($commit_id))
-  } glob("$working_dir/*","$working_dir/.*");
+  } glob("$INDEX_PATH/* $INDEX_PATH/.*");
 
   # rename the operation's file and create a new one
   move($INDEX_OPERATION_RECORD_FILE, get_ops_file_path($commit_id));
@@ -291,7 +298,7 @@ sub commit_files{
   }
   else {
     add_commit($commit);
-    print "Committed as commit ",get_cur_ver(),"\n";
+    print "Committed as commit ",get_curr_commit(),"\n";
   }
 }
 
