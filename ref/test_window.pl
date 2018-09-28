@@ -13,3 +13,13 @@ use fileLib;
 use helperLib;
 use typeLib;
 # this script for testing
+my %hash;
+$hash{1}= "a";
+$hash{2}= "b";
+$hash{3}= "c";
+$hash{4}= "d";
+
+# dd_hash("hash",%hash);
+my @arr  = hashSerializer(%hash);
+%hash =  hashParse(@arr);
+dd_hash("array to hash",%hash);

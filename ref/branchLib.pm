@@ -11,11 +11,7 @@ our @ISA= qw( Exporter );
 our @EXPORT = qw(init_db);
 # import the functionality to make path
 use File::Path qw(make_path rmtree);
-
-# some global variable
-my $META_PATH = get_meta_path();
-my $CURR_BRANCH_KEY = construct_key("curr_branch");
-
+use fileLib;
 
 sub create_branch {
   my ($branch) = @_;
@@ -23,9 +19,13 @@ sub create_branch {
   if(! -e $meta_branch){
     touch($meta_branch);
   }
-  
-
 }
+# some global variable
+my $META_PATH = get_meta_path();
+my $CURR_BRANCH_KEY = get_meta_path("curr_branch");
+
+
+
 
 # higher level lib
 sub init_db {

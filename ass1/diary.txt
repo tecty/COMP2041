@@ -8,3 +8,4 @@
 2018-9-27|04:08|04:52|coding|start subset 2
 2018-9-27|18:25|20:00|coding|create branch and checkout
 2018-9-28|05:49|06:55|Refactoring|Re-creating the functionality of subset 1 and 2
+2018-9-28|17:57|22:00|Refactoring|Large scale Refactoring

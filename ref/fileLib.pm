@@ -4,7 +4,9 @@ use warnings;
 use strict;
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(get_content get_content touch get_key set_key);
+our @EXPORT = qw(get_content get_content touch get_key set_key
+get_meta_path
+);
 
 sub get_content {
   # a helper function only read the whole file
@@ -46,8 +48,9 @@ sub touch {
 
 sub get_meta_path {
   my ($file) = @_;
-  if (!(defined $file and $file ne "")) {
+  if (defined $file and $file ne "") {
     return "./legit/meta/$file";
   }
   return "./legit/meta";
 }
+1;

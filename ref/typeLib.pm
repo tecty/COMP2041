@@ -1,10 +1,13 @@
 #!/usr/bin/env perl
-package dbLib;
+package typeLib;
 use warnings;
 use strict;
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(to_hash uniq delete_value_in_array);
+our @EXPORT = qw(to_hash uniq delete_value_in_array
+hashParse hashSerializer
+dd_val dd_arr dd_hash
+);
 
 sub to_hash {
   my %hash;
@@ -26,4 +29,51 @@ sub delete_value_in_array (\@$) {
     }
   }
 }
+
+sub hashParse{
+  # return the hash we want
+  my %hash;
+  foreach my $line (@_) {
+    # remove the new line
+    $line=~s/\\n//;
+    # split it
+    $line =~ /([^:]*):(.*)/;
+    # assign the matched key and value
+    $hash{$1} = $2;
+  }
+  return %hash;
+}
+
+sub hashSerializer(\%) {
+  my ($hash_ref) = @_;
+  # store the return value
+  my @arr;
+  foreach my $key (sort keys %{$hash_ref}) {
+    push @arr, "$key:$$hash_ref{$key}\n";
+  }
+  # return the serialized array
+  return @arr
+}
+
+sub dd_val {
+  print STDERR "> $_[0]:$_[1]\n";
+  exit 1;
+}
+
+sub dd_arr($\@) {
+  print STDERR "> Array $_[0]:\n";
+  foreach (@{$_[1]}) {
+    print STDERR ">> $_";
+  }
+  exit 1;
+}
+
+sub dd_hash($\%) {
+  print STDERR "> Hash: '$_[0]'\n";
+  foreach (hashSerializer(%{$_[1]})) {
+    print STDERR ">> $_";
+  }
+  exit 1;
+}
+
 1;
