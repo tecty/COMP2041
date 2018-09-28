@@ -8,21 +8,25 @@ use File::Path qw(make_path rmtree);
 # self library
 use fileLib;
 use typeLib;
+use textLib;
 use File::Spec;
+use File::Copy;
 # add current directory on the fly
 use lib File::Spec->catfile($FindBin::Bin);
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(init_db get_curr_commit
-get_commit_link add_files get_track_files
+get_commit_link add_files get_file_tracks
+commit_files
 );
+
 #
 # higher level lib
 #
 # some handy path
-my $INDEX_PATH = ".legit/index/";
 my $OPERATION_PATH = ".legit/operation/";
 my $COMMIT_PATH  = ".legit/commit/";
+my $INDEX_PATH = get_commit_file_path("index");
 # some global variable
 my $CURR_BRANCH_KEY = get_meta_path("curr_branch");
 # commit start from 0 and it's unique
@@ -140,7 +144,7 @@ sub get_commit_link {
 }
 
 
-sub get_track_files {
+sub get_file_tracks {
   # not defined or "" is mean latest,
   # which will include the result in indexed
   my ($commit) = @_;
@@ -155,17 +159,24 @@ sub get_track_files {
   # get the file name of operations
   unshift @ops_files, @commit_link;
 
-  dd_arr(@ops_files);
-
-
   my %track;
   map {
+    # the ops_files just commit's id (and special case "index")
+
     # this file's operations
-    my %ops = get_hash_from_file($_);
-    map {
-      # map all the operations to the track hash
-      $track{$_} = $ops{$_} ;
-    } keys %ops;
+    my %ops = get_hash_from_file(get_ops_file_path($_));
+    foreach my $key (keys %ops) {
+      # push the commit version to the file
+      if ($ops{$key} eq "A") {
+        # perform a add in tracks
+        # add this commit at the end
+        push @{$track{$key}}, $_;
+      }
+      else{
+        # untrack in this commit
+        delete $track{$key};
+      }
+    }
   } @ops_files;
 
   # return the whole track
@@ -183,12 +194,11 @@ sub remove_files {
   map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
 }
 
-#
 sub add_files (\@) {
   my ($files) = @_;
 
   # change the track file as an hash table
-  my %track_files = get_track_files() ;
+  my %file_track = get_file_tracks() ;
   # array to be files need to untrack
   my @need_untrack;
 
@@ -199,7 +209,7 @@ sub add_files (\@) {
     if (! -e $_) {
       # this file is not exists
       # need to do the untrack
-      if (exists $track_files{$_} and $track_files{$_} ne "D") {
+      if (exists $file_track{$_}) {
         # and this file is tracking
         delete_value_in_array(@$files, $_);
         push @need_untrack, $_;
@@ -217,8 +227,22 @@ sub add_files (\@) {
 
   # moving added files to index
   map {
-    copy($_, $INDEX_PATH);
-  }
+    my @src_content = get_file_content_by_tracks($_, $file_track{$_});
+    my @dest_content = get_content($_);
+    if (
+      # not record in repo
+      ! exists $file_track{$_} or
+      # track content is diff from working
+      is_diff(@src_content, @dest_content)
+    ) {
+      # there is different between this version and the version in repo
+      copy($_, $INDEX_PATH);
+    }
+    else {
+      # there is no difference, no perform add
+      delete_value_in_array(@$files, $_);
+    }
+  } @$files;
 
   # track the adding operations
   my %add_hash;
@@ -227,25 +251,39 @@ sub add_files (\@) {
     $add_hash{$_} = "A";
   } @$files;
   add_hash_to_file($INDEX_OPERATION_RECORD_FILE,%add_hash);
-
-  # # track the operations to
-  # open  my $op_file, ">>", get_working_ops_file();
-  #
-  # # copy all files to working directory
-  # map {
-  #   # get content of both filesystem file and in repo one, compare both
-  #   my @src =get_content($_);
-  #   my @dest = get_file_content_by_ver("",$_);
-  #
-  #   if (is_diff(@src, @dest )) {
-  #     copy($_, get_index_file_path());
-  #     print $op_file "A $_\n";
-  #   }
-  # } @$files;
-  #
-  # # close the operation file
-  # close $op_file;
 }
 
+sub commit_files{
+  my ($commit) = @_;
+
+  # get the content in the operation file, to decide whether there's things
+  # to commit
+  my @op_content = get_content(get_working_ops_file());
+
+  if ($#op_content == -1) {
+    # commit fail
+    print STDERR "nothing to commit\n";
+    exit 1;
+  }
+  else {
+    add_commit($commit);
+    print "Committed as commit ",get_cur_ver(),"\n";
+  }
+}
+
+sub get_file_content_by_tracks($\@) {
+  # take two argument, filename and the track of this file
+  my ($file, $track_ref) = @_;
+  if (defined $track_ref and $#$track_ref != -1) {
+    # the file has track  -- protection
+    # get the content by the latest commit's path
+    return get_content(
+    get_commit_file_path(
+    $$track_ref[$#$track_ref] , $file
+    ));
+  }
+  # there's no track
+  return "";
+}
 
 1;

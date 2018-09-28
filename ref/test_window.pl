@@ -18,10 +18,10 @@ $hash{1}= "0";
 $hash{2}= "1,0";
 $hash{3}= "2";
 $hash{4}= "3";
-my $COMMIT_RECORD_FILE = get_meta_path("commit");
+$hash{5} = undef;
 
-add_hash_to_file($COMMIT_RECORD_FILE, %hash);
-# dd_val(get_curr_commit());
+delete $hash{5};
 
-# dd_arr("commit_link",get_commit_link());
-get_track_files()
+if (exists $hash{5}) {
+  print "5 exists";
+}

@@ -7,7 +7,6 @@ use File::Spec;
 use lib File::Spec->catfile($FindBin::Bin);
 # import all
 use branchLib;
-use commitLib;
 use controller;
 use fileLib;
 use helperLib;
@@ -61,13 +60,14 @@ sub main {
     add(@ARGV);
   }
   elsif($command eq "commit"){
-
+    commit(@ARGV);
   }
   elsif($command eq "log"){
   }
   elsif($command eq "show"){
   }
   elsif($command eq "rm"){
+    remove(@ARGV);
   }
   elsif($command eq "status"){
   }

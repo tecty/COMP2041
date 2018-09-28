@@ -140,9 +140,6 @@ sub checkout {
   print "Switched to branch '$args[0]'\n";
 }
 
-
-
-
 sub main {
   # a big switch to dispatch to inter function
   # dispatch by command line args
