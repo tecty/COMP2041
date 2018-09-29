@@ -5,4 +5,5 @@ rm -rf .legit;
 # a common variable to return
 rm -rf a b c d e f g h;
 
+rm test*.sh;
 clear;

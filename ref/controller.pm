@@ -78,7 +78,7 @@ sub remove {
       if ($options =~/c/) {
         if ($status{$file} !~/.[AR]./ or $status{$file} =~/ARR/){
           # prevent this from deleting
-          delete_value_in_array(@args, $file);
+          remove_value_from_array(@args, $file);
           # and show the error message
           show_remove_error($file, $status{$file});
         }
@@ -86,7 +86,7 @@ sub remove {
       else{
         if($status{$file} !~ /ARA/){
           show_remove_error($file, $status{$file});
-          delete_value_in_array(@args, $file);
+          remove_value_from_array(@args, $file);
         }
       }
     }
@@ -94,7 +94,7 @@ sub remove {
       # show error if it's not exist in repo
       if ($status{$file} =~ /ARR/ or $status{$file} =~ /D../){
         show_remove_error($file, $status{$file});
-        delete_value_in_array(@args, $file);
+        remove_value_from_array(@args, $file);
       }
     }
   }
@@ -139,7 +139,7 @@ sub show_status {
     $status{$_}=~s/AAD/file changed, changes staged for commit/;
     $status{$_}=~s/ARD/file changed, changes not staged for commit/;
     $status{$_}=~s/R.A/file deleted/;
-    $status{$_}=~s/DR[RA]/deleted/;
+    $status{$_}=~s/(R.R|DR[RA])/deleted/;
     $status{$_}=~s/A.A/same as repo/;
     $status{$_}=~s/AAR/added to index/;
     $status{$_}=~s/(ARR|DRD)/untracked/;

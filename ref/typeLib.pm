@@ -4,7 +4,7 @@ use warnings;
 use strict;
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(to_hash uniq delete_value_in_array
+our @EXPORT = qw(to_hash uniq remove_value_from_array
 hashParse hashSerializer
 dd_val dd_err dd_arr dd_hash
 );
@@ -21,11 +21,13 @@ sub uniq {
   return keys %seen;
 }
 
-sub delete_value_in_array (\@$) {
+sub remove_value_from_array (\@$) {
   my ($arr_ref , $value) = @_;
   for (my $index = 0; $index <= $#$arr_ref; $index++) {
     if ($$arr_ref[$index] eq $value) {
       splice @$arr_ref, $index, 1;
+      # move index backward, since the array size is decreased
+      $index --;
     }
   }
 }
@@ -56,7 +58,7 @@ sub hashSerializer(\%) {
 }
 
 # Debug helper
-# dd - die and dump 
+# dd - die and dump
 
 sub dd_err{
   print STDERR "$_[0]\n";

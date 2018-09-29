@@ -219,7 +219,7 @@ sub add_files (\@) {
       # need to do the untrack
       if (exists $file_track_latest{$_}) {
         # and this file is tracking
-        delete_value_in_array(@$files, $_);
+        remove_value_from_array(@$files, $_);
         push @need_untrack, $_;
       }
       else{
@@ -269,7 +269,7 @@ sub add_files (\@) {
     }
     else {
       # there is no difference, no perform add
-      delete_value_in_array(@$files, $_);
+      remove_value_from_array(@$files, $_);
     }
   } @$files;
 
@@ -383,13 +383,23 @@ sub get_log {
 
 # ==== REMOVE PART ====
 sub remove_files {
+  # remove the file from working directory
+  map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
+
+  # filter out those don't need to record the operations
+  my %tracks = get_file_tracks(get_curr_commit());
+  map {
+    if (! exists $tracks{$_}){
+      # this file not need to record the operation
+      # because it's not in the repo
+      remove_value_from_array(@_, $_);
+    }
+  } @_;
+
   # store the operation need to write
   my %delete_ops;
   map {$delete_ops{$_} = "D"} @_;
   add_hash_to_file($INDEX_OPERATIONS_FILE, %delete_ops);
-
-  # remove the file from working directory
-  map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
 }
 
 # return a hash table of status
@@ -500,11 +510,11 @@ sub show_remove_error{
 
 sub get_curr_status{
   # currently tracking
-  my %file_track = get_file_tracks();
+  my %file_track = get_file_tracks(get_curr_commit());
   my @indexed_files = keys %file_track;
   # current delteing file
-  my %curr_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
-  push @indexed_files, keys %curr_ops;
+  # my %curr_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
+  # push @indexed_files, keys %curr_ops;
   # content in current directory
   push (@indexed_files,glob("*"));
   # remove duplicate check
