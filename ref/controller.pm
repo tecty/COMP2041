@@ -44,7 +44,7 @@ sub commit {
   if ($options =~ /a/){
     # fetch all the tracked file
     my %file_track = get_file_tracks();
-    add_files(@{keys %file_track});
+    add_files(keys %file_track);
   }
   if ($options =~ /m/){
     # commit as message

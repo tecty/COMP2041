@@ -202,8 +202,8 @@ sub get_file_tracks {
   return %track;
 }
 
-sub add_files (\@) {
-  my ($files) = @_;
+sub add_files  {
+  my (@files) = @_;
 
   # change the track file as an hash table
   my %file_track_latest = get_file_tracks() ;
@@ -219,7 +219,7 @@ sub add_files (\@) {
       # need to do the untrack
       if (exists $file_track_latest{$_}) {
         # and this file is tracking
-        remove_value_from_array(@$files, $_);
+        remove_value_from_array(@files, $_);
         push @need_untrack, $_;
       }
       else{
@@ -227,7 +227,7 @@ sub add_files (\@) {
         dd_err ("legit.pl: error: can not open '$_'");
       }
     }
-  } @$files;
+  } @files;
 
   # perform the delete action
   remove_files(@need_untrack);
@@ -245,7 +245,7 @@ sub add_files (\@) {
       # this file need to remove the delete flag first
       push @key_remove_needed,$_;
     }
-  } @$files;
+  } @files;
 
   # remove all the keys from operation file
   delete_hash_from_file($INDEX_OPERATIONS_FILE, @key_remove_needed);
@@ -269,16 +269,16 @@ sub add_files (\@) {
     }
     else {
       # there is no difference, no perform add
-      remove_value_from_array(@$files, $_);
+      remove_value_from_array(@files, $_);
     }
-  } @$files;
+  } @files;
 
   # track the adding operations
   my %add_hash;
   map{
     # A ass Add, D as Delete
     $add_hash{$_} = "A";
-  } @$files;
+  } @files;
   add_hash_to_file($INDEX_OPERATIONS_FILE,%add_hash);
 }
 
