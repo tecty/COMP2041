@@ -25,8 +25,8 @@ foreach my $testfile (@tests) {
   $correct_file = "$script_path/$correct_file";
 
   # the testfile addr
-  $testfile = "$testsDir/$testfile";
   $testfile =~ s?tests/??g;
+  $testfile = "$testsDir/$testfile";
 
   # write the test content
   open my $f, ">", "$testfile";

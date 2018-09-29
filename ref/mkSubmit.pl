@@ -35,6 +35,6 @@ foreach my $testfile (@tests) {
 
   # excute the generated script and dump it to our correct file
   open my $f, ">", "$script_path/myTest/$test_name.correct";
-  print $f `$testfile`;
+  print `$testfile`;
   close $f;
 }
