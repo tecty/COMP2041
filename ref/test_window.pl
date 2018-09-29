@@ -19,10 +19,6 @@ $hash{2}= "1,0";
 $hash{3}= "2";
 $hash{4}= "3";
 $hash{5} = undef;
-delete $hash{5};
-delete $hash{5};
 
-# dd_arr("b_track", @{$track{"b"}})
-if(! 0){
-  dd_err("im false");
-}
+my %status = file_status(qw(a));
+dd_hash("status", %status);

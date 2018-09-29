@@ -420,8 +420,12 @@ sub file_status  {
         $status{$file} = "D";
       }
       # only need to check wether it's Appear in the $working_dir or repository
-      (-e get_index_file_path($file)) ?
-        $status{$file} .= "A" :$status{$file} .= "R";
+      if(-e get_index_file_path($file)) {
+        $status{$file} .= "A";
+      }
+      else{
+        $status{$file} .= "R";
+      }
 
       # whether it's track in repository
       if (exists $curr_commit_tracks{$file} ){
@@ -441,8 +445,12 @@ sub file_status  {
     # check the content in working directory
     if (-e get_index_file_path($file)) {
       my @index_content = get_content(get_index_file_path($file));
-      (is_diff(@index_content,@fs_content))?
-        $status{$file} .= "D" : $status{$file} .= "A";
+      if (is_diff(@index_content,@fs_content)){
+        $status{$file} .= "D";
+      }
+      else{
+        $status{$file} .= "A";
+      }
     }
     else{
       $status{$file} .= "R";
@@ -454,8 +462,11 @@ sub file_status  {
       my @rep_content =
         get_file_content_by_tracks($file,@{$curr_commit_tracks{$file}});
       # there is different set "D", otherwise set A
-      (is_diff(@rep_content, @fs_content)) ?
-        $status{$file} .= "D": $status{$file} .= "A";
+      if(is_diff(@rep_content, @fs_content)){
+        $status{$file} .= "D";
+      } else{
+        $status{$file} .= "A";
+      }
     }
     else{
       $status{$file} .= "R";

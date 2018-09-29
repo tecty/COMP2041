@@ -134,16 +134,16 @@ sub show_status {
   # "" has different meaning
 
   my %status = get_curr_status();
-  # map {
-  #   $status{$_}=~s/ADD/file changed, different changes staged for commit/;
-  #   $status{$_}=~s/AAD/file changed, changes staged for commit/;
-  #   $status{$_}=~s/ARD/file changed, changes not staged for commit/;
-  #   $status{$_}=~s/R.A/file deleted/;
-  #   $status{$_}=~s/(R.R|DRR)/deleted/;
-  #   $status{$_}=~s/A.A/same as repo/;
-  #   $status{$_}=~s/AAR/added to index/;
-  #   $status{$_}=~s/(ARR|DRD)/untracked/;
-  # } keys %status;
+  map {
+    $status{$_}=~s/ADD/file changed, different changes staged for commit/;
+    $status{$_}=~s/AAD/file changed, changes staged for commit/;
+    $status{$_}=~s/ARD/file changed, changes not staged for commit/;
+    $status{$_}=~s/R.A/file deleted/;
+    $status{$_}=~s/DR[RA]/deleted/;
+    $status{$_}=~s/A.A/same as repo/;
+    $status{$_}=~s/AAR/added to index/;
+    $status{$_}=~s/(ARR|DRD)/untracked/;
+  } keys %status;
 
   # show the replaced message
   foreach my $key (sort keys %status) {
