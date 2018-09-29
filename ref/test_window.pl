@@ -20,5 +20,5 @@ $hash{3}= "2";
 $hash{4}= "3";
 $hash{5} = undef;
 
-my %status = file_status(qw(a));
+my %status = file_status(qw(d e));
 dd_hash("status", %status);

@@ -128,6 +128,10 @@ sub get_commit_link {
     # return an empty array
     return ();
   }
+  if ($commit >= get_max_commit()) {
+    dd_err("legit.pl: error: unknown commit '$commit'");
+  }
+
   # ELSE:
   # set up the data structure to visit
   my @visited;
@@ -143,7 +147,7 @@ sub get_commit_link {
     my @this_par = split ",",$commit_hash{$this_node} ;
     # push it's parent to @unvisited
     push @unvisited, $this_par[0];
-    if (@this_par == 2 or $this_par[0] == -1) {
+    if (@this_par == 2 or int($this_par[0]) == -1) {
       # stop search when meeting (merge node or the very first node)
       last;
     }
@@ -350,12 +354,12 @@ sub get_file_content_by_commit {
   my %file_track = get_file_tracks($commit);
   if (! defined $file_track{$file}) {
     if (defined $commit and $commit ne "" ) {
-      # (commit == null and path == null ) => couldn't find in index
-      dd_err("legit.pl: error: '$file' not found in index");
-    }
-    else{
       # (commit != null and path == null ) => couldn't find in commit
       dd_err("legit.pl: error: '$file' not found in commit $commit");
+    }
+    else{
+      # (commit == null and path == null ) => couldn't find in index
+      dd_err("legit.pl: error: '$file' not found in index");
     }
   }
 
