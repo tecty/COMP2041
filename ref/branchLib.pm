@@ -38,7 +38,7 @@ my $BRANCH_RECORD_FILE = get_meta_path("branch");
 my $COMMIT_RECORD_FILE = get_meta_path("commit");
 # record the message of commit
 my $LOG_RECORD_FILE = get_meta_path("log");
-my $INDEX_OPERATION_RECORD_FILE = get_ops_file_path("index");
+my $INDEX_OPERATIONS_FILE = get_ops_file_path("index");
 
 sub get_index_file_path {
   my ($file) = @_;
@@ -96,7 +96,7 @@ sub init_db {
         $BRANCH_RECORD_FILE,
         $COMMIT_RECORD_FILE,
         $LOG_RECORD_FILE,
-        $INDEX_OPERATION_RECORD_FILE
+        $INDEX_OPERATIONS_FILE
       ) and
       # current commit is 0
       set_key($MAX_COMMIT_KEY,0) and
@@ -201,7 +201,7 @@ sub remove_files {
   # store the operation need to write
   my %delete_ops;
   map {$delete_ops{$_} = "D"} @_;
-  add_hash_to_file($INDEX_OPERATION_RECORD_FILE, %delete_ops);
+  add_hash_to_file($INDEX_OPERATIONS_FILE, %delete_ops);
 
   # remove the file from working directory
   map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
@@ -211,7 +211,7 @@ sub add_files (\@) {
   my ($files) = @_;
 
   # change the track file as an hash table
-  my %file_track = get_file_tracks() ;
+  my %file_track_latest = get_file_tracks() ;
   # array to be files need to untrack
   my @need_untrack;
 
@@ -222,7 +222,7 @@ sub add_files (\@) {
     if (! -e $_) {
       # this file is not exists
       # need to do the untrack
-      if (exists $file_track{$_}) {
+      if (exists $file_track_latest{$_}) {
         # and this file is tracking
         delete_value_in_array(@$files, $_);
         push @need_untrack, $_;
@@ -238,13 +238,35 @@ sub add_files (\@) {
   # perform the delete action
   remove_files(@need_untrack);
 
+  # Edge Case:
+  # file is tracking, but delete in index,
+  # add a same file in tracking
+  my @key_remove_needed;
+
+  # get all the currently operations
+  my %index_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
+
+  map {
+    if (exists $index_ops{$_} and $index_ops{$_} eq "D"){
+      # this file need to remove the delete flag first
+      push @key_remove_needed,$_;
+    }
+  } @$files;
+
+  # remove all the keys from operation file
+  delete_hash_from_file($INDEX_OPERATIONS_FILE, @key_remove_needed);
+
+  # update the track is needed
+  %file_track_latest = get_file_tracks();
+
+
   # moving added files to index
   map {
-    my @src_content = get_file_content_by_tracks($_, $file_track{$_});
+    my @src_content = get_file_content_by_tracks($_, $file_track_latest{$_});
     my @dest_content = get_content($_);
     if (
       # not record in repo
-      ! exists $file_track{$_} or
+      ! exists $file_track_latest{$_} or
       # track content is diff from working
       is_diff(@src_content, @dest_content)
     ) {
@@ -263,7 +285,7 @@ sub add_files (\@) {
     # A ass Add, D as Delete
     $add_hash{$_} = "A";
   } @$files;
-  add_hash_to_file($INDEX_OPERATION_RECORD_FILE,%add_hash);
+  add_hash_to_file($INDEX_OPERATIONS_FILE,%add_hash);
 }
 
 sub add_commit {
@@ -291,8 +313,8 @@ sub add_commit {
   } glob("$INDEX_PATH/* $INDEX_PATH/.*");
 
   # rename the operation's file and create a new one
-  move($INDEX_OPERATION_RECORD_FILE, get_ops_file_path($commit_id));
-  touch($INDEX_OPERATION_RECORD_FILE);
+  move($INDEX_OPERATIONS_FILE, get_ops_file_path($commit_id));
+  touch($INDEX_OPERATIONS_FILE);
 
   # record the commit message
   my %message_hash = ($commit_id => $message);
@@ -304,7 +326,7 @@ sub commit_files{
 
   # get the content in the operation file, to decide whether there's things
   # to commit
-  my %op_content = get_hash_from_file($INDEX_OPERATION_RECORD_FILE);
+  my %op_content = get_hash_from_file($INDEX_OPERATIONS_FILE);
 
   if (keys %op_content == 0) {
     # commit fail

@@ -12,7 +12,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(get_content get_content touch get_key set_key
 get_meta_path
-get_hash_from_file add_hash_to_file
+get_hash_from_file add_hash_to_file delete_hash_from_file
 );
 
 sub get_content {
@@ -79,5 +79,17 @@ sub add_hash_to_file($\%) {
   my @content = hashSerializer(%hash);
   set_content($file, @content);
 }
+
+sub delete_hash_from_file {
+  my ($file, @keys) = @_;
+  my %hash = get_hash_from_file($file);
+  # remove all the keys need to delete
+  map {delete $hash{$_}} @keys;
+  # set the hash content to the file;
+  my @content = hashSerializer(%hash);
+  set_content($file, @content);
+}
+
+
 
 1;
