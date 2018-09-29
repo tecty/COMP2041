@@ -19,6 +19,7 @@ our @EXPORT = qw(init_db get_curr_commit
 get_commit_link add_files get_file_tracks
 commit_files get_max_commit
 get_log get_file_content_by_commit
+remove_files file_status show_remove_error get_curr_status
 );
 
 #
@@ -197,16 +198,6 @@ sub get_file_tracks {
   return %track;
 }
 
-sub remove_files {
-  # store the operation need to write
-  my %delete_ops;
-  map {$delete_ops{$_} = "D"} @_;
-  add_hash_to_file($INDEX_OPERATIONS_FILE, %delete_ops);
-
-  # remove the file from working directory
-  map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
-}
-
 sub add_files (\@) {
   my ($files) = @_;
 
@@ -229,8 +220,7 @@ sub add_files (\@) {
       }
       else{
         # throw the error and abort the actions
-        print STDERR "legit.pl: error: can not open '$_'\n";
-        exit 1;
+        dd_err ("legit.pl: error: can not open '$_'");
       }
     }
   } @$files;
@@ -387,5 +377,123 @@ sub get_log {
   return @log_arr;
 }
 
+# ==== REMOVE PART ====
+sub remove_files {
+  # store the operation need to write
+  my %delete_ops;
+  map {$delete_ops{$_} = "D"} @_;
+  add_hash_to_file($INDEX_OPERATIONS_FILE, %delete_ops);
 
+  # remove the file from working directory
+  map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
+}
+
+# return a hash table of status
+sub file_status  {
+  #  F I R (File system, Indexed, Repository)
+  #        Appear
+  #        Different
+  #        Remove
+  # File System Different - special case, the file is removed in index
+
+  my @files = @_;
+  # hash array for status
+  my %status ;
+
+  # hashing of current operations ;
+  my %index_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
+  # hash of current commit's tracking, not index;
+  my %curr_commit_tracks = get_file_tracks(get_curr_commit());
+
+  # check all specified file status
+  foreach my $file  (uniq sort @files) {
+    if (-e $file ) {
+      $status{$file} .= "A";
+      if (exists $index_ops{$file} and $index_ops{$file} eq "D") {
+        $status{$file} = "D";
+      }
+    }
+    else {
+      $status{$file} = "R";
+      # mark this file as deleting
+      if (exists $index_ops{$file} and $index_ops{$file} eq "D") {
+        $status{$file} = "D";
+      }
+      # only need to check wether it's Appear in the $working_dir or repository
+      (-e get_index_file_path($file)) ?
+        $status{$file} .= "A" :$status{$file} .= "R";
+
+      # whether it's track in repository
+      if (exists $curr_commit_tracks{$file} ){
+        $status{$file} .= "A";
+      }
+      else{
+        $status{$file} .= "R";
+      }
+      # short circute remain checks
+      next;
+    }
+    # ==== the file exist, we need to perform difference check
+
+    # open the file and read the content inside
+    my @fs_content =  get_content($file);
+
+    # check the content in working directory
+    if (-e get_index_file_path($file)) {
+      my @index_content = get_content(get_index_file_path($file));
+      (is_diff(@index_content,@fs_content))?
+        $status{$file} .= "D" : $status{$file} .= "A";
+    }
+    else{
+      $status{$file} .= "R";
+    }
+
+    # checking the content in repository
+    if (exists $curr_commit_tracks{$file}) {
+      # get the repository record's content
+      my @rep_content =
+        get_file_content_by_tracks($file,@{$curr_commit_tracks{$file}});
+      # there is different set "D", otherwise set A
+      (is_diff(@rep_content, @fs_content)) ?
+        $status{$file} .= "D": $status{$file} .= "A";
+    }
+    else{
+      $status{$file} .= "R";
+    }
+  }
+
+  return %status;
+}
+
+sub show_remove_error{
+  my ($file,$status) = @_;
+  if ($status =~/ADD/) {
+    dd_err("legit.pl: error: '$file' in index is different to both working file and repository");
+  }
+  elsif ($status =~/AA./) {
+    dd_err("legit.pl: error: '$file' has changes staged in the index");
+  }
+  elsif ($status =~/A[AR]D/) {
+    dd_err("legit.pl: error: '$file' in repository is different to working file");
+  }
+
+
+  elsif ($status =~/[DA]R[RD]/) {
+    dd_err("legit.pl: error: '$file' is not in the legit repository");
+  }
+}
+
+sub get_curr_status{
+  # currently tracking
+  my %file_track = get_file_tracks();
+  my @indexed_files = keys %file_track;
+  # current delteing file
+  my %curr_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
+  push @indexed_files, keys %curr_ops;
+  # content in current directory
+  push (@indexed_files,glob("*"));
+  # remove duplicate check
+  @indexed_files = uniq(@indexed_files);
+  return file_status(@indexed_files)
+}
 1;

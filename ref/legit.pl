@@ -78,9 +78,11 @@ sub main {
     dd_err("usage: legit.pl show <commit>:<filename>") if ! show(@ARGV);
   }
   elsif($command eq "rm"){
-    remove(@ARGV);
+    dd_err("usage: legit.pl rm [--force] [--cached] <filenames>")
+      if ! remove(@ARGV);
   }
   elsif($command eq "status"){
+    show_status();
   }
   elsif($command eq "branch"){
   }

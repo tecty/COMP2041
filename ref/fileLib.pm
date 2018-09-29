@@ -32,7 +32,6 @@ sub set_content($\@) {
   close $f;
 }
 
-
 sub get_key {
   # create a file to record the current branch
   my @lines = get_content($_[0]);

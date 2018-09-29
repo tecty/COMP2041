@@ -10,4 +10,4 @@
 2018-9-28|05:49|06:55|Refactoring|Re-creating the functionality of subset 1 and 2
 2018-9-28|17:57|20:00|Refactoring|Large scale Refactoring
 2018-9-28|20:35|22:00|Refactoring|Large scale Refactoring again
-2018-9-28|04:19|06:34|Refactoring|Large scale Refactoring, Try to recreate commits tree
+2018-9-28|16:43|17:05|Refactoring|Large scale Refactoring, refactor rm 
