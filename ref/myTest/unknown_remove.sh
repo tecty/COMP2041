@@ -1,12 +1,12 @@
-legit init
+./legit.pl init
 touch a
-legit add a
-legit commit -m "commit a"
-legit rm --cached a
-legit add a
-legit rm --cached b
-legit rm --force --cached b
-legit rm b
-legit rm --force b
-legit rm --fo b
-legit rm -c b
+./legit.pl add a
+./legit.pl commit -m "commit a"
+./legit.pl rm --cached a
+./legit.pl add a
+./legit.pl rm --cached b
+./legit.pl rm --force --cached b
+./legit.pl rm b
+./legit.pl rm --force b
+./legit.pl rm --fo b
+./legit.pl rm -c b

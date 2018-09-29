@@ -1,7 +1,7 @@
-./legit init
+./legit.pl init
 touch a
-./legit add a
-./legit commit -m "commit a"
-./legit rm --cached a
-./legit add a
-./legit commit -m "I should not be here"
+./legit.pl add a
+./legit.pl commit -m "commit a"
+./legit.pl rm --cached a
+./legit.pl add a
+./legit.pl commit -m "I should not be here"

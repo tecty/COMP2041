@@ -1,24 +1,24 @@
 #!/bin/bash
-./legit init
+./legit.pl init
 touch a
-./legit add a
-./legit commit -m "master 0"
-./legit branch another
+./legit.pl add a
+./legit.pl commit -m "master 0"
+./legit.pl branch another
 
-./legit checkout another
+./legit.pl checkout another
 touch c
-./legit add c
-./legit commit -m "another 1"
+./legit.pl add c
+./legit.pl commit -m "another 1"
 
-./legit checkout master
+./legit.pl checkout master
 touch b
-./legit add b
-./legit commit -m "master 2"
+./legit.pl add b
+./legit.pl commit -m "master 2"
 
-./legit checkout another
+./legit.pl checkout another
 touch d
-./legit add d
-./legit commit -m "another 3"
+./legit.pl add d
+./legit.pl commit -m "another 3"
 
-./legit checkout master
-./legit merge another -m "master 4"
+./legit.pl checkout master
+./legit.pl merge another -m "master 4"
