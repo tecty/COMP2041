@@ -157,7 +157,7 @@ sub branch {
   my $options = pop_options(@_);
   if (@_ == 0 and $options eq "") {
     my %branches = get_all_branches();
-    map {print "$_\n";} keys %branches;
+    map {print "$_\n";} sort keys %branches;
     # successful printing all branches ;
     return 1;
   }
