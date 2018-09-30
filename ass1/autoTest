@@ -32,10 +32,6 @@ foreach my $testfile (@tests) {
   open my $f, ">", "$testfile";
   print $f @test_content;
   close $f;
-  #
-  # open my $f, "<", $testfile;
-  # print <$f>;
-  # close $f;
 
   # get a tmp dir
   $clean = tempdir();
@@ -57,7 +53,7 @@ foreach my $testfile (@tests) {
   if (@diff_out) {
     $fail_count ++;
     print @diff_out,"\n---TestWindow---\n";
-    print `$script_path/test_window.pl`, "\n";
+    print `$script_path/test_window`, "\n";
   }
 
 }

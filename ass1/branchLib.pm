@@ -24,7 +24,8 @@ commit_files get_max_commit
 get_log get_file_content_by_commit
 remove_files file_status show_remove_error get_curr_status
 
-create_branch delete_branch checkout_to_branch
+checkout_to_branch
+create_branch delete_branch
 get_all_branches
 );
 
@@ -75,6 +76,7 @@ sub create_branch {
   add_hash_to_file($BRANCH_RECORD_FILE, %new_branch_record);
 }
 
+
 sub checkout_to_branch {
   my ($branch) = @_;
   if (! check_branch_exist($branch)){
@@ -83,23 +85,42 @@ sub checkout_to_branch {
   }
   # ELSE:
   # TODO: this version doesn't consider the file in index dir
-  my %file_tracks = get_file_tracks();
+  # fetch all the branch records
+  my %branches_record = get_hash_from_file($BRANCH_RECORD_FILE);
+  # get the files track of both branch
+  my %this_tracks = get_file_tracks(
+    # $branches_record{get_key($CURR_BRANCH_KEY)}
+  );
+  my %that_tracks = get_file_tracks(
+    $branches_record{$branch}
+  );
+
 
   # remove all the files that currently checking
-  unlink keys %file_tracks;
+  my @remove_needed =  keys %this_tracks;
+  # to record those file need to presist
+  my @presist_needed;
+  my @overwritten_files;
+
+
+  # remove all the remove needed
+  unlink @remove_needed;
 
   # checkout to required branch in logic
   set_key($CURR_BRANCH_KEY, $branch);
 
-  # update the tracks
-  %file_tracks = get_file_tracks();
+
 
   # reconstruct the file in directory
   map {
     # $_ is the file name of this branch currently tracking
-    my @fs_content = get_file_content_by_tracks($_, $file_tracks{$_});
+    my @fs_content = get_file_content_by_tracks($_, $that_tracks{$_});
     set_content($_,@fs_content);
-  } keys %file_tracks;
+  } keys %that_tracks;
+
+
+  # return the list of not presist working files
+  return @overwritten_files;
 }
 
 sub get_all_branches{

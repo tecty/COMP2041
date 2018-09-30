@@ -71,7 +71,7 @@ sub remove {
   my %status = file_status(@args);
 
 
-  foreach my $file (keys %status) {
+  foreach my $file (sort keys %status) {
     # integrety test
     if ($options !~ /f/) {
       # only the not apply -f, we don't perform the integrety test
@@ -186,8 +186,16 @@ sub checkout {
     return 0;
   }
   # ELSE:
-  checkout_to_branch(@_);
+  my @removed_work_file = checkout_to_branch(@_);
   # print the successful message
   print ("Switched to branch '$_[0]'\n");
+  if (@removed_work_file !=0) {
+    print STDERR "legit.pl: error: Your changes to the following files would be overwritten by checkout:\n";
+    print STDERR join "\n",@removed_work_file;
+    print STDERR "\n";
+    exit 1;
+  }
+  # exit successfully
+  return 1;
 }
 1;
