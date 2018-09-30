@@ -88,7 +88,7 @@ sub main {
     dd_err("usage: legit.pl branch [-d] <branch>") if ! branch(@ARGV);
   }
   elsif($command eq "checkout"){
-    dd_err("usage: legit.pl branch [-d] <branch>") if ! branch(@ARGV);
+    dd_err("usage: legit.pl checkout <branch>") if ! checkout(@ARGV);
   }
   elsif($command eq "merge"){
   }

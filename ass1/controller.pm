@@ -15,7 +15,8 @@ use typeLib;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(
-init_legit add remove commit show_log show show_status branch checkout);
+  init_legit add remove commit show_log show show_status branch checkout
+);
 
 # Highest level lib
 
@@ -177,6 +178,15 @@ sub branch {
 }
 
 sub checkout {
-
+  my $ops = pop_options(@_);
+  if($ops ne "" or @_ != 1){
+    # can only accept one argument without any options
+    # parse command line error
+    return 0;
+  }
+  # ELSE:
+  checkout_to_branch(@_);
+  # print the successful message
+  print ("Switched to branch '$_[0]'");
 }
 1;

@@ -23,7 +23,8 @@ get_commit_link add_files get_file_tracks
 commit_files get_max_commit
 get_log get_file_content_by_commit
 remove_files file_status show_remove_error get_curr_status
-create_branch delete_branch
+
+create_branch delete_branch checkout_to_branch
 get_all_branches
 );
 
@@ -58,7 +59,7 @@ sub delete_branch{
     # master has delete protection
     dd_err("legit.pl: error: can not delete branch '$branch'");
   }
-  # else, perform the deletion 
+  # else, perform the deletion
   delete_hash_from_file($BRANCH_RECORD_FILE,@_);
 }
 
@@ -72,6 +73,33 @@ sub create_branch {
   # ELSE:
   my %new_branch_record = ($branch => get_curr_commit());
   add_hash_to_file($BRANCH_RECORD_FILE, %new_branch_record);
+}
+
+sub checkout_to_branch {
+  my ($branch) = @_;
+  if (! check_branch_exist($branch)){
+    # unknown branch error
+    dd_err("legit.pl: error: unknown branch '$branch'");
+  }
+  # ELSE:
+  # TODO: this version doesn't consider the file in index dir 
+  my %file_tracks = get_file_tracks();
+
+  # remove all the files that currently checking
+  unlink keys %file_tracks;
+
+  # checkout to required branch in logic
+  set_key($CURR_BRANCH_KEY, $branch);
+
+  # update the tracks
+  %file_tracks = get_file_tracks();
+
+  # reconstruct the file in directory
+  map {
+    # $_ is the file name of this branch currently tracking
+    my @fs_content = get_file_content_by_tracks($_, $file_track{$_});
+    set_content($_,@fs_content);
+  } keys %file_tracks;
 }
 
 sub get_all_branches{
