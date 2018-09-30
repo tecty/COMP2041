@@ -11,9 +11,25 @@ $testsDir = tempdir();
 $index = 0 ;
 map {
   $test_name = sprintf ("test%02d.sh", $index);
-  copy($_,$test_name);
+
+  open $testfile, "<", $_;
+  @test_content = <$testfile>;
+  close $testfile;
+
+  # replace all the ./legit.pl as legit
+  map {
+    $_ =~ s?./legit.pl?legit?g;
+  } @test_content;
+
+  # write back the test content
+  open my $f,  ">", $test_name;
+  print $f @test_content;
+  close $f;
+
   $index ++;
 }@tests;
+
+print "=== Submit $index tests \n\n"
 
 $std_script = "/home/cs2041/bin/legit";
 foreach my $testfile (@tests) {
@@ -43,6 +59,6 @@ foreach my $testfile (@tests) {
 }
 
 chdir $script_path;
-exec "give cs2041 ass1_legit legit.pl diary.txt *.pm test*.sh";
+exec "give cs2041 ass1_legit legit.pl diary.txt *.pm test??.sh";
 
 exec "bash ./cleanEnv";

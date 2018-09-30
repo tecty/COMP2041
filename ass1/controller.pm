@@ -14,7 +14,8 @@ use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_legit add remove commit show_log show show_status branch);
+our @EXPORT = qw(
+init_legit add remove commit show_log show show_status branch checkout);
 
 # Highest level lib
 
@@ -151,7 +152,7 @@ sub show_status {
   }
 }
 
-sub branch{
+sub branch {
   my $options = pop_options(@_);
   if (@_ == 0 and $options eq "") {
     my %branches = get_all_branches();
@@ -173,8 +174,9 @@ sub branch{
     # couldn't fit any rules
     return 0;
   }
+}
 
-
+sub checkout {
 
 }
 1;

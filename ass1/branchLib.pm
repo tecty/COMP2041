@@ -45,17 +45,29 @@ my $INDEX_OPERATIONS_FILE = get_operation_path("index");
 
 sub check_branch_exist{
   my %branches = get_all_branches();
-  return exists $branches{$_};
-    # error on creating branch
+  return exists $branches{$_[0]};
+}
+
+sub delete_branch{
+  my ($branch) = @_;
+  if(! check_branch_exist($branch)){
+    # error of couldn't delte
+    dd_err("legit.pl: error: branch '$branch' does not exist");
   }
+  elsif($branch eq "master"){
+    # master has delete protection
+    dd_err("legit.pl: error: can not delete branch '$branch'");
+  }
+  # else, perform the deletion 
+  delete_hash_from_file($BRANCH_RECORD_FILE,@_);
 }
 
 sub create_branch {
   my ($branch) = @_;
   # get current branches
   if (check_branch_exist($branch)){
-    # branch should be not exits 
-    dd_err("legit.pl: error: branch 'master' already exists");
+    # branch should be not exits
+    dd_err("legit.pl: error: branch '$branch' already exists");
   }
   # ELSE:
   my %new_branch_record = ($branch => get_curr_commit());
