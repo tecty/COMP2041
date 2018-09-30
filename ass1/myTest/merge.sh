@@ -22,3 +22,6 @@ touch d
 
 ./legit.pl checkout master
 ./legit.pl merge another -m "master 4"
+
+./legit.pl log
+ls 
