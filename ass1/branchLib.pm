@@ -106,9 +106,8 @@ sub checkout_to_branch {
   );
 
 
-  # to record those files changes is discarded
-  my @overwritten_files;
 
+  # === presist changes check
   map {
     # $_ will be the file name that this branch is currently tracking
     my @fs_content = get_content($_);
@@ -120,29 +119,53 @@ sub checkout_to_branch {
     }
   } keys %this_tracks;
 
+
+  # === overwritten check
+
+  # to record those files changes that might  discarded
+  my @overwritten_files;
+  # the changing is overwritten if thereis a file here
+  map {
+    # skip for this working dir doesn't have the file
+    if (! -e $_ ){
+      return ;
+    }
+    # $_ will be the file name that "that branch" is currently tracking
+    my @fs_content = get_content($_);
+    my @that_content = get_file_content_by_tracks($_, $that_tracks{$_});
+
+    if (! exists $this_tracks{$_}) {
+      # those will be overwritten is the file that in fs and system want to
+      # persist it's changes
+      push @overwritten_files, $_;
+    }
+  } keys %that_tracks;
+
+  if (@overwritten_files != 0){
+    # fatal overwritten error
+    dd_err(
+      "legit.pl: error: Your changes to the following files would be overwritten by checkout:\n".
+      join("\n", @overwritten_files)
+    )
+  }
+
   # remove all the needed to remove
   unlink keys  %this_tracks;
 
   # checkout to required branch in logic
   set_key($CURR_BRANCH_KEY, $branch);
 
+
+
+
+
   # reconstruct the file in directory
   map {
     # $_ is the file name of this branch currently tracking
-    # the changing is overwritten if thereis a file here
-    if (-e $_) {
-      push @overwritten_files, $_;
-    }
-
     my @fs_content = get_file_content_by_tracks($_, $that_tracks{$_});
     set_content($_,@fs_content);
   } keys %that_tracks;
 
-  # remove the index record of the files need to overwritten
-  remove_changes_in_index(@overwritten_files);
-
-  # return the list of not presist working files
-  return @overwritten_files;
 }
 
 sub get_all_branches{
@@ -322,8 +345,7 @@ sub get_file_content_by_tracks($\@) {
     # the file has track  -- protection
     # get the content by the latest commit's path
     return get_content(
-    get_commit_path(
-    $$track_ref[$#$track_ref] , $file
+      get_commit_path($$track_ref[$#$track_ref] , $file
     ));
   }
   # there's no track

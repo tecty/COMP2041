@@ -6,7 +6,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(to_hash uniq remove_value_from_array
 hashParse hashSerializer
-dd_val dd_err dd_arr dd_hash
+dd_var dd_err dd_arr dd_hash
 );
 
 sub to_hash {
@@ -65,7 +65,7 @@ sub dd_err{
   exit 1;
 }
 
-sub dd_val {
+sub dd_var {
   print STDERR "> Dump Value:\n";
   if (@_ == 0 or ! defined $_[1]) {
     print STDERR ">> $_[0]\n";

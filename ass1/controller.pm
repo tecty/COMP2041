@@ -189,12 +189,7 @@ sub checkout {
   my @removed_work_file = checkout_to_branch(@_);
   # print the successful message
   print ("Switched to branch '$_[0]'\n");
-  if (@removed_work_file !=0) {
-    print STDERR "legit.pl: error: Your changes to the following files would be overwritten by checkout:\n";
-    print STDERR join "\n",@removed_work_file;
-    print STDERR "\n";
-    exit 1;
-  }
+
   # exit successfully
   return 1;
 }
