@@ -70,7 +70,7 @@ sub main {
   }
 
   # remainning action need to have at least one commit
-  if (get_max_commit() == -1) {
+  if (get_max_commit() == 0) {
     dd_err("legit.pl: error: your repository does not have any commits yet");
   }
 

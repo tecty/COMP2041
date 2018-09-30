@@ -169,6 +169,7 @@ sub branch {
   elsif(@_ == 1 and $options eq "d"){
     # delete branch
     delete_branch(@_);
+    print "Deleted branch '$_[0]'\n";
     return 1;
   }
   else {
