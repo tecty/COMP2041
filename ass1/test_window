@@ -12,21 +12,15 @@ use pathLib;
 use commitTreeLib;
 use fileLib;
 use helperLib;
+use textLib;
 use typeLib;
 # this script for testing
-my %hash;
-$hash{0}= "-1";
-$hash{1}= "0";
-$hash{2}= "1,0";
-$hash{3}= "2";
-$hash{4}= "3";
-$hash{5} = undef;
+my @dest = ("b", "d");
+my @src = ("a","b","c", "d");
 
-# my %track = get_file_tracks(get_curr_commit());
-# dd_arr("tracks", $track{"e"});
-#
-# my %status = file_status(qw(d e));
-# dd_hash("status", %status);
-# my %that_tracks = get_file_tracks(
-#   $branches_record{$branch}
-# );
+
+my %hash = diff(@dest ,@src);
+
+foreach (keys %hash) {
+  print "$_ :",$src[$_ - 1], "\n";
+}
