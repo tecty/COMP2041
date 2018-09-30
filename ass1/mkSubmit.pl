@@ -34,7 +34,7 @@ foreach my $testfile (@tests) {
   close $f;
 
   # switch to a clean environment;
-  chdir   tempdir() ;
+  chdir  tempdir();
 
   # excute the generated script and dump it to our correct file
   open my $f, ">", "$script_path/myTest/$test_name.correct";
@@ -42,6 +42,7 @@ foreach my $testfile (@tests) {
   close $f;
 }
 
+chdir $script_path;
 exec "give cs2041 ass1_legit legit.pl diary.txt *.pm test*.sh";
 
 exec "./cleanEnv";
