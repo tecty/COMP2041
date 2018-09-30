@@ -82,7 +82,7 @@ sub checkout_to_branch {
     dd_err("legit.pl: error: unknown branch '$branch'");
   }
   # ELSE:
-  # TODO: this version doesn't consider the file in index dir 
+  # TODO: this version doesn't consider the file in index dir
   my %file_tracks = get_file_tracks();
 
   # remove all the files that currently checking
@@ -97,7 +97,7 @@ sub checkout_to_branch {
   # reconstruct the file in directory
   map {
     # $_ is the file name of this branch currently tracking
-    my @fs_content = get_file_content_by_tracks($_, $file_track{$_});
+    my @fs_content = get_file_content_by_tracks($_, $file_tracks{$_});
     set_content($_,@fs_content);
   } keys %file_tracks;
 }

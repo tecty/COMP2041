@@ -10,7 +10,7 @@ use lib File::Spec->catfile($FindBin::Bin);
 use typeLib;
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(get_content get_content touch get_key set_key
+our @EXPORT = qw(get_content set_content touch get_key set_key
 get_meta_path
 get_hash_from_file add_hash_to_file delete_hash_from_file
 );

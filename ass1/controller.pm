@@ -187,6 +187,6 @@ sub checkout {
   # ELSE:
   checkout_to_branch(@_);
   # print the successful message
-  print ("Switched to branch '$_[0]'");
+  print ("Switched to branch '$_[0]'\n");
 }
 1;
