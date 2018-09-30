@@ -1,0 +1,8 @@
+Initialized empty legit repository in .legit
+legit.pl: error: your repository does not have any commits yet
+Committed as commit 0
+usage: legit.pl checkout <branch>
+usage: legit.pl checkout <branch>
+usage: legit.pl checkout <branch>
+Switched to branch 'another'
+legit.pl: error: unknown branch 'and'

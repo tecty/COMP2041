@@ -29,7 +29,7 @@ map {
   $index ++;
 }@tests;
 
-print "=== Submit $index tests \n\n"
+print "=== Submit $index tests \n\n";
 
 $std_script = "/home/cs2041/bin/legit";
 foreach my $testfile (@tests) {
@@ -59,6 +59,6 @@ foreach my $testfile (@tests) {
 }
 
 chdir $script_path;
-exec "give cs2041 ass1_legit legit.pl diary.txt *.pm test??.sh";
+system "give cs2041 ass1_legit legit.pl diary.txt *.pm test??.sh";
 
-exec "bash ./cleanEnv";
+system "bash ./cleanEnv";
