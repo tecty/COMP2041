@@ -152,8 +152,29 @@ sub show_status {
 }
 
 sub branch{
-  if (@_ == 0){
+  my $options = pop_options(@_);
+  if (@_ == 0 and $options eq "") {
+    my %branches = get_all_branches();
+    map {print "$_\n";} keys %branches;
+    # successful printing all branches ;
+    return 1;
+  }
+  elsif(@_ == 1 and $options eq ""){
+    # ELSE: @_ == 1 create branch
+    create_branch(@_);
+    return 1;
+  }
+  elsif(@_ == 1 and $options eq "d"){
+    # delete branch
+    delete_branch(@_);
+    return 1;
+  }
+  else {
+    # couldn't fit any rules
     return 0;
   }
+
+
+
 }
 1;

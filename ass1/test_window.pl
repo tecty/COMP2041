@@ -8,6 +8,8 @@ use lib File::Spec->catfile($FindBin::Bin);
 # import all
 use branchLib;
 use controller;
+use pathLib;
+use commitTreeLib;
 use fileLib;
 use helperLib;
 use typeLib;
@@ -20,8 +22,8 @@ $hash{3}= "2";
 $hash{4}= "3";
 $hash{5} = undef;
 
-my %track = get_file_tracks(get_curr_commit());
-dd_arr("tracks", $track{"e"});
-
-my %status = file_status(qw(d e));
-dd_hash("status", %status);
+# my %track = get_file_tracks(get_curr_commit());
+# dd_arr("tracks", $track{"e"});
+#
+# my %status = file_status(qw(d e));
+# dd_hash("status", %status);

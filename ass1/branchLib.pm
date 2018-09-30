@@ -17,11 +17,14 @@ use File::Copy;
 use lib File::Spec->catfile($FindBin::Bin);
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_db get_curr_commit
+our @EXPORT = qw(
+init_db get_curr_commit
 get_commit_link add_files get_file_tracks
 commit_files get_max_commit
 get_log get_file_content_by_commit
 remove_files file_status show_remove_error get_curr_status
+create_branch delete_branch
+get_all_branches
 );
 
 #
@@ -40,14 +43,27 @@ my $COMMIT_RECORD_FILE = get_meta_path("commit");
 my $LOG_RECORD_FILE = get_meta_path("log");
 my $INDEX_OPERATIONS_FILE = get_operation_path("index");
 
+sub check_branch_exist{
+  my %branches = get_all_branches();
+  return exists $branches{$_};
+    # error on creating branch
+  }
+}
 
 sub create_branch {
   my ($branch) = @_;
-  if ( int(get_key($MAX_COMMIT_KEY)) == 0){
-    # couldn't creat branch at no commit state
-    dd_err ("legit.pl: error: your repository does not have any commits yet");
-  }
   # get current branches
+  if (check_branch_exist($branch)){
+    # branch should be not exits 
+    dd_err("legit.pl: error: branch 'master' already exists");
+  }
+  # ELSE:
+  my %new_branch_record = ($branch => get_curr_commit());
+  add_hash_to_file($BRANCH_RECORD_FILE, %new_branch_record);
+}
+
+sub get_all_branches{
+  return get_hash_from_file($BRANCH_RECORD_FILE);
 }
 
 sub init_db {

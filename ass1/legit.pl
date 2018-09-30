@@ -85,7 +85,7 @@ sub main {
     show_status();
   }
   elsif($command eq "branch"){
-    dd_err("") if ! branch(@ARGV);
+    dd_err("usage: legit.pl branch [-d] <branch>") if ! branch(@ARGV);
   }
   elsif($command eq "checkout"){
   }
