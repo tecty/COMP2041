@@ -45,4 +45,4 @@ foreach my $testfile (@tests) {
 chdir $script_path;
 exec "give cs2041 ass1_legit legit.pl diary.txt *.pm test*.sh";
 
-exec "./cleanEnv";
+exec "bash ./cleanEnv";

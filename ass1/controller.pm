@@ -14,7 +14,7 @@ use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
-our @EXPORT = qw(init_legit add remove commit show_log show show_status);
+our @EXPORT = qw(init_legit add remove commit show_log show show_status branch);
 
 # Highest level lib
 
@@ -148,6 +148,12 @@ sub show_status {
   # show the replaced message
   foreach my $key (sort keys %status) {
     print "$key - $status{$key}\n";
+  }
+}
+
+sub branch{
+  if (@_ == 0){
+    return ;
   }
 }
 1;

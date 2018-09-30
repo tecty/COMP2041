@@ -11,3 +11,4 @@
 2018-9-28|17:57|20:00|Refactoring|Large scale Refactoring
 2018-9-28|20:35|22:00|Refactoring|Large scale Refactoring again
 2018-9-28|16:43|17:51|Refactoring|Large scale Refactoring, refactor rm milestone, refactor done
+2018-9-28|20:28|17:51|Coding|Startup of subset 2 
