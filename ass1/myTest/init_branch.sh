@@ -1,7 +1,7 @@
 #!/bin/sh
-./legit init
-./legit branch master
+./legit.pl init
+./legit.pl branch master
 touch a
-./legit add a
-./legit commit -m "nothing"
-./legit branch master
+./legit.pl add a
+./legit.pl commit -m "nothing"
+./legit.pl branch master
