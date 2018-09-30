@@ -35,8 +35,8 @@ sub max_two {
 sub diff (\@\@) {
   # we introduce two array to diff
   # using LCS algorithm
-  # output = dest - ref
-  my ($dest_ref ,$src_ref) = @_;
+  # output = src - dest
+  my ($src_ref,$dest_ref) = @_;
   # create an array of content inputed, in this way, we can prevent the
   # source array wouldn't be change
   my @src = @$src_ref;
@@ -94,9 +94,55 @@ sub diff (\@\@) {
   # return the operation to construct the dest
   # ret = dest - src;
   my %ret;
+  my @x_keys = sort {$a <=> $b} keys %eq_pos;
+  my @y_values = sort {$a <=> $b } values %eq_pos;
+
+  for (my $x = 0; $x < $x_keys[0]; $x++) {
+    for (my $y = 0; $y < $y_values[0]; $++) {
+      # body...
+    }
+
+    $x ++;
+  }
 
 
-  return %eq_pos;
+  for (my $index = 0; $index < @x_keys; $index++) {
+    my $next_x;
+    my $next_y;
+    if ($index != @x_keys - 1 ){
+      # set the next as in array
+      $next_x = $x_keys[$index + 1];
+      $next_y = $y_values[$index + 1];
+    }
+    else{
+      # set the next as the end of the @src
+      $next_x = $#src;
+      $next_y = $#dest;
+    }
+    # fetch the correspond y value
+    my $y = $y_values[$index];
+    my $x = $x_keys[$index] + 1;
+    for (; $x < $next_x; $x ++) {
+      # next string will be equal both in y
+      if ($y != $next_y ){
+        # both add one, and record a change
+        # change to the correspond y-index dest value
+        $ret{"$x"."C"} = $dest[$y];
+        $x ++; $y ++;
+      }
+      else{
+        # remain line as the src's deletion
+        $ret{"$x"."D"} ="";
+      }
+    }
+
+    # remain operation as an add at the last different x-line
+    for (; $y < $next_y; $y++) {
+      $ret{"$x"."A"} = $dest[$y];
+    }
+    # exaust of this x and y
+  }
+  return %ret;
 }
 
 sub patch {
