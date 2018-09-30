@@ -41,7 +41,6 @@ my $LOG_RECORD_FILE = get_meta_path("log");
 my $INDEX_OPERATIONS_FILE = get_operation_path("index");
 
 
-
 sub create_branch {
   my ($branch) = @_;
   if ( int(get_key($MAX_COMMIT_KEY)) == 0){
@@ -50,8 +49,6 @@ sub create_branch {
   }
   # get current branches
 }
-
-
 
 sub init_db {
   # dummy perl
@@ -86,7 +83,6 @@ sub init_db {
 }
 
 # ==== COMMIT PART ====
-
 
 sub add_files  {
   my (@files) = @_;

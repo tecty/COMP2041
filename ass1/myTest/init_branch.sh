@@ -1,5 +1,6 @@
 #!/bin/sh
 ./legit.pl init
+./legit.pl branch 
 ./legit.pl branch master
 touch a
 ./legit.pl add a
