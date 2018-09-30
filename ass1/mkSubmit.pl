@@ -34,7 +34,7 @@ foreach my $testfile (@tests) {
   close $f;
 
   # switch to a clean environment;
-  chdir   $clean ;
+  chdir   tempdir() ;
 
   # excute the generated script and dump it to our correct file
   open my $f, ">", "$script_path/myTest/$test_name.correct";
