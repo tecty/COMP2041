@@ -33,8 +33,15 @@ foreach my $testfile (@tests) {
   print $f @test_content;
   close $f;
 
+  # switch to a clean environment;
+  chdir   $clean ;
+
   # excute the generated script and dump it to our correct file
   open my $f, ">", "$script_path/myTest/$test_name.correct";
-  print $f `sh $testfile`;
+  print $f `bash $testfile 2>&1`;
   close $f;
 }
+
+exec "give cs2041 ass1_legit legit.pl diary.txt *.pm test*.sh";
+
+exec "./cleanEnv";

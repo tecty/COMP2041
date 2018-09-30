@@ -6,4 +6,3 @@ rm -rf .legit;
 rm -rf a b c d e f g h;
 
 rm test*.sh;
-clear;
