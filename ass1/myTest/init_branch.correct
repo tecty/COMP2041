@@ -1,5 +1,5 @@
-/tmp/yQiOm9ZHTH/init_branch.sh: line 2: ./legit: No such file or directory
-/tmp/yQiOm9ZHTH/init_branch.sh: line 3: ./legit: No such file or directory
-/tmp/yQiOm9ZHTH/init_branch.sh: line 5: ./legit: No such file or directory
-/tmp/yQiOm9ZHTH/init_branch.sh: line 6: ./legit: No such file or directory
-/tmp/yQiOm9ZHTH/init_branch.sh: line 7: ./legit: No such file or directory
+Initialized empty legit repository in .legit
+legit.pl: error: your repository does not have any commits yet
+legit.pl: error: your repository does not have any commits yet
+Committed as commit 0
+legit.pl: error: branch 'master' already exists
