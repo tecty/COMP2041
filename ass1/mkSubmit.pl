@@ -6,7 +6,7 @@ use File::Temp qw/tempdir/;
 
 $script_path = cwd;
 
-@tests = glob("myTest/*.sh");
+@tests = glob("myTest/merge.sh");
 
 $index = 0 ;
 map {
@@ -35,6 +35,6 @@ foreach my $testfile (@tests) {
 
   # excute the generated script and dump it to our correct file
   open my $f, ">", "$script_path/myTest/$test_name.correct";
-  print `$testfile`;
+  print $f `$testfile`;
   close $f;
 }
