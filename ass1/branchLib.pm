@@ -76,6 +76,16 @@ sub create_branch {
   add_hash_to_file($BRANCH_RECORD_FILE, %new_branch_record);
 }
 
+sub remove_changes_in_index {
+  # the path of files need to be unlink
+  my @index_path;
+  foreach my $file (@_) {
+    push @index_path, get_index_path($file);
+  }
+  unlink @index_path;
+  # remove all the changes in index
+  delete_hash_from_file($INDEX_OPERATIONS_FILE, @_);
+}
 
 sub checkout_to_branch {
   my ($branch) = @_;
@@ -89,35 +99,47 @@ sub checkout_to_branch {
   my %branches_record = get_hash_from_file($BRANCH_RECORD_FILE);
   # get the files track of both branch
   my %this_tracks = get_file_tracks(
-    # $branches_record{get_key($CURR_BRANCH_KEY)}
+    $branches_record{get_key($CURR_BRANCH_KEY)}
   );
   my %that_tracks = get_file_tracks(
     $branches_record{$branch}
   );
 
 
-  # remove all the files that currently checking
-  my @remove_needed =  keys %this_tracks;
-  # to record those file need to presist
-  my @presist_needed;
+  # to record those files changes is discarded
   my @overwritten_files;
 
+  map {
+    # $_ will be the file name that this branch is currently tracking
+    my @fs_content = get_content($_);
+    my @this_content = get_file_content_by_tracks($_, $this_tracks{$_});
+    if (is_diff(@fs_content, @this_content)) {
+      # presist the changes
+      delete $this_tracks{$_};
+      delete $that_tracks{$_};
+    }
+  } keys %this_tracks;
 
-  # remove all the remove needed
-  unlink @remove_needed;
+  # remove all the needed to remove
+  unlink keys  %this_tracks;
 
   # checkout to required branch in logic
   set_key($CURR_BRANCH_KEY, $branch);
 
-
-
   # reconstruct the file in directory
   map {
     # $_ is the file name of this branch currently tracking
+    # the changing is overwritten if thereis a file here
+    if (-e $_) {
+      push @overwritten_files, $_;
+    }
+
     my @fs_content = get_file_content_by_tracks($_, $that_tracks{$_});
     set_content($_,@fs_content);
   } keys %that_tracks;
 
+  # remove the index record of the files need to overwritten
+  remove_changes_in_index(@overwritten_files);
 
   # return the list of not presist working files
   return @overwritten_files;

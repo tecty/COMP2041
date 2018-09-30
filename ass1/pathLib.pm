@@ -8,6 +8,8 @@ our @EXPORT = qw(
 get_index_path get_operation_path get_commit_path
 );
 
+# the order couldn't change,
+# because the index path is depend to commit path
 my $OPERATION_PATH = ".legit/operation/";
 my $COMMIT_PATH  = ".legit/commit/";
 my $INDEX_PATH = get_commit_path("index");
