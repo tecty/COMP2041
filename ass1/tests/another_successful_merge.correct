@@ -1,0 +1,21 @@
+Initialized empty legit repository in .legit
+Committed as commit 0
+Switched to branch 'b1'
+Committed as commit 1
+Switched to branch 'master'
+Committed as commit 2
+Auto-merging a
+Auto-merging b
+Auto-merging c
+Auto-merging d
+Committed as commit 3
+3 merge1
+2 commit-2
+1 commit-1
+0 commit-0
+a - same as repo
+b - same as repo
+c - same as repo
+d - same as repo
+e - same as repo
+f - same as repo

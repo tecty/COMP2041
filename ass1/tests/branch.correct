@@ -1,0 +1,12 @@
+Initialized empty legit repository in .legit
+legit.pl: error: your repository does not have any commits yet
+Committed as commit 0
+legit.pl: error: branch 'master' already exists
+branch1
+branch2
+master
+Deleted branch 'branch2'
+legit.pl: error: can not delete branch 'master'
+legit.pl: error: branch 'b1' does not exist
+branch1
+master

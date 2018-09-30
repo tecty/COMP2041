@@ -1,0 +1,35 @@
+Initialized empty legit repository in .legit
+Committed as commit 0
+Switched to branch 'b0'
+Committed as commit 1
+Switched to branch 'b1'
+Committed as commit 2
+Switched to branch 'b0'
+Switched to branch 'b1'
+Switched to branch 'b00'
+Committed as commit 3
+Switched to branch 'b01'
+Committed as commit 4
+Switched to branch 'b10'
+Committed as commit 5
+Switched to branch 'b11'
+Committed as commit 6
+Switched to branch 'master'
+0 root
+Switched to branch 'b1'
+2 1
+0 root
+Switched to branch 'b01'
+4 01
+1 0
+0 root
+Switched to branch 'b11'
+6 11
+2 1
+0 root
+Switched to branch 'master'
+Fast-forward: no commit created
+Fast-forward: no commit created
+3 00
+1 0
+0 root

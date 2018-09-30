@@ -3,6 +3,8 @@ use File::Copy;
 use Cwd qw(cwd);
 use File::Temp qw/tempdir/;
 
+# fetch the latest version in github
+system "git pull";
 
 $script_path = cwd;
 
