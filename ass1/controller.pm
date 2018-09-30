@@ -153,7 +153,7 @@ sub show_status {
 
 sub branch{
   if (@_ == 0){
-    return ;
+    return 0;
   }
 }
 1;
