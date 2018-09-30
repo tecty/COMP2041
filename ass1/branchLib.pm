@@ -9,6 +9,8 @@ use File::Path qw(make_path rmtree);
 use fileLib;
 use typeLib;
 use textLib;
+use pathLib;
+use commitTreeLib;
 use File::Spec;
 use File::Copy;
 # add current directory on the fly
@@ -26,9 +28,6 @@ remove_files file_status show_remove_error get_curr_status
 # higher level lib
 #
 # some handy path
-my $OPERATION_PATH = ".legit/operation/";
-my $COMMIT_PATH  = ".legit/commit/";
-my $INDEX_PATH = get_commit_file_path("index");
 # some global variable
 my $CURR_BRANCH_KEY = get_meta_path("curr_branch");
 # commit start from 0 and it's unique
@@ -39,26 +38,9 @@ my $BRANCH_RECORD_FILE = get_meta_path("branch");
 my $COMMIT_RECORD_FILE = get_meta_path("commit");
 # record the message of commit
 my $LOG_RECORD_FILE = get_meta_path("log");
-my $INDEX_OPERATIONS_FILE = get_ops_file_path("index");
+my $INDEX_OPERATIONS_FILE = get_operation_path("index");
 
-sub get_index_file_path {
-  my ($file) = @_;
-  $file = (defined $file) ? $file : "";
-  return "$INDEX_PATH/$file";
-}
 
-sub get_ops_file_path{
-  my ($commit) = @_;
-  $commit = (defined $commit) ? $commit : "";
-  return $OPERATION_PATH."$commit.ops";
-}
-
-sub get_commit_file_path{
-  my ($commit,$file) = @_;
-  $commit = (defined $commit) ? "$commit/" : "";
-  $file = (defined $file) ? $file : "";
-  return $COMMIT_PATH.$commit.$file;
-}
 
 sub create_branch {
   my ($branch) = @_;
@@ -87,9 +69,9 @@ sub init_db {
   if (
       ! -d ".legit" and
       make_path(
-        $COMMIT_PATH,
-        $OPERATION_PATH,
-        $INDEX_PATH,
+        get_commit_path(),
+        get_operation_path(),
+        get_index_path(),
         get_meta_path()
       ) and
       # create all the file for record data
@@ -182,7 +164,7 @@ sub get_file_tracks {
     # the ops_files just commit's id (and special case "index")
 
     # this file's operations
-    my %ops = get_hash_from_file(get_ops_file_path($_));
+    my %ops = get_hash_from_file(get_operation_path($_));
     foreach my $key (keys %ops) {
       # push the commit version to the file
       if ($ops{$key} eq "A") {
@@ -265,7 +247,7 @@ sub add_files  {
       is_diff(@src_content, @dest_content)
     ) {
       # there is different between this version and the version in repo
-      copy($_, $INDEX_PATH);
+      copy($_, get_index_path());
     }
     else {
       # there is no difference, no perform add
@@ -300,14 +282,16 @@ sub add_commit {
   my %branch_id = (get_key($CURR_BRANCH_KEY) =>  $commit_id);
   add_hash_to_file($BRANCH_RECORD_FILE, %branch_id);
 
+  my @indexed_files = glob(get_index_path("*"));
+  push @indexed_files, glob(get_index_path(".*"));
   # move all the thing from index to commit dir
-  make_path(get_commit_file_path($commit_id));
+  make_path(get_commit_path($commit_id));
   map {
-    move($_,get_commit_file_path($commit_id))
-  } glob("$INDEX_PATH/* $INDEX_PATH/.*");
+    move($_,get_commit_path($commit_id))
+  } @indexed_files;
 
   # rename the operation's file and create a new one
-  move($INDEX_OPERATIONS_FILE, get_ops_file_path($commit_id));
+  move($INDEX_OPERATIONS_FILE, get_operation_path($commit_id));
   touch($INDEX_OPERATIONS_FILE);
 
   # record the commit message
@@ -339,7 +323,7 @@ sub get_file_content_by_tracks($\@) {
     # the file has track  -- protection
     # get the content by the latest commit's path
     return get_content(
-    get_commit_file_path(
+    get_commit_path(
     $$track_ref[$#$track_ref] , $file
     ));
   }
@@ -384,7 +368,7 @@ sub get_log {
 # ==== REMOVE PART ====
 sub remove_files {
   # remove the file from working directory
-  map {if (-e get_index_file_path($_)) {unlink get_index_file_path($_)}} @_;
+  map {if (-e get_index_path($_)) {unlink get_index_path($_)}} @_;
 
   # filter out those don't need to record the operations
   my %tracks = get_file_tracks(get_curr_commit());
@@ -434,7 +418,7 @@ sub file_status  {
         $status{$file} = "D";
       }
       # only need to check wether it's Appear in the $working_dir or repository
-      if(-e get_index_file_path($file)) {
+      if(-e get_index_path($file)) {
         $status{$file} .= "A";
       }
       else{
@@ -457,8 +441,8 @@ sub file_status  {
     my @fs_content =  get_content($file);
 
     # check the content in working directory
-    if (-e get_index_file_path($file)) {
-      my @index_content = get_content(get_index_file_path($file));
+    if (-e get_index_path($file)) {
+      my @index_content = get_content(get_index_path($file));
       if (is_diff(@index_content,@fs_content)){
         $status{$file} .= "D";
       }
