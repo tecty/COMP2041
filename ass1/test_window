@@ -15,8 +15,8 @@ use helperLib;
 use textLib;
 use typeLib;
 # this script for testing
-my @src = ("a","b","c", "d");
-my @dest = ("b", "d");
+my @dest = ("a","b","c", "d");
+my @src = ("b", "d","f");
 
 
 my %hash = diff(@src,@dest);

@@ -3,7 +3,11 @@ package textLib;
 use warnings;
 use strict;
 use Exporter;
-
+use FindBin;
+use File::Spec;
+# add current directory on the fly
+use lib File::Spec->catfile($FindBin::Bin);
+use typeLib;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(is_diff diff patch);
@@ -96,52 +100,45 @@ sub diff (\@\@) {
   my %ret;
   my @x_keys = sort {$a <=> $b} keys %eq_pos;
   my @y_values = sort {$a <=> $b } values %eq_pos;
+  unshift @x_keys, 0;
+  unshift @y_values, 0;
+  push @x_keys, $#src  +1;
+  push @y_values, $#dest +1;
 
-  for (my $x = 0; $x < $x_keys[0]; $x++) {
-    for (my $y = 0; $y < $y_values[0]; $++) {
-      # body...
-    }
-
-    $x ++;
-  }
-
-
-  for (my $index = 0; $index < @x_keys; $index++) {
-    my $next_x;
-    my $next_y;
-    if ($index != @x_keys - 1 ){
-      # set the next as in array
-      $next_x = $x_keys[$index + 1];
-      $next_y = $y_values[$index + 1];
-    }
-    else{
-      # set the next as the end of the @src
-      $next_x = $#src;
-      $next_y = $#dest;
-    }
-    # fetch the correspond y value
-    my $y = $y_values[$index];
-    my $x = $x_keys[$index] + 1;
-    for (; $x < $next_x; $x ++) {
-      # next string will be equal both in y
-      if ($y != $next_y ){
-        # both add one, and record a change
-        # change to the correspond y-index dest value
-        $ret{"$x"."C"} = $dest[$y];
-        $x ++; $y ++;
+  for (my $index = 0; $index < @x_keys -1; $index++) {
+    # fetch this range
+    my @range_x = ($x_keys[$index], $x_keys[$index +1]);
+    my @range_y = ($y_values[$index], $y_values[$index +1]);
+    
+    my $x = $range_x[0];
+    my $y = $range_y[0];
+    for (; $x < $range_x[1] and $x != $range_x[1] -1 ; $x ++){
+      # consume all the common gap
+      if ($y == $range_y[1] -1 ){
+        # the y is fully consumed, x should be deleted
+        $ret{($x+1)."D"} = "";
       }
       else{
-        # remain line as the src's deletion
-        $ret{"$x"."D"} ="";
+        $ret{($x+1)."C"} = $dest[($y+1)];
+        $y ++;
       }
     }
-
-    # remain operation as an add at the last different x-line
-    for (; $y < $next_y; $y++) {
-      $ret{"$x"."A"} = $dest[$y];
+    if ($x == $range_x[1]-1 and $y != $range_y[1] -1) {
+      # remain line need to convey as x's last line's adds
+      $y ++;
+      for (; $y < $range_y[1]; $y++) {
+        $ret{($x)."A".$y} = $dest[$y];
+      }
     }
-    # exaust of this x and y
+    elsif($x == $range_x[1]-1 and $y == $range_y[1] -1){
+      # luckly, consumed both
+    }
+    else {
+      dd_err("Fatel: I shouldn't be here ");
+    }
   }
+
+  # return the file instruction
   return %ret;
 }
 
