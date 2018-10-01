@@ -145,11 +145,11 @@ sub diff (\@\@) {
 sub comparte_diff_key {
   $a =~ /([0-9]*)[ADC]([0-9]*)/;
   my $a_line = $1;
-  my $a_dest = $2;
+  my $a_dest = (defined $2 and $2 ne "") ? $2: -10;
 
   $b =~ /([0-9]*)[ADC]([0-9]*)/;
   my $b_line = $1;
-  my $b_dest = $2;
+  my $b_dest = (defined $2 and $2 ne "") ? $2: -10 ;
   return ($a_line <=> $b_line or $a_dest <=> $b_dest);
 }
 
@@ -184,8 +184,8 @@ sub patch(\@\%) {
     else{
       dd_err("Patch Err, I shouldn't be here");
     }
-    print "\n==src: $action\n";
-    print ">$_\n" for @src;
+    # print "\n==src: $action\n";
+    # print ">$_\n" for @src;
   }
 
 

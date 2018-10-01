@@ -15,4 +15,4 @@
 2018-9-30|20:28|23:00|Coding|Startup of subset 2, simple create and checkout for now
 2018-9-31|23:58|02:42|Coding|Prsist file changes and overwrite checking.
 2018-10-1|04:05|05:30|Coding|Diff as preparation of the merge functionality and challenge.
-2018-10-1|17:30|18:52|Coding|Debug in diff, almost debug done.
+2018-10-1|17:30|19:32|Coding|A first version of diff and patch. Now I can do the merge and challenge.

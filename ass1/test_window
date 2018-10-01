@@ -15,15 +15,18 @@ use helperLib;
 use textLib;
 use typeLib;
 # this script for testing
-my @src = ("b", "d","f");
-my @dest = ("a","b","c", "d");
+my @src = get_content("mkSubmit");
+my @dest = get_content("autoTest");
 
 
 my %diff = diff(@src,@dest);
 
 my @result =  patch(@src,%diff);
 
-dd_arr("Result",@result);
+if (is_diff(@result, @dest)) {
+  print "test Failed";
+}
+# dd_arr("Result",@result);
 # dd_hash("diff", %diff);
 # foreach (keys %hash) {
 #   print "$_ :",$src[$_ - 1], "\n";
