@@ -5,4 +5,5 @@ usage: legit.pl checkout <branch>
 usage: legit.pl checkout <branch>
 usage: legit.pl checkout <branch>
 Switched to branch 'another'
+Already on 'another'
 legit.pl: error: unknown branch 'and'
