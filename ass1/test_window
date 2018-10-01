@@ -15,13 +15,16 @@ use helperLib;
 use textLib;
 use typeLib;
 # this script for testing
-my @dest = ("a","b","c", "d");
 my @src = ("b", "d","f");
+my @dest = ("a","b","c", "d");
 
 
-my %hash = diff(@src,@dest);
+my %diff = diff(@src,@dest);
 
-dd_hash("diff", %hash);
+my @result =  patch(@src,%diff);
+
+dd_arr("Result",@result);
+# dd_hash("diff", %diff);
 # foreach (keys %hash) {
 #   print "$_ :",$src[$_ - 1], "\n";
 # }

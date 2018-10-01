@@ -109,7 +109,7 @@ sub diff (\@\@) {
     # fetch this range
     my @range_x = ($x_keys[$index], $x_keys[$index +1]);
     my @range_y = ($y_values[$index], $y_values[$index +1]);
-    
+
     my $x = $range_x[0];
     my $y = $range_y[0];
     for (; $x < $range_x[1] and $x != $range_x[1] -1 ; $x ++){
@@ -142,8 +142,58 @@ sub diff (\@\@) {
   return %ret;
 }
 
-sub patch {
-  # body...
+sub comparte_diff_key {
+  $a =~ /([0-9]*)[ADC]([0-9]*)/;
+  my $a_line = $1;
+  my $a_dest = $2;
+
+  $b =~ /([0-9]*)[ADC]([0-9]*)/;
+  my $b_line = $1;
+  my $b_dest = $2;
+  return ($a_line <=> $b_line or $a_dest <=> $b_dest);
+}
+
+
+sub patch(\@\%) {
+  # === construct the dest via diff
+  # change ref to actual array and hash table
+  my ($src_ref,$diff_ref) = @_;
+  my @src = @{$src_ref};
+  my %diff = %{$diff_ref};
+
+  # unshift it to have better support at the add at front
+  unshift @src,"";
+
+  foreach my $action (reverse sort comparte_diff_key keys %diff) {
+    $action =~ /([0-9]*)([ADC])([0-9]*)/;
+    my $line = $1;
+    my $operation = $2;
+    if ($operation eq "D") {
+      # use splice to delete that line
+      splice @src, $line, 1;
+    }
+    elsif($operation eq "C") {
+      # directly change the content in the line
+      $src[$line] = $diff{$action};
+    }
+    elsif($operation eq "A"){
+      # add the line via splice
+      # since we do it revertically, we will add 11 then 10 then 9 of dest
+      splice @src, $line +1 ,0, $diff{$action};
+    }
+    else{
+      dd_err("Patch Err, I shouldn't be here");
+    }
+    print "\n==src: $action\n";
+    print ">$_\n" for @src;
+  }
+
+
+
+
+  # shift it back the empty line
+  shift @src;
+  return @src;
 }
 
 
