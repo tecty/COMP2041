@@ -61,7 +61,7 @@ sub get_commit_hash {
 }
 
 sub get_commit_link {
-  my ($commit) = @_;
+  my ($commit, $to_commit) = @_;
   # stop at two value node (merge)
   # or get a accendign list (by history )
   if (!(defined $commit and $commit ne "")) {
@@ -89,16 +89,31 @@ sub get_commit_link {
   # travel throught hash table
   while (@unvisited) {
     my $this_node = shift @unvisited;
+    # break the loop
+    if ($this_node == -1) {
+      # couldn't vistie this node
+      last;
+    }
+
     # add this node to visited
     unshift @visited,$this_node;
+
+
     # fetch this node's parent
     my @this_par = @{$commit_hash{$this_node}} ;
     # dd_arr("this parent", @this_par);
     # push it's parent to @unvisited
     push @unvisited, $this_par[0];
-    if (@this_par == 2 or int($this_par[0]) == -1) {
-      # stop search when meeting (merge node or the very first node)
-      last;
+    if (! defined $to_commit){
+      if (@this_par == 2 ) {
+        # stop search when meeting (merge node or the very first node)
+        last;
+      }
+    }else{
+      # to node exit
+      if ($to_commit == $this_node){
+        last;
+      }
     }
   }
   # return all it's parent
@@ -204,16 +219,16 @@ sub is_ancestor_of ($$\%) {
     my $this_node = shift @unvisited;
     # add this node to visited
     unshift @visited,$this_node;
+    if ($this_node == -1) {
+      # -1 couldn't have any parent
+      last;
+    }
     # fetch this node's parent
-    my @this_par = @{$commit_hash{$this_node}} ;
+    my @this_par = @{$commit_hash{$this_node}};
     # push it's parent to @unvisited
     push @unvisited, @this_par;
     if ($to == $this_node){
       return 1;
-    }
-    if (($this_par[0] < $to )and ($this_par[1] < $to) ) {
-      # not found
-      return 0;
     }
   }
   return 0;

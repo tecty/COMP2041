@@ -473,8 +473,7 @@ sub file_status  {
     # checking the content in repository
     if (exists $curr_commit_tracks{$file}) {
       # get the repository record's content
-      my @rep_content =
-        get_file_content_by_tracks($file,@{$curr_commit_tracks{$file}});
+      my @rep_content =get_file_content_by_tracks($file,@{$curr_commit_tracks{$file}});
       # there is different set "D", otherwise set A
       if(is_diff(@rep_content, @fs_content)){
         $status{$file} .= "D";
@@ -524,21 +523,61 @@ sub get_curr_status{
 
 # ==== MERGE PART ====
 
+sub fetch_files_hash_by_commit {
+  my ($commit) = @_;
+  my %files;
+  my %file_tracks = get_file_tracks($commit);
+  foreach my $file_name (keys %file_tracks) {
+    $files{$file_name} = get_file_content_by_tracks(
+      $file_name, @{$file_tracks{$file_name}});
+  }
+  # return the files;
+  return %files;
+}
+
+sub fetch_ops_by_commit{
+  my ($from, $to) = @_;
+  # fetch the commit link
+  my @commit_link = get_commit_link($from, $to);
+
+  # the final opearation array ;
+  my %ops;
+  foreach my $this_commit (@commit_link) {
+    my %tmp_ops = get_hash_from_file(get_operation_path($this_commit));
+    foreach $key (keys %tmp_ops) {
+      # add up this operations
+      $ops{$key} = $tmp_ops{$key};
+    }
+  }
+  # return the final operations
+  return %ops;
+}
+
+sub fetch_file_diffs_by_commit{
+  my ($from, $to) = @_;
+  my %to_files= fetch_files_hash_by_commit($to);
+  my %from_files= fetch_files_hash_by_commit($from);
+
+}
+
+
 sub do_merge {
   my ($their_commit) = @_;
-  my %branch_hash = get_hash_from_file($BRANCH_REsCORD_FILE);
+  my %branch_hash = get_hash_from_file($BRANCH_RECORD_FILE);
+  my %commit_hash = get_commit_hash();
   if (! is_int($their_commit)){
     # convert their banch as commit id
     $their_commit = $branch_hash{$their_commit};
   }
   my $our_commit = get_curr_commit();
 
-  if(is_ancestor_of($their_commit,$our_commit ) ){
+  if(is_ancestor_of($their_commit,$our_commit, %commit_hash) ){
     # I can fast forward commit here
     # by just set out branch point to their's commit id
+
+    my %new_record = {get_key($CURR_BRANCH_KEY) => $their_commit};
     add_hash_to_file(
-      $COMMIT_RECORD_FILE,
-      (get_key($CURR_BRANCH_KEY) => $their_commit)
+      $COMMIT_RECORD_FILE,%new_record
     );
   }
   else {
@@ -546,17 +585,38 @@ sub do_merge {
     my @ancestors = get_ancestor($their_commit, $our_commit);
     # fetch the best ancsetor
     my $best_ancestor = $ancestors[0];
+
+    # fetch all operations of both branches
+    my %our_ops = fetch_ops_by_commit($our_commit, $best_ancestor);
+    my %their_ops = fetch_ops_by_commit($ther_commit, $best_ancestor);
+
+    my @unable_merge;
+    # check whether there is a conflict in the operation first
+    foreach my $key  (sort keys %our_ops) {
+      if (defined $their_ops{$key}) {
+        # then checking whether a branch has deleted the file for now
+        if ($their_ops{$key} ne $our_ops{$key}) {
+          # we currently record add and delete
+          # then if it's different then the operation couldn't merge
+          push @unable_merge, $key;
+        }
+      }
+    }
+    # dump the merge error
+    if (@unable_merge) {
+      dd_err(
+      "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
+    }
+
     # do the three way merge
+    my %ancestor_files= fetch_files_hash_by_commit($best_ancestor);
+    my %our_files= fetch_files_hash_by_commit($our_commit);
+    my %theirs_files= fetch_files_hash_by_commit($their_commit);
 
-
-
+    #
 
 
   }
-
-
-
-
 }
 
 
