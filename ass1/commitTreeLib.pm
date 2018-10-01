@@ -17,6 +17,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(
 get_curr_commit get_max_commit get_commit_link get_file_tracks
+get_ancestor do_get_ranged_commit_link
 );
 
 # middle ware?
@@ -45,6 +46,19 @@ sub get_max_commit{
   return int(get_key($MAX_COMMIT_KEY));
 }
 
+sub get_commit_hash {
+  my %commit_hash = get_hash_from_file($COMMIT_RECORD_FILE);
+  foreach my $key (keys %commit_hash) {
+    my @arr = split(",",$commit_hash{$key});
+    # strictly change type to int
+    map {$_ = int($_)} @arr;
+    $commit_hash{$key} = [@arr];
+    # print "im with ", @{$commit_hash{$key}}, "\n";
+  }
+  # dd_hash("commit hash ", %commit_hash);
+  return %commit_hash;
+}
+
 sub get_commit_link {
   my ($commit) = @_;
   # stop at two value node (merge)
@@ -69,14 +83,16 @@ sub get_commit_link {
   my @visited;
   my @unvisited = ($commit);
   # get the commit tree
-  my %commit_hash = get_hash_from_file($COMMIT_RECORD_FILE);
+  my %commit_hash = get_commit_hash();
+
   # travel throught hash table
   while (@unvisited) {
     my $this_node = shift @unvisited;
     # add this node to visited
     unshift @visited,$this_node;
     # fetch this node's parent
-    my @this_par = split ",",$commit_hash{$this_node} ;
+    my @this_par = @{$commit_hash{$this_node}} ;
+    # dd_arr("this parent", @this_par);
     # push it's parent to @unvisited
     push @unvisited, $this_par[0];
     if (@this_par == 2 or int($this_par[0]) == -1) {
@@ -132,5 +148,111 @@ sub get_file_tracks {
   # return the whole track
   return %track;
 }
+
+sub do_get_ranged_commit_link($$\%\%) ;
+sub do_get_ranged_commit_link($$\%\%) {
+  # four input value, do the search recursively
+  my ($commit_id, $depth, $hash_ref, $ret_ref) = @_;
+  # set this commit id as input
+  if (!defined $commit_id or $commit_id <= -1) {
+    # break the search, since there's no parent for -1 commit
+    return;
+  }
+  # if ($depth == 100) {
+  #   print "array ",$$hash_ref{$commit_id};
+  #   dd_arr("input", @_);
+  # }
+
+
+  # assign the depth
+  ${$ret_ref}{$commit_id}= $depth ;
+  # find the next node to visit
+  my @next = @{$$hash_ref{$commit_id}};
+  foreach (@next) {
+    do_get_ranged_commit_link($_, $depth +1, %$hash_ref, %$ret_ref);
+  }
+}
+
+sub get_ranged_commit_link{
+  my ($commit, %commit_hash ) = @_;
+  if ($commit == -1) {
+    # return an empty array
+    return ();
+  }
+  if ($commit >= get_max_commit()) {
+    dd_err("legit.pl: error: unknown commit '$commit'");
+  }
+
+  # store the value of return
+  # with (commit => depth)
+  my %ret ;
+  do_get_ranged_commit_link($commit, 0, %commit_hash, %ret);
+  return %ret;
+}
+
+sub is_ancestor_of ($$\%) {
+  # pre $from > $to ;
+  my ($from, $to, $hash_ref) = @_;
+
+  my @visited;
+  my @unvisited = ($from);
+  # get the commit tree
+  my %commit_hash = get_commit_hash();
+  # travel throught hash table
+  while (@unvisited) {
+    my $this_node = shift @unvisited;
+    # add this node to visited
+    unshift @visited,$this_node;
+    # fetch this node's parent
+    my @this_par = @{$commit_hash{$this_node}} ;
+    # push it's parent to @unvisited
+    push @unvisited, @this_par;
+    if ($to == $this_node){
+      return 1;
+    }
+    if (($this_par[0] < $to )and ($this_par[1] < $to) ) {
+      # not found
+      return 0;
+    }
+  }
+  return 0;
+}
+
+sub get_ancestor {
+  # input is two commit id
+  my ($mine, $theirs) = @_;
+
+  my %commit_hash = get_commit_hash();
+
+  # get the ranged commit link
+  my %mine_link = get_ranged_commit_link($theirs, %commit_hash);
+  my %theirs_link = get_ranged_commit_link($mine, %commit_hash);
+
+  # push all the common part
+  my @ancestors;
+  foreach my $commit (keys %mine_link) {
+    if (exists $theirs_link{$commit}){
+      push @ancestors, $commit;
+    }
+  }
+
+  # decending sort of the ancestors
+  # done use reverse of a and b because it is not Intuitive
+  @ancestors = reverse sort {$a <=> $b} @ancestors;
+
+  # TODO: If i do recursive merge, i will need to remove the not good ancestor
+  #       But for now, I leave it there
+
+  # # remove all the one ancestors is another's ancestors;
+  # for (my $index = 0; $index < @ancestors; $index++) {
+  #   if (is_ancestor_of($ancestors[$index], $$ancestors[$index + 1])) {
+  #     # remove the index +1 as the ancestor
+  #   }
+  #
+  # }
+
+  return @ancestors;
+}
+
 
 1;

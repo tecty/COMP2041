@@ -9,13 +9,13 @@ use lib File::Spec->catfile($FindBin::Bin);
 #  this file need to use all our basic lib except this one
 use branchLib;
 use fileLib;
-use helperLib;
+
 use typeLib;
 
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(
-  init_legit add remove commit show_log show show_status branch checkout
+  init_legit add remove commit show_log show show_status branch checkout merge
 );
 
 # Highest level lib

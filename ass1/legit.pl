@@ -9,7 +9,6 @@ use lib File::Spec->catfile($FindBin::Bin);
 use branchLib;
 use controller;
 use fileLib;
-use helperLib;
 use typeLib;
 
 # holding for main function

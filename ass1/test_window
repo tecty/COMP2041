@@ -11,24 +11,15 @@ use controller;
 use pathLib;
 use commitTreeLib;
 use fileLib;
-use helperLib;
+
 use textLib;
 use typeLib;
 # this script for testing
-# my @src = get_content("mkSubmit");
-# my @dest = get_content("autoTest");
-#
-#
-# my %diff = diff(@src,@dest);
-#
-# my @result =  patch(@src,%diff);
-#
-# if (is_diff(@result, @dest)) {
-#   print "test Failed";
-# }
 
+my @arr = get_commit_link(5);
+print "commit link ", @arr;
+# my  @ancestors = get_ancestor(5,6);
+# print "ancestors ",@ancestors;
 
-my %tracks = get_file_tracks();
-dd_var('current_commit',get_curr_commit());
-dd_hash("tracks",%tracks);
-dd_arr("f tracks",$tracks{"f"});
+# my %commit_hash= get_commit_hash();
+# is_ancestor_of(5,2,%commit_hash);

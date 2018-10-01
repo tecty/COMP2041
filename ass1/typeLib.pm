@@ -7,7 +7,30 @@ our @ISA= qw( Exporter );
 our @EXPORT = qw(to_hash uniq remove_value_from_array
 hashParse hashSerializer
 dd_var dd_err dd_arr dd_hash
+pop_options
 );
+
+sub pop_options(\@) {
+  # pop all the option in the array
+  my ($arr_ref)= @_;
+
+  # grep all opotions
+  my @options = grep {$_ =~ /^-(.*)/ } @$arr_ref;
+
+  # pop all the dash in the array
+  @options = grep {$_ =~ s/^-(.*)/$1/g } @options;
+
+  # split all the chars in options and make them unique
+  my @options_chars;
+  map {push @options_chars, split(//, $_ );} @options;
+  uniq(@options_chars);
+
+  # remove all the options in the array
+  @$arr_ref = grep { $_ !~ /^-(.*)/ } @$arr_ref;
+
+  # return all the options as a single string
+  return join("", @options);;
+}
 
 sub to_hash {
   my %hash;
