@@ -17,7 +17,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(
 get_curr_commit get_max_commit get_commit_link get_file_tracks
-get_commit_hash
+get_commit_hash is_ancestor_of
 get_ancestor do_get_ranged_commit_link
 );
 

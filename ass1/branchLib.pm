@@ -525,7 +525,37 @@ sub get_curr_status{
 # ==== MERGE PART ====
 
 sub do_merge {
-  
+  my ($their_commit) = @_;
+  my %branch_hash = get_hash_from_file($BRANCH_REsCORD_FILE);
+  if (! is_int($their_commit)){
+    # convert their banch as commit id
+    $their_commit = $branch_hash{$their_commit};
+  }
+  my $our_commit = get_curr_commit();
+
+  if(is_ancestor_of($their_commit,$our_commit ) ){
+    # I can fast forward commit here
+    # by just set out branch point to their's commit id
+    add_hash_to_file(
+      $COMMIT_RECORD_FILE,
+      (get_key($CURR_BRANCH_KEY) => $their_commit)
+    );
+  }
+  else {
+    # merge ther commit to our commit
+    my @ancestors = get_ancestor($their_commit, $our_commit);
+    # fetch the best ancsetor
+    my $best_ancestor = $ancestors[0];
+    # do the three way merge 
+
+
+
+
+  }
+
+
+
+
 }
 
 

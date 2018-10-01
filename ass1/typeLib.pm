@@ -7,7 +7,7 @@ our @ISA= qw( Exporter );
 our @EXPORT = qw(to_hash uniq remove_value_from_array
 hashParse hashSerializer
 dd_var dd_err dd_arr dd_hash
-pop_options
+pop_options is_int
 );
 
 sub pop_options(\@) {

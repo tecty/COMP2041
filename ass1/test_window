@@ -22,4 +22,6 @@ print "commit link ", @arr;
 # print "ancestors ",@ancestors;
 
 my %commit_hash= get_commit_hash();
-is_ancestor_of(5,2,%commit_hash);
+if (is_ancestor_of(5,2,%commit_hash)){
+  print "yes";
+}
