@@ -42,6 +42,10 @@ sub add {
 sub commit {
   # parse the command line arguments
   my $options = pop_options(@_);
+  if (@_ == 0 or $options =~/[^ma]/){
+    # raise a commit error 
+    return 0;
+  }
   my $commit = join " ",@_;
   if ($options =~ /a/){
     # fetch all the tracked file

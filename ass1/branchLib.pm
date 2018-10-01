@@ -94,7 +94,6 @@ sub checkout_to_branch {
     dd_err("legit.pl: error: unknown branch '$branch'");
   }
   # ELSE:
-  # TODO: this version doesn't consider the file in index dir
   # fetch all the branch records
   my %branches_record = get_hash_from_file($BRANCH_RECORD_FILE);
   # get the files track of both branch
@@ -127,17 +126,16 @@ sub checkout_to_branch {
   # the changing is overwritten if thereis a file here
   map {
     # skip for this working dir doesn't have the file
-    if (! -e $_ ){
-      return ;
-    }
-    # $_ will be the file name that "that branch" is currently tracking
-    my @fs_content = get_content($_);
-    my @that_content = get_file_content_by_tracks($_, $that_tracks{$_});
+    if (-e $_ ) {
+      # $_ will be the file name that "that branch" is currently tracking
+      my @fs_content = get_content($_);
+      my @that_content = get_file_content_by_tracks($_, $that_tracks{$_});
 
-    if (! exists $this_tracks{$_}) {
-      # those will be overwritten is the file that in fs and system want to
-      # persist it's changes
-      push @overwritten_files, $_;
+      if (! exists $this_tracks{$_}) {
+        # those will be overwritten is the file that in fs and system want to
+        # persist it's changes
+        push @overwritten_files, $_;
+      }
     }
   } keys %that_tracks;
 
@@ -154,10 +152,6 @@ sub checkout_to_branch {
 
   # checkout to required branch in logic
   set_key($CURR_BRANCH_KEY, $branch);
-
-
-
-
 
   # reconstruct the file in directory
   map {

@@ -13,5 +13,6 @@ touch a
 
 # error when checkout current  ?
 ./legit.pl checkout another
+./legit.pl checkout another
 # error when checkotu non exist branch
 ./legit.pl checkout and
