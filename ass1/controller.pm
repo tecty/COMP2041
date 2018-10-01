@@ -241,7 +241,7 @@ sub pop_message(\@) {
   }
 
   # branch name must be given
-  return 0 if (defined $branch and $branch ne "");
+  return 0 if (! defined $branch or $branch eq "");
 
   $$arg_ref[0] = $branch;
   $$arg_ref[1] = $msg;
@@ -254,6 +254,9 @@ sub merge {
   }
   # the message cammand is arranged
   my ($branch , $msg) = @_;
+  if (! defined $msg or $msg eq ""){
+    dd_err("legit.pl: error: empty commit message");
+  }
   # do the merge
   do_merge($branch);
   # commit this commit if there exist a message;

@@ -91,6 +91,9 @@ sub main {
     dd_err("usage: legit.pl checkout <branch>") if ! checkout(@ARGV);
   }
   elsif($command eq "merge"){
+    if (! merge(@ARGV)){
+      dd_err("usage: legit.pl merge <branch|commit> -m message");
+    }
   }
   else{
     print STDERR "legit.pl: error: unknown command $command\n";
