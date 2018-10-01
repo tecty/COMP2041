@@ -546,7 +546,8 @@ sub do_merge {
     my @ancestors = get_ancestor($their_commit, $our_commit);
     # fetch the best ancsetor
     my $best_ancestor = $ancestors[0];
-    # do the three way merge 
+    # do the three way merge
+
 
 
 
