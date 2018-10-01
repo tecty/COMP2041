@@ -27,6 +27,7 @@ remove_files file_status show_remove_error get_curr_status
 checkout_to_branch
 create_branch delete_branch
 get_all_branches
+do_merge
 );
 
 #
@@ -324,11 +325,11 @@ sub commit_files{
 
   if (keys %op_content == 0) {
     # commit fail
-    dd_err("nothing to commit");
+    return 0;
   }
   else {
     add_commit($commit);
-    print "Committed as commit ",get_curr_commit(),"\n";
+    return 1;
   }
 }
 
@@ -520,4 +521,12 @@ sub get_curr_status{
   @indexed_files = uniq(@indexed_files);
   return file_status(@indexed_files)
 }
+
+# ==== MERGE PART ====
+
+sub do_merge {
+  
+}
+
+
 1;

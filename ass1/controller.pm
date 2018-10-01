@@ -43,7 +43,7 @@ sub commit {
   # parse the command line arguments
   my $options = pop_options(@_);
   if (@_ == 0 or $options =~/[^ma]/){
-    # raise a commit error 
+    # raise a commit error
     return 0;
   }
   my $commit = join " ",@_;
@@ -54,7 +54,12 @@ sub commit {
   }
   if ($options =~ /m/){
     # commit as message
-    commit_files($commit);
+    if (commit_files($commit)){
+      print "Committed as commit ",get_curr_commit(),"\n";
+    }else{
+      # commit fail
+      dd_err("nothing to commit");
+    }
   }
 }
 
@@ -197,4 +202,62 @@ sub checkout {
   # exit successfully
   return 1;
 }
+
+sub pop_message(\@) {
+  # rerange the input array to (branch, msg)
+  my ($arg_ref) = @_;
+  my $branch;
+  my $msg;
+  for (my $index = 0; $index < @_; $index++) {
+    if (
+      defined $branch and defined $msg and
+      $branch ne "" and $msg ne ""
+    )
+    {
+      # overwhelmed of command args
+      return 0
+    }
+
+    if ($$arg_ref[$index] =~ /^-(.*)/){
+      my $options = $1;
+      if ($options =~ /[^m]/ or $index == $#_){
+        # can only accept one option, which is m;
+        # or array out of bound
+        return 0;
+      }
+      elsif($$arg_ref[$index +1] !~ /^-(.*)/){
+        # found the message
+        $msg = $$arg_ref[$index +1];
+        # index will require another add, since pop the message will
+        # consume to slot of array
+        $index ++;
+      }
+    }
+    else{
+      # found the branch;
+      $branch  =  $$arg_ref[$index];
+    }
+
+  }
+
+  # branch name must be given
+  return 0 if (defined $branch and $branch ne "");
+
+  $$arg_ref[0] = $branch;
+  $$arg_ref[1] = $msg;
+}
+
+
+sub merge {
+  if( ! pop_message(@_)){
+    return 0;
+  }
+  # the message cammand is arranged
+  my ($branch , $msg) = @_;
+  # do the merge
+  do_merge($branch);
+  # commit this commit if there exist a message;
+  commit_files($msg);
+}
+
 1;

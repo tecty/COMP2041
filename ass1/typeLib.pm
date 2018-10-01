@@ -57,6 +57,11 @@ sub hashSerializer(\%) {
   return @arr
 }
 
+sub is_int {
+  return ($_[0] =~ /^([0-9]+)$/);
+}
+
+
 # Debug helper
 # dd - die and dump
 
