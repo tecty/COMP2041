@@ -208,7 +208,7 @@ sub pop_message(\@) {
   my ($arg_ref) = @_;
   my $branch;
   my $msg;
-  for (my $index = 0; $index < @_; $index++) {
+  for (my $index = 0; $index < @$arg_ref; $index++) {
     if (
       defined $branch and defined $msg and
       $branch ne "" and $msg ne ""
@@ -220,12 +220,12 @@ sub pop_message(\@) {
 
     if ($$arg_ref[$index] =~ /^-(.*)/){
       my $options = $1;
-      if ($options =~ /[^m]/ or $index == $#_){
+      if ($options ne "m" and ! exists $$arg_ref[$index +1]){
         # can only accept one option, which is m;
         # or array out of bound
         return 0;
       }
-      elsif($$arg_ref[$index +1] !~ /^-(.*)/){
+      else {
         # found the message
         $msg = $$arg_ref[$index +1];
         # index will require another add, since pop the message will
@@ -237,7 +237,6 @@ sub pop_message(\@) {
       # found the branch;
       $branch  =  $$arg_ref[$index];
     }
-
   }
 
   # branch name must be given
@@ -245,8 +244,8 @@ sub pop_message(\@) {
 
   $$arg_ref[0] = $branch;
   $$arg_ref[1] = $msg;
+  return 1;
 }
-
 
 sub merge {
   if( ! pop_message(@_)){
@@ -254,6 +253,7 @@ sub merge {
   }
   # the message cammand is arranged
   my ($branch , $msg) = @_;
+  # dd_arr("ARGV",($branch , $msg));
   if (! defined $msg or $msg eq ""){
     dd_err("legit.pl: error: empty commit message");
   }
@@ -261,6 +261,9 @@ sub merge {
   do_merge($branch);
   # commit this commit if there exist a message;
   commit_files($msg);
+
+  # merge successfully
+  return 1;
 }
 
 1;
