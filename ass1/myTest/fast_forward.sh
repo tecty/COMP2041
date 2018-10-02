@@ -13,5 +13,5 @@ touch a
 ./legit.pl commit -m "commit -3"
 ./legit.pl checkout master
 # try to fast forward merge
-./legit.pl merge another
-./legit.pl status 
+./legit.pl merge another -m "Im a fast-forward merge"
+./legit.pl status
