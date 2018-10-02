@@ -6,7 +6,7 @@ use File::Temp qw/tempdir/;
 $script_path = cwd;
 
 # fetch the tests we want to test
-@tests = glob ("tests/*.sh");
+@tests = glob ("myTest/*.sh");
 $testsDir = tempdir();
 
 # count the failed test
@@ -25,7 +25,7 @@ foreach my $testfile (@tests) {
   $correct_file = "$script_path/$correct_file";
 
   # the testfile addr
-  $testfile =~ s?tests/??g;
+  $testfile =~ s?myTest/??g;
   $testfile = "$testsDir/$testfile";
 
   # write the test content

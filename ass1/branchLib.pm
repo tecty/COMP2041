@@ -25,7 +25,7 @@ get_log get_file_content_by_commit
 remove_files file_status show_remove_error get_curr_status
 
 is_branch_exist
-checkout_to_branch
+pre_checkout_routine checkout_to_branch
 is_ancestor_of_some_branch
 create_branch delete_branch
 get_all_branches
@@ -48,10 +48,12 @@ my $COMMIT_RECORD_FILE = get_meta_path("commit");
 my $LOG_RECORD_FILE = get_meta_path("log");
 my $INDEX_OPERATIONS_FILE = get_operation_path("index");
 
-sub check_branch_exist{
+sub is_branch_exist{
+  # checking whether a branch is exist
   my %branches = get_all_branches();
   return exists $branches{$_[0]};
 }
+
 
 sub is_ancestor_of_some_branch {
   my ($branch) = @_;
@@ -83,7 +85,7 @@ sub is_ancestor_of_some_branch {
 
 sub delete_branch{
   my ($branch) = @_;
-  if(! check_branch_exist($branch)){
+  if(! is_branch_exist($branch)){
     # error of couldn't delte
     dd_err("legit.pl: error: branch '$branch' does not exist");
   }
@@ -103,7 +105,7 @@ sub delete_branch{
 sub create_branch {
   my ($branch) = @_;
   # get current branches
-  if (check_branch_exist($branch)){
+  if (is_branch_exist($branch)){
     # branch should be not exits
     dd_err("legit.pl: error: branch '$branch' already exists");
   }
@@ -123,13 +125,19 @@ sub remove_changes_in_index {
   delete_hash_from_file($INDEX_OPERATIONS_FILE, @_);
 }
 
-sub checkout_to_branch {
+sub pre_checkout_routine {
   my ($branch) = @_;
-  if (! check_branch_exist($branch)){
+  if (! is_branch_exist($branch)){
     # unknown branch error
     dd_err("legit.pl: error: unknown branch '$branch'");
   }
-  # ELSE:
+  if ($branch eq get_key($CURR_BRANCH_KEY)) {
+    dd_err("Already on '$branch'");
+  }
+}
+
+sub checkout_to_branch {
+  my ($branch) = @_;
   # fetch all the branch records
   my %branches_record = get_hash_from_file($BRANCH_RECORD_FILE);
   # get the files track of both branch
@@ -139,7 +147,6 @@ sub checkout_to_branch {
   my %that_tracks = get_file_tracks(
     $branches_record{$branch}
   );
-
 
   # === persist changes check
   map {
@@ -590,7 +597,7 @@ sub show_remove_error{
     dd_err("legit.pl: error: '$file' in repository is different to working file");
   }
 
-  elsif ($status =~/[DA]R[RD]/) {
+  elsif ($status =~/.R[RD]/) {
     dd_err("legit.pl: error: '$file' is not in the legit repository");
   }
 }
@@ -730,12 +737,6 @@ sub merge_diff_by_file(\%\%) {
   return %merged_diff;
 }
 
-sub is_branch_exist{
-  # checking whether a branch is exist
-  my ($branch_name) = @_;
-  my %branch_hash = get_hash_from_file($BRANCH_RECORD_FILE);
-  return (defined $branch_hash{$branch_name});
-}
 
 sub get_their_commit_id {
   my ($their_commit) = @_;
@@ -752,6 +753,13 @@ sub do_merge {
   my $their_commit = get_their_commit_id(@_);
   my $our_commit = get_curr_commit();
   my @need_auto_merge;
+
+  if (is_ancestor_of($their_commit, $our_commit)) {
+    # merge our ancestor's error
+    print "Already up to date\n";
+    exit 0;
+  }
+
 
   if(is_ancestor_of($our_commit,$their_commit) ){
     # I can fast forward commit here

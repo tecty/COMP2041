@@ -87,7 +87,11 @@ sub remove {
       # check the integrety
 
       if ($options =~/c/) {
-        if ($status{$file} !~/.[AR]./ or $status{$file} =~/ARR/){
+        if (
+          $status{$file} !~/.[AR]./ or
+          $status{$file} =~/ARR/ or
+          $status{$file} =~ /.R[RD]/
+        ){
           # prevent this from deleting
           remove_value_from_array(@args, $file);
           # and show the error message
@@ -103,7 +107,7 @@ sub remove {
     }
     else {
       # show error if it's not exist in repo
-      if ($status{$file} =~ /ARR/ or $status{$file} =~ /D../){
+      if ($status{$file} =~ /.R[RD]/){
         show_remove_error($file, $status{$file});
         remove_value_from_array(@args, $file);
       }
@@ -194,7 +198,9 @@ sub checkout {
     # parse command line error
     return 0;
   }
+
   # ELSE:
+  pre_checkout_routine(@_);
   my @removed_work_file = checkout_to_branch(@_);
   # print the successful message
   print ("Switched to branch '$_[0]'\n");
@@ -234,8 +240,14 @@ sub pop_message(\@) {
       }
     }
     else{
-      # found the branch;
-      $branch  =  $$arg_ref[$index];
+      if (! defined $branch){
+        # found the branch;
+        $branch  =  $$arg_ref[$index];
+      }
+      else{
+        # parse error
+        return 0;
+      }
     }
   }
 
@@ -257,7 +269,7 @@ sub merge {
   if (! defined $msg or $msg eq ""){
     dd_err("legit.pl: error: empty commit message");
   }
-  if (! is_branch_exist($branch)){
+  if (! (is_int($branch) or is_branch_exist($branch))){
     dd_err("legit.pl: error: unknown branch '$branch'");
   }
 

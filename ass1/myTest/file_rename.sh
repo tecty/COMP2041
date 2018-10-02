@@ -4,16 +4,16 @@
 ./legit.pl init
 seq 1 7 >a
 ./legit.pl add a
-git add a
-git commit -m "commit 0"
+./legit.pl add a
+./legit.pl commit -m "commit 0"
 mv a b
-git status
-git add b
-git commit -m "change name of b"
-git status
+./legit.pl status
+./legit.pl add b
+./legit.pl commit -m "change name of b"
+./legit.pl status
 touch a
-git add a
-git commit -m "another a"
+./legit.pl add a
+./legit.pl commit -m "another a"
 mv b a
-git status
-git commit -ma "b or a conflict"
+./legit.pl status
+./legit.pl commit -ma "b or a conflict"
