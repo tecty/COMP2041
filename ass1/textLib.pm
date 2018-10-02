@@ -188,9 +188,6 @@ sub patch(\@\%) {
     # print ">$_\n" for @src;
   }
 
-
-
-
   # shift it back the empty line
   shift @src;
   return @src;

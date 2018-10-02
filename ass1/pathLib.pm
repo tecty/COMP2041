@@ -5,7 +5,8 @@ use strict;
 our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(
-get_index_path get_operation_path get_commit_path
+get_index_path pop_index_path
+get_operation_path get_commit_path
 );
 
 # the order couldn't change,
@@ -19,8 +20,16 @@ my $INDEX_PATH = get_commit_path("index");
 sub get_index_path {
   my ($file) = @_;
   $file = (defined $file) ? $file : "";
-  return "$INDEX_PATH/$file";
+  return $INDEX_PATH.$file;
 }
+
+sub pop_index_path {
+  # reverse operation of the get_index_path
+  my ($file) =@_;
+  $file =~ s?.legit/commit/index/??g;
+  return $file;
+}
+
 
 sub get_operation_path{
   my ($commit) = @_;

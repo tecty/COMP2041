@@ -8,7 +8,17 @@ our @EXPORT = qw(to_hash uniq remove_value_from_array
 hashParse hashSerializer
 dd_var dd_err dd_arr dd_hash
 pop_options is_int
+pop_newline
 );
+sub pop_newline(\@){
+  my ($arr_ref) = @_;
+  map { $_ =~ s?\n??g;  } @$arr_ref;
+}
+sub push_newline(\@){
+  my ($arr_ref) = @_;
+  # if the array doesn't have a new line in this line, add one 
+  map { $_ = $_."\n" if $_ !~  "\n";  } @$arr_ref;
+}
 
 sub pop_options(\@) {
   # pop all the option in the array

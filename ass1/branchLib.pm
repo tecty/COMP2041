@@ -285,6 +285,10 @@ sub add_commit {
   # #pre: there's things to commit
   my ($message) = @_;
 
+  # get the tracks of current commit to calculate diff
+  my %file_tracks = get_file_tracks(get_curr_commit());
+  # dd_arr("A's track", @{$file_tracks{"b"}});
+
   # this commit's id
   # increment it and store
   my $commit_id = int(get_key($MAX_COMMIT_KEY));
@@ -298,14 +302,41 @@ sub add_commit {
   # point this branch's head to this commit
   my %branch_id = (get_key($CURR_BRANCH_KEY) =>  $commit_id);
   add_hash_to_file($BRANCH_RECORD_FILE, %branch_id);
+  #
+  my %index_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
+  my @indexed_files  =  keys %index_ops;
+  # dd_arr("index_arr",@indexed_files);
 
-  my @indexed_files = glob(get_index_path("*"));
-  push @indexed_files, glob(get_index_path(".*"));
+
   # move all the thing from index to commit dir
   make_path(get_commit_path($commit_id));
   map {
-    move($_,get_commit_path($commit_id))
+    my $file_name = pop_index_path($_);
+    # dd_var("file_name", $file_name) if $file_name eq "b";
+
+    if (! defined $file_tracks{$file_name}){
+      # becuse this file haven't been tracked
+      # this is the base of the file
+      move($_,get_commit_path($commit_id));
+    }
+    else{
+
+      # dd_var("defined") if $file_name eq "b";
+      # this file has tracked, we need to get it's content and write it's diff
+      # dd_var("_",$_) if $file_name eq "b";
+      my @dest = get_content($_);
+      my @base = get_file_content_by_tracks($file_name, $file_tracks{$file_name});
+      pop_newline(@base);
+      pop_newline(@dest);
+      my %diff = diff(@base, @dest);
+      # dd_hash("diff",%diff);
+      # write the diff to file
+      my @content = hashSerializer(%diff);
+      set_content(get_commit_path($commit_id,$file_name), @content);
+    }
   } @indexed_files;
+
+  # dd_var("fail save");
 
   # rename the operation's file and create a new one
   move($INDEX_OPERATIONS_FILE, get_operation_path($commit_id));
@@ -339,9 +370,22 @@ sub get_file_content_by_tracks($\@) {
   if (defined $track_ref and $#$track_ref != -1) {
     # the file has track  -- protection
     # get the content by the latest commit's path
-    return get_content(
-      get_commit_path($$track_ref[$#$track_ref] , $file
-    ));
+    my @base = get_content(get_commit_path($$track_ref[0] , $file));
+
+    # for the rest of the file, we assume them is store in diff
+    for (my $index = 1; $index <= $#$track_ref; $index++) {
+      # diff is store by a hash
+      my %diff = get_hash_from_file(
+        get_commit_path($$track_ref[$index] , $file));
+
+      # add up this diff
+      @base = patch(@base, %diff);
+    }
+
+    return @base;
+    # return get_content(
+    #   get_commit_path($$track_ref[$#$track_ref] , $file
+    # ));
   }
   # there's no track
   return "";
@@ -730,7 +774,7 @@ sub do_merge {
   #     dd_err(
   #     "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
   #   }
-  # }
+  }
 }
 
 

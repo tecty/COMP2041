@@ -27,14 +27,15 @@ use typeLib;
 # }
 
 
-sub get_diff {
-  # my %merged_diff;
-  # return null
-  return ;
-}
 
-my %hash = get_diff();
-
-if (! keys %hash) {
-  dd_err("hash is empty ")
-}
+# sub get_diff {
+#   # my %merged_diff;
+#   # return null
+#   return ;
+# }
+#
+# my %hash = get_diff();
+#
+# if (! keys %hash) {
+#   dd_err("hash is empty ")
+# }

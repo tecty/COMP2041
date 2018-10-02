@@ -18,7 +18,7 @@ get_hash_from_file add_hash_to_file delete_hash_from_file
 sub get_content {
   # a helper function only read the whole file
   my ($file) = @_;
-  open my $f, "<",$file or dd_var("File Path", $file);
+  open my $f, "<",$file or dd_var("File Path on get_conent", $file);
   my @content = <$f>;
   close $f;
   return @content;
@@ -27,7 +27,7 @@ sub get_content {
 sub set_content($\@) {
   # helper function to write the whole file
   my ($file, $content_ref) = @_;
-  open my $f, ">", $file or dd_var("File Path", $file);
+  open my $f, ">", $file or dd_var("File Path on set_content", $file);
   print $f @$content_ref;
   close $f;
 }
