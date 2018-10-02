@@ -27,7 +27,7 @@ remove_files file_status show_remove_error get_curr_status
 checkout_to_branch
 create_branch delete_branch
 get_all_branches
-do_merge
+do_merge merge_commit
 );
 
 #
@@ -579,8 +579,11 @@ sub fetch_files_hash_by_commit {
   my %files;
   my %file_tracks = get_file_tracks($commit);
   foreach my $file_name (keys %file_tracks) {
-    $files{$file_name} = get_file_content_by_tracks(
+    my @content= get_file_content_by_tracks(
       $file_name, @{$file_tracks{$file_name}});
+    # we dont want new line when diff
+    pop_newline(@content);
+    $files{$file_name}  = [@content];
   }
   # return the files;
   return %files;
@@ -624,9 +627,14 @@ sub get_diff_by_file_set(\%\%) {
       $$dest_ref{$file_name} = [];
     }
     # generate the diff and dump it to diff's hash
-    my @src = $$src_ref{$file_name};
-    my @dest = $$dest_ref{$file_name};
-    $diff_result{$file_name} = diff(@src, @dest);
+    my @src = @{$$src_ref{$file_name}};
+    my @dest = @{$$dest_ref{$file_name}};
+    # 2-D hash or 2-D array is painful in perl
+    # because perl doesn't have type system ? or strong type?
+    # I miss php
+    # much better scripting lang
+    my %diff_out = diff(@src, @dest);
+    $diff_result{$file_name} = {%diff_out} ;
   }
 
   return %diff_result;
@@ -680,18 +688,27 @@ sub merge_diff_by_file(\%\%) {
       }
     }
   }
+
   return %merged_diff;
 }
 
-sub do_merge {
+sub get_their_commit_id {
   my ($their_commit) = @_;
   my %branch_hash = get_hash_from_file($BRANCH_RECORD_FILE);
-  my %commit_hash = get_commit_hash();
   if (! is_int($their_commit)){
     # convert their banch as commit id
     $their_commit = $branch_hash{$their_commit};
   }
+  return int($their_commit);
+}
+
+
+sub do_merge {
+  # fetch their commit id
+  my $their_commit = get_their_commit_id(@_);
   my $our_commit = get_curr_commit();
+  my %commit_hash = get_commit_hash();
+  my @need_auto_merge;
 
   if(is_ancestor_of($their_commit,$our_commit, %commit_hash) ){
     # I can fast forward commit here
@@ -701,6 +718,8 @@ sub do_merge {
     add_hash_to_file(
       $COMMIT_RECORD_FILE,%new_record
     );
+    # abort commit, there's nothing to commit
+    exit;
   }
   else {
     # merge ther commit to our commit
@@ -713,76 +732,151 @@ sub do_merge {
     my %their_ops = fetch_ops_by_commit($their_commit, $best_ancestor);
     my %merged_ops = %their_ops;
 
+
     my @unable_merge;
     # check whether there is a conflict in the operation first
-  #   foreach my $key  (sort keys %our_ops) {
-  #     if (defined $their_ops{$key}) {
-  #       # then checking whether a branch has deleted the file for now
-  #       if ($their_ops{$key} ne $our_ops{$key}) {
-  #         # we currently record add and delete
-  #         # then if it's different then the operation couldn't merge
-  #         push @unable_merge, $key;
-  #       }
-  #       else{
-  #         # merge this oepration
-  #         $merged_ops{$key} = $our_ops{$key};
-  #        }
-  #     }
-  #   }
-  #
-  #   # do the three way merge
-  #   my %ancestor_files= fetch_files_hash_by_commit($best_ancestor);
-  #   my %our_files= fetch_files_hash_by_commit($our_commit);
-  #   my %their_files= fetch_files_hash_by_commit($their_commit);
-  #
-  #   map {
-  #     # remove all the files that's unable merged from tracks first
-  #     delete $ancestor_files{$_};
-  #     delete $our_files{$_};
-  #     delete $their_files{$_};
-  #   } @unable_merge;
-  #
-  #   # get the file set diff
-  #   my %our_diff = get_diff_by_file_set(%ancestor_files, %our_files);
-  #   my %their_diff = get_diff_by_file_set(%ancestor_files, %their_files);
-  #
-  #   # generate merged diff, which can apply to ancestor
-  #   my %merged_diff;
-  #
-  #   # fetch all the file name
-  #   my @check_files = keys %our_diff;
-  #   push @check_files, keys %their_diff;
-  #   uniq(@check_files);
-  #
-  #   foreach my $file (@check_files) {
-  #     if (!defined $our_diff{$file}) {
-  #       # then the merged result is their diff's result
-  #       $merged_diff{$file} = $their_diff{$file};
-  #       next;
-  #     }
-  #     if (!defined $their_diff{$file}) {
-  #       # then the merged result is their diff's result
-  #       $merged_diff{$file} = $our_diff{$file};
-  #       next;
-  #     }
-  #     # merged diff to be the result
-  #     $merged_ops{$file} =
-  #       merge_diff_by_file(%{$our_diff{$file}} , %{$their_diff{$file}});
-  #     if (! defined $merged_ops{$file}) {
-  #       # unable to merge two diff
-  #       push @unable_merge, $file;
-  #     }
-  #   }
-  #
-  #   # dump the merge error
-  #   if (@unable_merge) {
-  #     # prevent duplicate unable merge file
-  #     uniq(@unable_merge);
-  #     dd_err(
-  #     "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
-  #   }
+    foreach my $key  (sort keys %our_ops) {
+      if (defined $their_ops{$key}) {
+        # then checking whether a branch has deleted the file for now
+        if ($their_ops{$key} ne $our_ops{$key}) {
+          # we currently record add and delete
+          # then if it's different then the operation couldn't merge
+          push @unable_merge, $key;
+        }
+        else{
+          # this file need auto mergeing
+          push @need_auto_merge, $key;
+        }
+      }
+      else{
+        # not defined
+        # merge this oepration
+        $merged_ops{$key} = $our_ops{$key};
+      }
+    }
+
+    # do the three way merge
+    my %ancestor_files= fetch_files_hash_by_commit($best_ancestor);
+    my %our_files= fetch_files_hash_by_commit($our_commit);
+    my %their_files= fetch_files_hash_by_commit($their_commit);
+
+    map {
+      # remove all the files that's unable merged from tracks first
+      delete $ancestor_files{$_};
+      delete $our_files{$_};
+      delete $their_files{$_};
+    } @unable_merge;
+
+    # get the file set diff
+    my %our_diff = get_diff_by_file_set(%ancestor_files, %our_files);
+    my %their_diff = get_diff_by_file_set(%ancestor_files, %their_files);
+
+    # dd_arr("ancestor's 7", @{$their_files{"7.txt"}});
+    # generate merged diff, which can apply to ancestor
+    my %merged_diff;
+
+    # fetch all the file name
+    my @check_files = keys %our_diff;
+    push @check_files, keys %their_diff;
+    uniq(@check_files);
+
+    foreach my $file (@check_files) {
+      if (!defined $our_diff{$file}) {
+        # then the merged result is their diff's result
+        $merged_diff{$file} = $their_diff{$file};
+        next;
+      }
+      if (!defined $their_diff{$file}) {
+        # then the merged result is their diff's result
+        $merged_diff{$file} = $our_diff{$file};
+        next;
+      }
+      # merged diff to be the result
+      $merged_diff{$file} =
+        {merge_diff_by_file(%{$our_diff{$file}} , %{$their_diff{$file}})};
+      if (! defined $merged_diff{$file}) {
+        # unable to merge two diff
+        push @unable_merge, $file;
+      }
+    }
+    # debug window
+    # dd_hash("merged diff", %{$merged_diff{"7.txt"}});
+    # dd_hash("merged ops", %merged_ops);
+
+    # dump the merge error
+    if (@unable_merge) {
+      # prevent duplicate unable merge file
+      uniq(@unable_merge);
+      dd_err(
+      "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
+    }
+
+    # === Perform merge actually
+    # there's not way back, have to perform merge now
+    # now we should checked all our errors situations
+
+    # TODO: now is assumed the index is empty
+
+    # sematic: apply merged diff to ancestors
+    foreach my $file (@check_files) {
+      # I hate this syntax, even i know why
+      my @dest = patch(@{$ancestor_files{$file}}, %{$merged_diff{$file}});
+      push_newline(@dest);
+      # write the merged output to the index folder
+      set_content(get_index_path($file), @dest);
+
+      # perform as checkout to this created commit
+      set_content($file, @dest);
+    }
+
+    # set up the merged operations, i don't think it's matter
+    set_hash_to_file($INDEX_OPERATIONS_FILE, %merged_ops);
   }
+
+  return @need_auto_merge;
 }
 
+sub merge_commit{
+  # fetch this commit's arguments
+  my $message = $_[1];
+  my $their_commit = get_their_commit_id($_[0]);
+  my $our_commit = get_curr_commit();
+  # full copy because we assume the
+
+  # === Using My NoSQL Access APIs
+  # this commit's id
+  # increment it and store
+  my $commit_id = int(get_key($MAX_COMMIT_KEY));
+  set_key($MAX_COMMIT_KEY, $commit_id +1);
+
+  # point commit_id to two branches head (HEAD)
+  my %commit_link = ( $commit_id => "$our_commit,$their_commit");
+  add_hash_to_file($COMMIT_RECORD_FILE, %commit_link);
+
+  # point this branch's head to this commit
+  my %branch_id = (get_key($CURR_BRANCH_KEY) =>  $commit_id);
+  add_hash_to_file($BRANCH_RECORD_FILE, %branch_id);
+
+  my %index_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
+  my @indexed_files  = grep { $_ if $index_ops{$_} eq "A"} keys %index_ops;
+  # dd_arr("index_arr",@indexed_files);
+
+  # move all the thing from index to commit dir
+  make_path(get_commit_path($commit_id));
+  map {
+    # copy all the record
+    move(get_index_path($_),get_commit_path($commit_id));
+  } @indexed_files;
+
+  # dd_var("fail save");
+
+  # rename the operation's file and create a new one
+  move($INDEX_OPERATIONS_FILE, get_operation_path($commit_id));
+  touch($INDEX_OPERATIONS_FILE);
+
+  # record the commit message
+  my %message_hash = ($commit_id => $message);
+  add_hash_to_file($LOG_RECORD_FILE, %message_hash);
+}
 
 1;

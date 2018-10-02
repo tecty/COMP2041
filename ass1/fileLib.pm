@@ -12,7 +12,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(get_content set_content touch get_key set_key
 get_meta_path
-get_hash_from_file add_hash_to_file delete_hash_from_file
+get_hash_from_file add_hash_to_file delete_hash_from_file set_hash_to_file
 );
 
 sub get_content {
@@ -60,11 +60,20 @@ sub get_meta_path {
   return ".legit/meta";
 }
 
+# CRUD of a Hash File
+
 sub get_hash_from_file{
   my ($file)=  @_;
   my @content = get_content($file);
   # parse the read conetnt
   return hashParse(@content);
+}
+
+sub set_hash_to_file($\%) {
+  my ($file, $hash_ref) = @_;
+  # write back the content to the file;
+  my @content = hashSerializer(%{$hash_ref});
+  set_content($file, @content);
 }
 
 sub add_hash_to_file($\%) {
@@ -75,8 +84,7 @@ sub add_hash_to_file($\%) {
     $hash{$_} = $$hash_ref{$_};
   }
   # write back the content to the file;
-  my @content = hashSerializer(%hash);
-  set_content($file, @content);
+  set_hash_to_file($file, %hash);
 }
 
 sub delete_hash_from_file {

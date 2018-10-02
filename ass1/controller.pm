@@ -258,10 +258,13 @@ sub merge {
     dd_err("legit.pl: error: empty commit message");
   }
   # do the merge
-  do_merge($branch);
-  # commit this commit if there exist a message;
-  commit_files($msg);
+  my @auto_merge = do_merge($branch);
+  print ("Auto-merging $_\n") for @auto_merge;
 
+  # commit this commit if there exist a message;
+  merge_commit($branch, $msg);
+
+  print "Committed as commit ",get_curr_commit(),"\n";
   # merge successfully
   return 1;
 }
