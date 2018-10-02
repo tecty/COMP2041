@@ -3,6 +3,6 @@
 # clean the environment
 rm -rf .legit;
 # a common variable to return
-rm -rf a b c d e f g h;
+rm -rf a b c d e f g h 7.txt;
 
 rm -rf test*.sh;

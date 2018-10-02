@@ -24,6 +24,7 @@ commit_files get_max_commit
 get_log get_file_content_by_commit
 remove_files file_status show_remove_error get_curr_status
 
+is_branch_exist
 checkout_to_branch
 is_ancestor_of_some_branch
 create_branch delete_branch
@@ -456,9 +457,10 @@ sub get_log {
   my %log_hash = get_hash_from_file($LOG_RECORD_FILE);
   # for storing the parsed log
   my @log_arr;
+  my @commit_link = get_full_commit_link();
   foreach my $key (
     # numeric sort of the hash keys
-    reverse sort {$a <=> $b} keys %log_hash
+    reverse @commit_link
   ) {
     push @log_arr, "$key $log_hash{$key}\n";
   }
@@ -679,7 +681,7 @@ sub merge_diff_by_file(\%\%) {
   # try to merge this diff
   my @actions = keys %$src_ref;
   push @actions , keys %$dest_ref;
-
+  # return ();
 
   foreach my $key (@actions) {
     $key =~ /([0-9]*)([ADC])([0-9]*)/;
@@ -688,10 +690,11 @@ sub merge_diff_by_file(\%\%) {
     if (defined $$dest_ref{$key} and defined $$src_ref{$key}  ) {
       # this operation has defined in both branch
       # if the argument is not same, then this file couldnt' merge
-      if ($$dest_ref{$key} ne $$dest_ref{$key}) {
+      if ($$src_ref{$key} ne $$dest_ref{$key}) {
         # couldn merge if they both try to modify same line
         return ;
       }
+      # dd_err("i was here $$dest_ref{$key}");
       # this operation can be merge
       $merged_diff{$key} = $$dest_ref{$key};
     }
@@ -725,6 +728,13 @@ sub merge_diff_by_file(\%\%) {
   return %merged_diff;
 }
 
+sub is_branch_exist{
+  # checking whether a branch is exist
+  my ($branch_name) = @_;
+  my %branch_hash = get_hash_from_file($BRANCH_RECORD_FILE);
+  return (defined $branch_hash{$branch_name});
+}
+
 sub get_their_commit_id {
   my ($their_commit) = @_;
   my %branch_hash = get_hash_from_file($BRANCH_RECORD_FILE);
@@ -734,7 +744,6 @@ sub get_their_commit_id {
   }
   return int($their_commit);
 }
-
 
 sub do_merge {
   # fetch their commit id
@@ -827,7 +836,8 @@ sub do_merge {
       # merged diff to be the result
       $merged_diff{$file} =
         {merge_diff_by_file(%{$our_diff{$file}} , %{$their_diff{$file}})};
-      if (! defined $merged_diff{$file}) {
+      # dd_hash( "merged ops ",%{$merged_diff{$file}});
+      if (! keys %{$merged_diff{$file}}) {
         # unable to merge two diff
         push @unable_merge, $file;
       }
@@ -839,7 +849,7 @@ sub do_merge {
     # dump the merge error
     if (@unable_merge) {
       # prevent duplicate unable merge file
-      uniq(@unable_merge);
+      @unable_merge = uniq(@unable_merge);
       dd_err(
       "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
     }

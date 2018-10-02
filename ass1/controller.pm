@@ -257,6 +257,10 @@ sub merge {
   if (! defined $msg or $msg eq ""){
     dd_err("legit.pl: error: empty commit message");
   }
+  if (! is_branch_exist($branch)){
+    dd_err("legit.pl: error: unknown branch '$branch'");
+  }
+
   # do the merge
   my @auto_merge = do_merge($branch);
   if (@auto_merge) {

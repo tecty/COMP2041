@@ -16,9 +16,12 @@ use textLib;
 use typeLib;
 # this script for testing
 
-if (is_ancestor_of_some_branch("branch1")){
-  dd_err("true");
-}
-else {
-  dd_err("false");
-}
+my @link = get_full_commit_link(3);
+dd_arr("link",@link);
+
+# if (is_ancestor_of_some_branch("branch1")){
+#   dd_err("true");
+# }
+# else {
+#   dd_err("false");
+# }

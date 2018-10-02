@@ -17,6 +17,7 @@ our @ISA= qw( Exporter );
 # these are exported by default.
 our @EXPORT = qw(
 get_curr_commit get_max_commit get_commit_link get_file_tracks
+get_full_commit_link
 get_commit_hash is_ancestor_of
 get_ancestor do_get_ranged_commit_link
 );
@@ -63,6 +64,47 @@ sub get_commit_hash {
   # dd_hash("commit hash ", %commit_hash);
   return %commit_hash;
 }
+
+sub get_full_commit_link {
+  my ($commit) = @_;
+  if (!(defined $commit and $commit ne "")) {
+    # fetch the default value from fs
+    $commit = get_curr_commit();
+  }
+  # change type of the commit value
+  $commit = int($commit);
+  my %visited;
+  my @unvisited = ($commit);
+  # get the commit tree
+  my %commit_hash = get_commit_hash();
+
+  # travel throught hash table
+  while (@unvisited) {
+    my $this_node = shift @unvisited;
+    # break the loop
+    if (defined $visited{$this_node}) {
+      # skip serach this node
+      next;
+    }
+    if ($this_node == -1) {
+      # couldn't vistie this node
+      last;
+    }
+
+    # add this node to visited
+    $visited{$this_node} = 1;
+
+    # fetch this node's parent
+    my @this_par = @{$commit_hash{$this_node}} ;
+    # dd_arr("this parent", @this_par);
+    # push it's parent to @unvisited
+    push @unvisited, @this_par;
+  }
+  # return all it's parent
+  return sort {$a <=> $b} keys %visited;
+}
+
+
 
 sub get_commit_link {
   my ($commit, $to_commit) = @_;
