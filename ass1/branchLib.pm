@@ -304,7 +304,7 @@ sub add_commit {
   add_hash_to_file($BRANCH_RECORD_FILE, %branch_id);
   #
   my %index_ops = get_hash_from_file($INDEX_OPERATIONS_FILE);
-  my @indexed_files  =  keys %index_ops;
+  my @indexed_files  = grep { $_ if $index_ops{$_} eq "A"} keys %index_ops;
   # dd_arr("index_arr",@indexed_files);
 
 
