@@ -141,16 +141,18 @@ sub checkout_to_branch {
   );
 
 
-
-  # === presist changes check
+  # === persist changes check
   map {
-    # $_ will be the file name that this branch is currently tracking
-    my @fs_content = get_content($_);
-    my @this_content = get_file_content_by_tracks($_, $this_tracks{$_});
-    if (is_diff(@fs_content, @this_content)) {
-      # presist the changes
-      delete $this_tracks{$_};
-      delete $that_tracks{$_};
+    if (-e $_){
+      # TODO: Whether a delete is a changes need to persist
+      # $_ will be the file name that this branch is currently tracking
+      my @fs_content = get_content($_);
+      my @this_content = get_file_content_by_tracks($_, $this_tracks{$_});
+      if (is_diff(@fs_content, @this_content)) {
+        # persist the changes
+        delete $this_tracks{$_};
+        delete $that_tracks{$_};
+      }
     }
   } keys %this_tracks;
 
@@ -759,6 +761,8 @@ sub do_merge {
     add_hash_to_file(
       $BRANCH_RECORD_FILE,%new_record
     );
+    # perform a fake checkout
+    checkout_to_branch(get_key($CURR_BRANCH_KEY));
     # abort commit, there's nothing to commit
     # return an empty array
     return ();
