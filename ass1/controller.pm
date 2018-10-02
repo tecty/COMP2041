@@ -274,9 +274,8 @@ sub merge {
   }
 
   # do the merge
-  my @auto_merge = do_merge($branch);
-  if (@auto_merge) {
-    print ("Auto-merging $_\n") for @auto_merge;
+  if (do_merge($branch)) {
+
     # commit this commit if there exist a message;
     merge_commit($branch, $msg);
 

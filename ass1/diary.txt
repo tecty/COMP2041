@@ -20,4 +20,4 @@
 2018-10-1|23:15|02:42|Coding|Merge functionality.
 2018-10-2|03:27|04:04|Coding|3-way auto merge functionality.
 2018-10-3|00:22|03:01|Coding|Challenge is easier than subset 2, when we have diff and patch, I finished challenge in this version
-2018-10-3|03:52|03:01|Coding|Subset 2 continue.
+2018-10-3|03:52|07:46|Coding|Subset 2 Finished.

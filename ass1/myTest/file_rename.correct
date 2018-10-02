@@ -8,4 +8,3 @@ b - same as repo
 Committed as commit 2
 a - file changed, changes not staged for commit
 b - file deleted
-usage: legit.pl commit [-a] -m commit-message

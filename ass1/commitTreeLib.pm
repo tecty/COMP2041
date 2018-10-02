@@ -163,7 +163,7 @@ sub get_commit_link {
     }
   }
   # return all it's parent
-  return @visited;
+  return sort {$a <=> $b} @visited;
 }
 
 sub get_file_tracks {
@@ -181,7 +181,6 @@ sub get_file_tracks {
     # prevent the commit > max_commit
     dd_err("legit.pl: error: unknown commit '$commit'")
   }
-
 
   my @commit_link = get_commit_link($commit);
   # get the file name of operations

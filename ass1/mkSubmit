@@ -20,7 +20,7 @@ map {
 
   # replace all the ./legit.pl as legit
   map {
-    $_ =~ s?./legit.pl?legit?g;
+    $_ =~ s?./legit.pl?legit.pl?g;
   } @test_content;
 
   # write back the test content

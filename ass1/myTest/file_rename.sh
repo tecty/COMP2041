@@ -16,4 +16,3 @@ touch a
 ./legit.pl commit -m "another a"
 mv b a
 ./legit.pl status
-./legit.pl commit -ma "b or a conflict"

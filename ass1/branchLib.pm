@@ -637,6 +637,9 @@ sub fetch_ops_by_commit{
   my ($from, $to) = @_;
   # fetch the commit link
   my @commit_link = get_commit_link($from, $to);
+  # remove the operation in ancestor, because ancestor's operation is
+  # the operation between ancestor's parent and ancestors
+  shift @commit_link;
 
   # the final opearation array ;
   my %ops;
@@ -657,22 +660,28 @@ sub get_diff_by_file_set(\%\%) {
   # push to array's file
   my @files = keys %$src_ref;
   push @files, keys %$dest_ref;
+
+  # remove the direct reference to prevent a bug
+  my %src = %$src_ref;
+  my %dest = %$dest_ref;
+
+
   # the file_name should be unique
-  uniq(@files);
+  @files = uniq(@files);
 
   foreach my $file_name (@files) {
     # fetch the content and diff
     if (! defined $$src_ref{$file_name}) {
       # assign an empty array
-      $$src_ref{$file_name} = [];
+      $src{$file_name} = [];
     }
     if (! defined $$dest_ref{$file_name}) {
       # assign an empty array
-      $$dest_ref{$file_name} = [];
+      $dest{$file_name} = [];
     }
     # generate the diff and dump it to diff's hash
-    my @src = @{$$src_ref{$file_name}};
-    my @dest = @{$$dest_ref{$file_name}};
+    my @src = @{$src{$file_name}};
+    my @dest = @{$dest{$file_name}};
     # 2-D hash or 2-D array is painful in perl
     # because perl doesn't have type system ? or strong type?
     # I miss php
@@ -737,7 +746,6 @@ sub merge_diff_by_file(\%\%) {
   return %merged_diff;
 }
 
-
 sub get_their_commit_id {
   my ($their_commit) = @_;
   my %branch_hash = get_hash_from_file($BRANCH_RECORD_FILE);
@@ -772,8 +780,8 @@ sub do_merge {
     # perform a fake checkout
     checkout_to_branch(get_key($CURR_BRANCH_KEY));
     # abort commit, there's nothing to commit
-    # return an empty array
-    return ();
+    # not need commit 
+    return 0;
   }
   else {
     # merge ther commit to our commit
@@ -784,6 +792,9 @@ sub do_merge {
     # fetch all operations of both branches
     my %our_ops = fetch_ops_by_commit($our_commit, $best_ancestor);
     my %their_ops = fetch_ops_by_commit($their_commit, $best_ancestor);
+
+
+
     my %merged_ops = %their_ops;
 
 
@@ -798,6 +809,7 @@ sub do_merge {
           push @unable_merge, $key;
         }
         else{
+          dd_var("$their_ops{$key} ne $our_ops{$key}");
           # this file need auto mergeing
           push @need_auto_merge, $key;
         }
@@ -814,6 +826,7 @@ sub do_merge {
     my %our_files= fetch_files_hash_by_commit($our_commit);
     my %their_files= fetch_files_hash_by_commit($their_commit);
 
+
     map {
       # remove all the files that's unable merged from tracks first
       delete $ancestor_files{$_};
@@ -824,6 +837,8 @@ sub do_merge {
     # get the file set diff
     my %our_diff = get_diff_by_file_set(%ancestor_files, %our_files);
     my %their_diff = get_diff_by_file_set(%ancestor_files, %their_files);
+    # dd_hash("our_diff", %ancestor_files);
+
 
     # dd_arr("ancestor's 7", @{$their_files{"7.txt"}});
     # generate merged diff, which can apply to ancestor
@@ -832,9 +847,10 @@ sub do_merge {
     # fetch all the file name
     my @check_files = keys %our_diff;
     push @check_files, keys %their_diff;
-    uniq(@check_files);
+    @check_files = uniq(@check_files);
+    # dd_arr("Check merging files",@check_files);
 
-    foreach my $file (@check_files) {
+    foreach my $file (sort @check_files) {
       if (!defined $our_diff{$file}) {
         # then the merged result is their diff's result
         $merged_diff{$file} = $their_diff{$file};
@@ -845,11 +861,15 @@ sub do_merge {
         $merged_diff{$file} = $our_diff{$file};
         next;
       }
+
       # merged diff to be the result
       $merged_diff{$file} =
         {merge_diff_by_file(%{$our_diff{$file}} , %{$their_diff{$file}})};
       # dd_hash( "merged ops ",%{$merged_diff{$file}});
-      if (! keys %{$merged_diff{$file}}) {
+      if (! keys %{$merged_diff{$file}} and
+        # prevent both diff is empty
+        # Etc: empty file situation.
+        (keys %{$their_diff{$file}} or keys %{$our_diff{$file}})) {
         # unable to merge two diff
         push @unable_merge, $file;
       }
@@ -861,7 +881,8 @@ sub do_merge {
     # dump the merge error
     if (@unable_merge) {
       # prevent duplicate unable merge file
-      @unable_merge = uniq(@unable_merge);
+      @unable_merge =  uniq(@unable_merge);
+      @unable_merge = sort @unable_merge;
       dd_err(
       "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
     }
@@ -887,8 +908,9 @@ sub do_merge {
     # set up the merged operations, i don't think it's matter
     set_hash_to_file($INDEX_OPERATIONS_FILE, %merged_ops);
   }
-
-  return @need_auto_merge;
+  print ("Auto-merging $_\n") for @need_auto_merge;
+  # need commit
+  return 1;
 }
 
 sub merge_commit{

@@ -16,7 +16,7 @@ use textLib;
 use typeLib;
 # this script for testing
 
-my @link = get_full_commit_link(3);
+my @link = get_commit_link(3);
 dd_arr("link",@link);
 
 # if (is_ancestor_of_some_branch("branch1")){
