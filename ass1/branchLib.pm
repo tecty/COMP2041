@@ -544,7 +544,7 @@ sub fetch_ops_by_commit{
   my %ops;
   foreach my $this_commit (@commit_link) {
     my %tmp_ops = get_hash_from_file(get_operation_path($this_commit));
-    foreach $key (keys %tmp_ops) {
+    foreach my $key (keys %tmp_ops) {
       # add up this operations
       $ops{$key} = $tmp_ops{$key};
     }
@@ -553,13 +553,84 @@ sub fetch_ops_by_commit{
   return %ops;
 }
 
-sub fetch_file_diffs_by_commit{
-  my ($from, $to) = @_;
-  my %to_files= fetch_files_hash_by_commit($to);
-  my %from_files= fetch_files_hash_by_commit($from);
+sub get_diff_by_file_set(\%\%) {
+  my ($src_ref, $dest_ref) = @_;
+  my %diff_result;
+  # push to array's file
+  my @files = keys %$src_ref;
+  push @files, keys %$dest_ref;
+  # the file_name should be unique
+  uniq(@files);
 
+  foreach my $file_name (@files) {
+    # fetch the content and diff
+    if (! defined $$src_ref{$file_name}) {
+      # assign an empty array
+      $$src_ref{$file_name} = [];
+    }
+    if (! defined $$dest_ref{$file_name}) {
+      # assign an empty array
+      $$dest_ref{$file_name} = [];
+    }
+    # generate the diff and dump it to diff's hash
+    my @src = $$src_ref{$file_name};
+    my @dest = $$dest_ref{$file_name};
+    $diff_result{$file_name} = diff(@src, @dest);
+  }
+
+  return %diff_result;
 }
 
+sub merge_diff_by_file(\%\%) {
+  my ($src_ref, $dest_ref) = @_;
+  my %merged_diff;
+  # try to merge this diff
+  my @actions = keys %$src_ref;
+  push @actions , keys %$dest_ref;
+
+
+  foreach my $key (@actions) {
+    $key =~ /([0-9]*)([ADC])([0-9]*)/;
+    my $line = $1;
+    my $operation = $2;
+    if (defined $$dest_ref{$key} and defined $$src_ref{$key}  ) {
+      # this operation has defined in both branch
+      # if the argument is not same, then this file couldnt' merge
+      if ($$dest_ref{$key} ne $$dest_ref{$key}) {
+        # couldn merge if they both try to modify same line
+        return ;
+      }
+      # this operation can be merge
+      $merged_diff{$key} = $$dest_ref{$key};
+    }
+    else{
+      # reverse the operation to check the other hash
+      if ($operation eq "D"){
+        $operation = "C";
+      }
+      elsif ($operation eq "C"){
+        $operation = "D";
+      }
+      if (defined $$dest_ref{$key}) {
+        if (defined $$src_ref{$line.$operation} and $operation ne "A") {
+          # "A" operation doesn't need to check the reverse
+          # this file cannot merge
+          return ;
+        }
+        # this operation can be merge
+        $merged_diff{$key} = $$dest_ref{$key};
+      }else{
+        # this operation is from src
+        if (defined $$dest_ref{$line.$operation} and $operation ne "A") {
+          # "A" operation doesn't need to check the reverse
+          return ;
+        }
+        $merged_diff{$key} = $$src_ref{$key};
+      }
+    }
+  }
+  return %merged_diff;
+}
 
 sub do_merge {
   my ($their_commit) = @_;
@@ -588,35 +659,78 @@ sub do_merge {
 
     # fetch all operations of both branches
     my %our_ops = fetch_ops_by_commit($our_commit, $best_ancestor);
-    my %their_ops = fetch_ops_by_commit($ther_commit, $best_ancestor);
+    my %their_ops = fetch_ops_by_commit($their_commit, $best_ancestor);
+    my %merged_ops = %their_ops;
 
     my @unable_merge;
     # check whether there is a conflict in the operation first
-    foreach my $key  (sort keys %our_ops) {
-      if (defined $their_ops{$key}) {
-        # then checking whether a branch has deleted the file for now
-        if ($their_ops{$key} ne $our_ops{$key}) {
-          # we currently record add and delete
-          # then if it's different then the operation couldn't merge
-          push @unable_merge, $key;
-        }
-      }
-    }
-    # dump the merge error
-    if (@unable_merge) {
-      dd_err(
-      "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
-    }
-
-    # do the three way merge
-    my %ancestor_files= fetch_files_hash_by_commit($best_ancestor);
-    my %our_files= fetch_files_hash_by_commit($our_commit);
-    my %theirs_files= fetch_files_hash_by_commit($their_commit);
-
-    #
-
-
-  }
+  #   foreach my $key  (sort keys %our_ops) {
+  #     if (defined $their_ops{$key}) {
+  #       # then checking whether a branch has deleted the file for now
+  #       if ($their_ops{$key} ne $our_ops{$key}) {
+  #         # we currently record add and delete
+  #         # then if it's different then the operation couldn't merge
+  #         push @unable_merge, $key;
+  #       }
+  #       else{
+  #         # merge this oepration
+  #         $merged_ops{$key} = $our_ops{$key};
+  #        }
+  #     }
+  #   }
+  #
+  #   # do the three way merge
+  #   my %ancestor_files= fetch_files_hash_by_commit($best_ancestor);
+  #   my %our_files= fetch_files_hash_by_commit($our_commit);
+  #   my %their_files= fetch_files_hash_by_commit($their_commit);
+  #
+  #   map {
+  #     # remove all the files that's unable merged from tracks first
+  #     delete $ancestor_files{$_};
+  #     delete $our_files{$_};
+  #     delete $their_files{$_};
+  #   } @unable_merge;
+  #
+  #   # get the file set diff
+  #   my %our_diff = get_diff_by_file_set(%ancestor_files, %our_files);
+  #   my %their_diff = get_diff_by_file_set(%ancestor_files, %their_files);
+  #
+  #   # generate merged diff, which can apply to ancestor
+  #   my %merged_diff;
+  #
+  #   # fetch all the file name
+  #   my @check_files = keys %our_diff;
+  #   push @check_files, keys %their_diff;
+  #   uniq(@check_files);
+  #
+  #   foreach my $file (@check_files) {
+  #     if (!defined $our_diff{$file}) {
+  #       # then the merged result is their diff's result
+  #       $merged_diff{$file} = $their_diff{$file};
+  #       next;
+  #     }
+  #     if (!defined $their_diff{$file}) {
+  #       # then the merged result is their diff's result
+  #       $merged_diff{$file} = $our_diff{$file};
+  #       next;
+  #     }
+  #     # merged diff to be the result
+  #     $merged_ops{$file} =
+  #       merge_diff_by_file(%{$our_diff{$file}} , %{$their_diff{$file}});
+  #     if (! defined $merged_ops{$file}) {
+  #       # unable to merge two diff
+  #       push @unable_merge, $file;
+  #     }
+  #   }
+  #
+  #   # dump the merge error
+  #   if (@unable_merge) {
+  #     # prevent duplicate unable merge file
+  #     uniq(@unable_merge);
+  #     dd_err(
+  #     "legit.pl: error: These files can not be merged:\n" .join("\n",@unable_merge));
+  #   }
+  # }
 }
 
 
