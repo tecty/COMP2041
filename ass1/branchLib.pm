@@ -94,7 +94,7 @@ sub delete_branch{
     # prevent it from deletion if it's not the ancestor of other branches
     dd_err("legit.pl: error: branch '$branch' has unmerged changes");
   }
-  
+
   # else, perform the deletion
   delete_hash_from_file($BRANCH_RECORD_FILE,@_);
 }
@@ -586,7 +586,6 @@ sub show_remove_error{
     dd_err("legit.pl: error: '$file' in repository is different to working file");
   }
 
-
   elsif ($status =~/[DA]R[RD]/) {
     dd_err("legit.pl: error: '$file' is not in the legit repository");
   }
@@ -743,16 +742,17 @@ sub do_merge {
   my $our_commit = get_curr_commit();
   my @need_auto_merge;
 
-  if(is_ancestor_of($their_commit,$our_commit) ){
+  if(is_ancestor_of($our_commit,$their_commit) ){
     # I can fast forward commit here
     # by just set out branch point to their's commit id
 
-    my %new_record = {get_key($CURR_BRANCH_KEY) => $their_commit};
+    my %new_record = (get_key($CURR_BRANCH_KEY) => $their_commit);
     add_hash_to_file(
-      $COMMIT_RECORD_FILE,%new_record
+      $BRANCH_RECORD_FILE,%new_record
     );
     # abort commit, there's nothing to commit
-    exit;
+    # return an empty array
+    return ();
   }
   else {
     # merge ther commit to our commit
