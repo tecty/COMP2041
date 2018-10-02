@@ -259,12 +259,18 @@ sub merge {
   }
   # do the merge
   my @auto_merge = do_merge($branch);
-  print ("Auto-merging $_\n") for @auto_merge;
+  if (@auto_merge) {
+    print ("Auto-merging $_\n") for @auto_merge;
+    # commit this commit if there exist a message;
+    merge_commit($branch, $msg);
 
-  # commit this commit if there exist a message;
-  merge_commit($branch, $msg);
+    print "Committed as commit ",get_curr_commit(),"\n";
+  }
+  else{
+    print "Fast-forward: no commit created\n";
+  }
 
-  print "Committed as commit ",get_curr_commit(),"\n";
+
   # merge successfully
   return 1;
 }

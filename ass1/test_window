@@ -16,26 +16,9 @@ use textLib;
 use typeLib;
 # this script for testing
 
-# my @arr = get_commit_link(5);
-# print "commit link ", @arr;
-# # my  @ancestors = get_ancestor(5,6);
-# # print "ancestors ",@ancestors;
-#
-# my %commit_hash= get_commit_hash();
-# if (is_ancestor_of(5,2,%commit_hash)){
-#   print "yes";
+# if (is_ancestor_of_some_branch("branch1")){
+#   dd_err("true");
 # }
-
-
-
-# sub get_diff {
-#   # my %merged_diff;
-#   # return null
-#   return ;
-# }
-#
-# my %hash = get_diff();
-#
-# if (! keys %hash) {
-#   dd_err("hash is empty ")
+# else {
+#   dd_err("false");
 # }

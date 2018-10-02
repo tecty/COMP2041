@@ -25,6 +25,7 @@ get_log get_file_content_by_commit
 remove_files file_status show_remove_error get_curr_status
 
 checkout_to_branch
+is_ancestor_of_some_branch
 create_branch delete_branch
 get_all_branches
 do_merge merge_commit
@@ -51,6 +52,34 @@ sub check_branch_exist{
   return exists $branches{$_[0]};
 }
 
+sub is_ancestor_of_some_branch {
+  my ($branch) = @_;
+  # my %commit_hash = get_commit_hash();
+  # get the branch name of all branch, except this one
+  my %branches_hash =  get_hash_from_file($BRANCH_RECORD_FILE);
+  my @branches = keys %branches_hash;
+  remove_value_from_array(@branches, $branch);
+
+  # find all possible branches_hash
+  map {
+    if ($branches_hash{$_} == $branches_hash{$branch} ){
+      # dd_var("return true here with $_ $branch");
+      # the head is same
+      return 1;
+    }
+    elsif ($branches_hash{$_} > $branches_hash{$branch} ){
+      # find whether this branch has ancsetor of given branch
+      if (is_ancestor_of($branches_hash{$branch},$branches_hash{$_})){
+        return 1;
+      }
+    }
+    # ELSE: pass to next branch to test
+  } @branches;
+
+  # not found
+  return 0;
+}
+
 sub delete_branch{
   my ($branch) = @_;
   if(! check_branch_exist($branch)){
@@ -61,6 +90,11 @@ sub delete_branch{
     # master has delete protection
     dd_err("legit.pl: error: can not delete branch '$branch'");
   }
+  elsif(! is_ancestor_of_some_branch($branch)){
+    # prevent it from deletion if it's not the ancestor of other branches
+    dd_err("legit.pl: error: branch '$branch' has unmerged changes");
+  }
+  
   # else, perform the deletion
   delete_hash_from_file($BRANCH_RECORD_FILE,@_);
 }
@@ -707,10 +741,9 @@ sub do_merge {
   # fetch their commit id
   my $their_commit = get_their_commit_id(@_);
   my $our_commit = get_curr_commit();
-  my %commit_hash = get_commit_hash();
   my @need_auto_merge;
 
-  if(is_ancestor_of($their_commit,$our_commit, %commit_hash) ){
+  if(is_ancestor_of($their_commit,$our_commit) ){
     # I can fast forward commit here
     # by just set out branch point to their's commit id
 

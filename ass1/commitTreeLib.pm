@@ -47,14 +47,18 @@ sub get_max_commit{
   return int(get_key($MAX_COMMIT_KEY));
 }
 
+my %commit_hash;
+
 sub get_commit_hash {
-  my %commit_hash = get_hash_from_file($COMMIT_RECORD_FILE);
-  foreach my $key (keys %commit_hash) {
-    my @arr = split(",",$commit_hash{$key});
-    # strictly change type to int
-    map {$_ = int($_)} @arr;
-    $commit_hash{$key} = [@arr];
-    # print "im with ", @{$commit_hash{$key}}, "\n";
+  if (! keys %commit_hash){
+    %commit_hash = get_hash_from_file($COMMIT_RECORD_FILE);
+    foreach my $key (keys %commit_hash) {
+      my @arr = split(",",$commit_hash{$key});
+      # strictly change type to int
+      map {$_ = int($_)} @arr;
+      $commit_hash{$key} = [@arr];
+      # print "im with ", @{$commit_hash{$key}}, "\n";
+    }
   }
   # dd_hash("commit hash ", %commit_hash);
   return %commit_hash;
@@ -206,14 +210,14 @@ sub get_ranged_commit_link{
   return %ret;
 }
 
-sub is_ancestor_of ($$\%) {
+sub is_ancestor_of ($$) {
   # pre $from > $to ;
-  my ($from, $to, $hash_ref) = @_;
+  my ($to,$from) = @_;
+  # commit hash check
+  get_commit_hash();
 
   my @visited;
   my @unvisited = ($from);
-  # get the commit tree
-  my %commit_hash = get_commit_hash();
   # travel throught hash table
   while (@unvisited) {
     my $this_node = shift @unvisited;
@@ -258,14 +262,6 @@ sub get_ancestor {
 
   # TODO: If i do recursive merge, i will need to remove the not good ancestor
   #       But for now, I leave it there
-
-  # # remove all the one ancestors is another's ancestors;
-  # for (my $index = 0; $index < @ancestors; $index++) {
-  #   if (is_ancestor_of($ancestors[$index], $$ancestors[$index + 1])) {
-  #     # remove the index +1 as the ancestor
-  #   }
-  #
-  # }
 
   return @ancestors;
 }
