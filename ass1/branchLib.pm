@@ -311,28 +311,29 @@ sub add_commit {
   # move all the thing from index to commit dir
   make_path(get_commit_path($commit_id));
   map {
-    my $file_name = pop_index_path($_);
-    # dd_var("file_name", $file_name) if $file_name eq "b";
+    # $_ is the file name
+    # dd_var("file_name", $_) if $_ eq "b";
 
-    if (! defined $file_tracks{$file_name}){
+    if (! defined $file_tracks{$_}){
       # becuse this file haven't been tracked
       # this is the base of the file
-      move($_,get_commit_path($commit_id));
+      move(get_index_path($_),get_commit_path($commit_id));
     }
     else{
-
-      # dd_var("defined") if $file_name eq "b";
+      # dd_var("defined") if $_ eq "b";
       # this file has tracked, we need to get it's content and write it's diff
-      # dd_var("_",$_) if $file_name eq "b";
-      my @dest = get_content($_);
-      my @base = get_file_content_by_tracks($file_name, $file_tracks{$file_name});
+      # dd_var("_",$_) if $_ eq "b";
+      my @dest = get_content(get_index_path($_));
+      my @base = get_file_content_by_tracks($_, $file_tracks{$_});
       pop_newline(@base);
       pop_newline(@dest);
       my %diff = diff(@base, @dest);
       # dd_hash("diff",%diff);
       # write the diff to file
       my @content = hashSerializer(%diff);
-      set_content(get_commit_path($commit_id,$file_name), @content);
+      set_content(get_commit_path($commit_id,$_), @content);
+      # we don't need the file in index any more
+      unlink get_index_path($_);
     }
   } @indexed_files;
 
@@ -368,10 +369,17 @@ sub get_file_content_by_tracks($\@) {
   # take two argument, filename and the track of this file
   my ($file, $track_ref) = @_;
   if (defined $track_ref and $#$track_ref != -1) {
+    # special case, we need to directly pop the content from index
+    # dd_var("last path",$$track_ref[$#$track_ref]);
+    if($$track_ref[$#$track_ref] eq "index"){
+      return get_content(
+        get_commit_path($$track_ref[$#$track_ref] , $file
+      ));
+    }
     # the file has track  -- protection
     # get the content by the latest commit's path
     my @base = get_content(get_commit_path($$track_ref[0] , $file));
-
+    pop_newline(@base);
     # for the rest of the file, we assume them is store in diff
     for (my $index = 1; $index <= $#$track_ref; $index++) {
       # diff is store by a hash
@@ -382,10 +390,9 @@ sub get_file_content_by_tracks($\@) {
       @base = patch(@base, %diff);
     }
 
+    push_newline(@base);
+
     return @base;
-    # return get_content(
-    #   get_commit_path($$track_ref[$#$track_ref] , $file
-    # ));
   }
   # there's no track
   return "";

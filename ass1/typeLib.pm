@@ -8,7 +8,7 @@ our @EXPORT = qw(to_hash uniq remove_value_from_array
 hashParse hashSerializer
 dd_var dd_err dd_arr dd_hash
 pop_options is_int
-pop_newline
+pop_newline push_newline
 );
 sub pop_newline(\@){
   my ($arr_ref) = @_;
@@ -16,7 +16,7 @@ sub pop_newline(\@){
 }
 sub push_newline(\@){
   my ($arr_ref) = @_;
-  # if the array doesn't have a new line in this line, add one 
+  # if the array doesn't have a new line in this line, add one
   map { $_ = $_."\n" if $_ !~  "\n";  } @$arr_ref;
 }
 
