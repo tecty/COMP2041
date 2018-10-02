@@ -596,7 +596,6 @@ sub show_remove_error{
   elsif ($status =~/A[AR]D/) {
     dd_err("legit.pl: error: '$file' in repository is different to working file");
   }
-
   elsif ($status =~/.R[RD]/) {
     dd_err("legit.pl: error: '$file' is not in the legit repository");
   }
@@ -780,7 +779,7 @@ sub do_merge {
     # perform a fake checkout
     checkout_to_branch(get_key($CURR_BRANCH_KEY));
     # abort commit, there's nothing to commit
-    # not need commit 
+    # not need commit
     return 0;
   }
   else {
@@ -809,7 +808,7 @@ sub do_merge {
           push @unable_merge, $key;
         }
         else{
-          dd_var("$their_ops{$key} ne $our_ops{$key}");
+          # dd_var("$their_ops{$key} ne $our_ops{$key}");
           # this file need auto mergeing
           push @need_auto_merge, $key;
         }

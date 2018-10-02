@@ -87,11 +87,7 @@ sub remove {
       # check the integrety
 
       if ($options =~/c/) {
-        if (
-          $status{$file} !~/.[AR]./ or
-          $status{$file} =~/ARR/ or
-          $status{$file} =~ /.R[RD]/
-        ){
+        if ($status{$file} !~/.[AR]./ or $status{$file} =~/[RA]RR/){
           # prevent this from deleting
           remove_value_from_array(@args, $file);
           # and show the error message
