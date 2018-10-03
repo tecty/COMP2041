@@ -8,7 +8,7 @@ system "git pull";
 
 $script_path = cwd;
 
-@tests = glob("myTest/*.sh");
+@tests = glob("zmyTest/*.sh");
 $testsDir = tempdir();
 $index = 0 ;
 map {
@@ -42,7 +42,7 @@ foreach my $testfile (@tests) {
 
   # the testfile addr
   $test_name =  $testfile ;
-  $test_name =~ s?myTest/??g;
+  $test_name =~ s?zmyTest/??g;
   $test_name =~ s?\.sh??g;
   $testfile = "$testsDir/$test_name.sh";
 
@@ -55,12 +55,12 @@ foreach my $testfile (@tests) {
   chdir  tempdir();
 
   # excute the generated script and dump it to our correct file
-  open my $f, ">", "$script_path/myTest/$test_name.correct";
+  open my $f, ">", "$script_path/zmyTest/$test_name.correct";
   print $f `bash $testfile 2>&1`;
   close $f;
 }
 
 chdir $script_path;
-system "give cs2041 ass1_legit legit.pl diary.txt *.pm test??.sh";
+# system "give cs2041 ass1_legit legit.pl diary.txt *.pm test??.sh";
 
 system "bash ./cleanEnv";
