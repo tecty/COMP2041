@@ -30,18 +30,44 @@ These are the legit commands:
   exit 1;
 }
 
+sub is_valid_command{
+  my ($in) = @_;
+  my @commands = qw (init add commit log show rm status branch checkout merge);
+  map {if ($in eq $_) { return 1; }} @commands;
+  return 0;
+}
 
 sub main {
   # a big switch to dispatch to inter function
   # dispatch by command line args
 
-
   if ($#ARGV == -1) {
     show_usage();
   }
 
+
+
   # shift out the first word as sub command
   my $command = shift @ARGV;
+
+  if (! is_valid_command($command)){
+    dd_err (
+"legit.pl: error: unknown command $command
+Usage: legit.pl <command> [<args>]
+
+These are the legit commands:
+   init       Create an empty legit repository
+   add        Add file contents to the index
+   commit     Record changes to the repository
+   log        Show commit log
+   show       Show file at particular state
+   rm         Remove files from the current directory and from the index
+   status     Show the status of files in the current directory, index, and repository
+   branch     list, create or delete a branch
+   checkout   Switch branches or restore current directory files
+   merge      Join two development histories together\n");
+    exit 1;
+  }
 
   if ($command eq "init") {
     # call the init function

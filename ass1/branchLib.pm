@@ -257,6 +257,7 @@ sub add_files  {
   # see it as the delete action
   # push it into untrack array
   map {
+
     if (! -e $_) {
       # this file is not exists
       # need to do the untrack
@@ -269,6 +270,9 @@ sub add_files  {
         # throw the error and abort the actions
         dd_err ("legit.pl: error: can not open '$_'");
       }
+    }
+    elsif (! -f $_) {
+      dd_err("legit.pl: error: '$_' is not a regular file")
     }
   } @files;
 
