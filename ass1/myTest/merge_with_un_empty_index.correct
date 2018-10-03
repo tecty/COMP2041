@@ -7,13 +7,15 @@ Committed as commit 2
 Switched to branch 'another'
 Committed as commit 3
 Switched to branch 'master'
-Committed as commit 4
-4 master 4
-3 another 3
+legit.pl: error: internal error error: Your local changes to the following files would be overwritten by merge:
+  e
+ 
+You are not required to detect this error or produce this error message.
 2 master 2
-1 another 1
 0 master 0
+a - same as repo
+b - same as repo
+e - added to index
 a
 b
-c
-d
+e
