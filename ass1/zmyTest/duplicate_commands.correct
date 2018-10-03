@@ -1,0 +1,21 @@
+Initialized empty legit repository in .legit
+legit.pl: error: .legit already exists
+Committed as commit 0
+nothing to commit
+legit.pl: error: branch 'br' already exists
+legit.pl: error: invalid filename '.legit'
+legit.pl: error: invalid filename '.legit'
+legit.pl: error: .legit already exists
+legit.pl: error: 'a' is not in the legit repository
+Committed as commit 1
+Switched to branch 'br'
+Already on 'br'
+Committed as commit 2
+nothing to commit
+legit.pl: error: These files can not be merged:
+a
+legit.pl: error: These files can not be merged:
+a
+2 second
+0 first
+a - same as repo

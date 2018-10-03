@@ -1,0 +1,21 @@
+Initialized empty legit repository in .legit
+legit.pl: error: your repository does not have any commits yet
+legit.pl: error: your repository does not have any commits yet
+legit.pl: error: your repository does not have any commits yet
+Committed as commit 0
+usage: legit.pl show <commit>:<filename>
+legit.pl: error: unknown commit '10'
+Switched to branch 'b1'
+--second lin\n str\s\s\s\--
+legit.pl: error: 'b' is not in the legit repository
+legit.pl: error: 'b' not found in index
+legit.pl: error: 'b' not found in commit 0
+Committed as commit 1
+Switched to branch 'master'
+legit.pl: error: 'b' not found in index
+Fast-forward: no commit created
+--second lin\n str\s\s\s\--
+a - file changed, changes not staged for commit
+b - same as repo
+1 second
+0 first

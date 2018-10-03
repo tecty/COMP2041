@@ -1,0 +1,15 @@
+Initialized empty legit repository in .legit
+Committed as commit 0
+Switched to branch 'br'
+Switched to branch 'master'
+Switched to branch 'br'
+Switched to branch 'master'
+Switched to branch 'br'
+a - file changed, different changes staged for commit
+b - file changed, changes staged for commit
+c - file changed, changes not staged for commit
+d - file deleted
+e - deleted
+f - same as repo
+g - added to index
+h - untracked
