@@ -1,0 +1,21 @@
+Initialized empty legit repository in .legit
+Committed as commit 0
+Switched to branch 'another'
+Committed as commit 1
+Switched to branch 'master'
+Committed as commit 2
+Switched to branch 'another'
+Committed as commit 3
+Switched to branch 'master'
+legit.pl: error: internal error error: Your local changes to the following files would be overwritten by merge:
+  e
+ 
+You are not required to detect this error or produce this error message.
+2 master 2
+0 master 0
+a - same as repo
+b - same as repo
+e - added to index
+a
+b
+e

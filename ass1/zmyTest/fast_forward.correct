@@ -1,0 +1,12 @@
+Initialized empty legit repository in .legit
+Committed as commit 0
+Switched to branch 'another'
+Committed as commit 1
+Committed as commit 2
+Committed as commit 3
+Switched to branch 'master'
+Fast-forward: no commit created
+a - same as repo
+b - same as repo
+c - same as repo
+d - same as repo

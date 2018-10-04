@@ -1,0 +1,7 @@
+Initialized empty legit repository in .legit
+legit.pl: error: your repository does not have any commits yet
+usage: legit.pl commit [-a] -m commit-message
+usage: legit.pl commit [-a] -m commit-message
+usage: legit.pl commit [-a] -m commit-message
+usage: legit.pl commit [-a] -m commit-message
+Committed as commit 0
