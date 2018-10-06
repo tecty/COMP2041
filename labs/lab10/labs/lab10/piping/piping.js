@@ -13,8 +13,12 @@
  * test with `node test.js`
  */
 
-function buildPipe() {
+function pipTwo(a,b){
+    return (args) => a(b(args));
+}
 
+function buildPipe(...funs) {
+    return funs.reduce(pipTwo);
 }
 
 module.exports = buildPipe;
