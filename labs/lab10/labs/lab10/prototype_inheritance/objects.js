@@ -30,7 +30,7 @@ function Dog(name, age) {
     Animal.call(this, age);
     this.name = name; 
     // overwrite the getter funtion 
-    this.age.get  = function (){
+    this.d.toHumanYears  = function (){
         return this.age * 7;
     };
 }
