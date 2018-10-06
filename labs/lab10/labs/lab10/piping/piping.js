@@ -14,7 +14,7 @@
  */
 
 function pipTwo(a,b){
-    return (args) => a(b(args));
+    return (args) => b(a(args));
 }
 
 function buildPipe(...funs) {
