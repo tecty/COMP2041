@@ -55,28 +55,26 @@ Person.prototype.buyDrink = function(drink) {
 };
 // write me
 Person.prototype.getRecipt = function() {
-  this.history.sort;
-  let receipt;
-  for (let start = 0; start < history.length; start++) {
-    let end = 0;
-    for(; end  < this.history.length; end ++){
-      if (this.history[start].name != this.history[end].name){
-        break;
-      }
+  // use map to process the data 
+  let map = Map();
+
+  this.history.forEach((el) => {
+    let theDrinkHistory = map.get(el.name);
+    if (theDrinkHistory == undefined){
+      // push a new element ot the map 
+      theDrinkHistory = { name: el.name, count:1, total: el.cost};
     }
-    const count = end - start + 1;
-    const total = count * this.history[start].cost;
-    receipt.push (
-      {
-        name : this.history[start],
-        count: count, 
-        total: total,
-      }
-    );
-    
-  }
-  // return the final constructed receipt
-  return receipt;
+    else{
+      // update the info in the map 
+      theDrinkHistory.count ++;
+      theDrinkHistory.total += el.cost;
+    }
+    // push back the latest element
+    map.set(el.name, theDrinkHistory);
+  });
+  
+  // return iterated array of maps 
+  return [...map.values()];
 };
 
 module.exports = Person;
