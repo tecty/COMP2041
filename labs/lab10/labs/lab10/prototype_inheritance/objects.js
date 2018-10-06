@@ -17,27 +17,23 @@
  *
  */
 
-function Animal(age) {
-    this.age = age;
-    this.sound = '\'woof\'';
+function Animal() {
 }
 
 Animal.prototype.makeSound = function() {
-    console.log(this.sound);
+    console.log('woof');
 };
 
 function Dog(name, age) {
-    Animal.call(this, age);
+    Animal.call(Animal.prototype);
+    this.age = age;
     this.name = name; 
+    this.toHumanYears = function(){
+        return this.age *7;
+    };
 }
 
-Dog.prototype = Object.create(Animal.prototype,{
-    toHumanYears: {
-        value: function(){
-            return this.age *7;
-        }
-    }
-});
-Dog.prototype.constructor = Dog;
+Dog.prototype  = Animal.prototype;
+// Dog.prototype.constructor = Dog;
 
 module.exports = Dog;
