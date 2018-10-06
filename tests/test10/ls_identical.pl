@@ -41,4 +41,4 @@ foreach my $a_file (@a_files) {
 
 @same_files = sort @same_files;
 
-print join("\n", @same_files),"\n";
+print join("\n", @same_files),"\n" if @same_files;
