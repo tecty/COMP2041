@@ -35,5 +35,7 @@ function Dog(name, age) {
     };
 }
 
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
 
 module.exports = Dog;
