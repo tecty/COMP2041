@@ -97,12 +97,25 @@ function makeTeamList(teamData, namesData, teamsData) {
     });
     let list = new Array(); 
     list[0] = `${theTeam.team}, coached by ${teamData.team.coach}`;
+    function findPlayerById(id) {
+        return teamData.players.find((el)=> {
+            return el.id == id;
+        });
+    }
+    
+    // append match into names index
+    namesData.map((el) => {
+        el.matches = findPlayerById(el.id).matches;
+    });
+    
     // sort the elemnt by it's id 
     namesData.sort((a,b) =>{
-        return a.id > b.id;
+        return a.matches > b.matches;
     });
     let index = 1;
-    
+
+
+
     namesData.forEach(el => {
         list.push(`${index ++ }. ${el.name}`);
     });
