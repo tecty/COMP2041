@@ -1,15 +1,20 @@
 #!/bin/bash
 
-a_files=`ls $1/*`;
-b_files=`ls $2/*`;
 same_files=();
 index=0;
-for file in $a_files
+if [[ ! -d $1 ]]; then
+  #statements
+  exit 1;
+fi
+
+
+cd $1;
+for file in *
 do
-    b_file=`echo "${file}" | sed s/^$1/$2/`
+    b_file=`echo "../$2/${file}"`
     # echo $b_file;
     if  `diff "${file}" "${b_file}"  > /dev/null 2>/dev/null` ;then
-        same_files[$index]=`echo $file | sed s?^$1/??` 
+        same_files[$index]=`echo $file | sed s?^$1/??`
         # echo ${same_files[$index]}
         # echo $index
         ((index ++));
@@ -18,7 +23,7 @@ done
 sorted=($(sort <<<"${same_files[*]}"))
 if ((index != 0)) ;then
     ((index--))
-    for i in `seq 0 $index`; do 
+    for i in `seq 0 $index`; do
             printf "%s\n" "${same_files[$i]}"
     done
 fi
