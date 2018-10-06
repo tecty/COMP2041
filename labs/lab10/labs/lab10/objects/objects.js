@@ -46,7 +46,7 @@ function Person(name, age) {
 Person.prototype.buyDrink = function(drink) {
   if (
     this.canSpend(drink.cost) && 
-    (!drink.alchol || this.canDrink())
+    (!drink.alcohol || this.canDrink())
   ){
     this.history.push(drink);
     this.tab+= drink.cost;
