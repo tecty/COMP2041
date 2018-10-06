@@ -29,13 +29,15 @@ Animal.prototype.makeSound = function() {
 function Dog(name, age) {
     Animal.call(this, age);
     this.name = name; 
-    // overwrite the getter funtion 
-    this.d.toHumanYears  = function (){
-        return this.age * 7;
-    };
 }
 
-Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype = Object.create(Animal.prototype,{
+    toHumanYears: {
+        value: function(){
+            return this.age *7;
+        }
+    }
+});
 Dog.prototype.constructor = Dog;
 
 module.exports = Dog;
