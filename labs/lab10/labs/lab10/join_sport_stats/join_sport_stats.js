@@ -97,8 +97,14 @@ function makeTeamList(teamData, namesData, teamsData) {
     });
     let list = new Array(); 
     list[0] = `${theTeam.team}, coached by ${teamData.team.coach}`;
+    // sort the elemnt by it's id 
+    namesData.sort((a,b) =>{
+        return a.id > b.id;
+    });
+    let index = 1;
+    
     namesData.forEach(el => {
-        list.push(`${el.id}. ${el.name}`);
+        list.push(`${index ++ }. ${el.name}`);
     });
     
     return list;
