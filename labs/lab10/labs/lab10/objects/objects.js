@@ -39,7 +39,7 @@ function Person(name, age) {
     };
     this.canSpend = function(cost) {
       return this.tab + cost <= 1000;
-    }
+    };
 }
 
 // write me
@@ -49,7 +49,7 @@ Person.prototype.buyDrink = function(drink) {
     (!drink.alchol || this.canDrink())
   ){
     this.history.push(drink);
-    
+    this.tab+= drink.cost;
     this.historyLen ++;
   }
 };
