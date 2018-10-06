@@ -56,7 +56,7 @@ Person.prototype.buyDrink = function(drink) {
 // write me
 Person.prototype.getRecipt = function() {
   // use map to process the data 
-  let map = Map();
+  let map = new Map();
 
   this.history.forEach((el) => {
     let theDrinkHistory = map.get(el.name);

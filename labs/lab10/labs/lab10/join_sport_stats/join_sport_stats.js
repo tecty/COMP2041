@@ -110,7 +110,7 @@ function makeTeamList(teamData, namesData, teamsData) {
     
     // sort the elemnt by it's id 
     namesData.sort((a,b) =>{
-        return a.matches > b.matches;
+	    return a.matches < b.matches;
     });
     let index = 1;
 
