@@ -24,10 +24,16 @@ function Animal(age) {
 
 Animal.prototype.makeSound = function() {
     console.log(this.sound);
-}
+};
 
 function Dog(name, age) {
+    Animal.call(this, age);
     this.name = name; 
-    this.age = age;
+    // overwrite the getter funtion 
+    this.age.get  = function (){
+        return this.age * 7;
+    };
 }
+
+
 module.exports = Dog;
