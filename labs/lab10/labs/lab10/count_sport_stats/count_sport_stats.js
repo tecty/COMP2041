@@ -37,7 +37,7 @@ function countStats(list) {
 
   return list.reduce((a,b) => {
     a.matches += parseInt(b.matches);
-    a.tries += parseInt(b.matches);
+    a.tries += parseInt(b.tries);
     return a;
   },
   {
