@@ -1,6 +1,37 @@
+function addpx(str, val){
+  return (parseInt(str.replace('px',''))+ val) + 'px';
+}
+
 class Fireball{
-  constructor(x,y){
-    
+  constructor(left,bottom){
+    // create the fire ball element 
+    this.ball = document.createElement('img');
+    this.ball.src = 'imgs/fireball.png';
+    this.ball.style.bottom = bottom;
+
+    // get the current postion 
+    this.startLeft = left;
+    this.startTime = Date.now();
+
+    // call the refresh pos to refresh to the correct position 
+    requestAnimationFrame(this.refreshPos);
+    // attach this element to the body tag
+    document.body.appendChild(this.ball);
+  }
+
+  refreshPos(){
+    console.log(Date.now());
+    // every second move for 200px 
+    let offset =(this.startTime - Date.now())* 200/1000;
+    this.ball.style.left= addpx(this.startLeft, offset);
+    console.log(this.ball.style.left);
+    if(offset > 1000){
+      // the bullet has range of 1000px 
+      this.ball.remove();
+    }
+    else{
+      requestAnimationFrame(this.refreshPos);
+    }
   }
 }
 
@@ -22,31 +53,32 @@ class Ghost {
     // switch the move speed 
     this.slowMove = this.slowMove? false: true;
   }
-  addpx(str, val){
-    return (parseInt(str.replace('px',''))+ val) + 'px';
-  }
+
   left(){
-    this.theGhost.style.left  = this.addpx(
+    this.theGhost.style.left  = addpx(
       this.theGhost.style.left, - this.getMoveSpeed()
     );
   }
   right(){
-    this.theGhost.style.left  = this.addpx(
+    this.theGhost.style.left  = addpx(
       this.theGhost.style.left, this.getMoveSpeed()
     );
   }
   down(){
-    this.theGhost.style.bottom  = this.addpx(
+    this.theGhost.style.bottom  = addpx(
       this.theGhost.style.bottom, - this.getMoveSpeed()
     );
   }
   up(){
-    this.theGhost.style.bottom  = this.addpx(
+    this.theGhost.style.bottom  = addpx(
       this.theGhost.style.bottom, this.getMoveSpeed()
     );
   }
   shoot(){
-    
+    new Fireball(
+      this.theGhost.style.left, 
+      this.theGhost.style.bottom
+    );
   }
 }
 
