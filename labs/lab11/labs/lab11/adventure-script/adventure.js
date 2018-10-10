@@ -7,22 +7,28 @@ class Fireball{
     // create the fire ball element 
     this.ball = document.createElement('img');
     this.ball.src = 'imgs/fireball.png';
+    // the original positon 
     this.ball.style.bottom = bottom;
+    this.ball.style.left = left;
+    // the fireball's style 
+    this.ball.style.position = 'absolute';
+    this.ball.style.width = '75px';
+    this.ball.style.height = '65px';
 
     // get the current postion 
     this.startLeft = left;
     this.startTime = Date.now();
 
     // call the refresh pos to refresh to the correct position 
-    requestAnimationFrame(this.refreshPos);
+    requestAnimationFrame(()=>this.refreshPos());
     // attach this element to the body tag
     document.body.appendChild(this.ball);
   }
 
   refreshPos(){
-    console.log(Date.now());
     // every second move for 200px 
-    let offset =(this.startTime - Date.now())* 200/1000;
+    let offset =(Date.now() - this.startTime )* 200/1000;
+    // console.log(offset);
     this.ball.style.left= addpx(this.startLeft, offset);
     console.log(this.ball.style.left);
     if(offset > 1000){
@@ -30,7 +36,7 @@ class Fireball{
       this.ball.remove();
     }
     else{
-      requestAnimationFrame(this.refreshPos);
+      requestAnimationFrame(()=> this.refreshPos());
     }
   }
 }
@@ -76,8 +82,8 @@ class Ghost {
   }
   shoot(){
     new Fireball(
-      this.theGhost.style.left, 
-      this.theGhost.style.bottom
+      addpx(this.theGhost.style.left,100), 
+      addpx(this.theGhost.style.bottom,-15)
     );
   }
 }

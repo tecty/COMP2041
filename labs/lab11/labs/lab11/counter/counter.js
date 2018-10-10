@@ -5,6 +5,10 @@ Date.prototype.timeNow = function () {
         ((this.getMinutes() < 10)?'0':'') + this.getMinutes() +':'+ 
         ((this.getSeconds() < 10)?'0':'') + this.getSeconds();
 };
+
+
+
+
 function showTime(){
     var currentdate = new Date();
     output.textContent  = currentdate.timeNow();

@@ -1,20 +1,11 @@
-function expand(){
-  var foldTarget = this.childNodes[1].id+'-content';
-  this.childNodes[1].innerHTML = 'expand_less';
-  // change the onclick function back to fold 
-  this.onclick= fold;
-  // display this content 
-  document.getElementById(foldTarget).style.display = null;
-}
-
-
-function fold() {
+function toggle() {
   // find the item
   var foldTarget = this.childNodes[1].id+'-content';
-  this.childNodes[1].innerHTML = 'expand_more';
-  this.onclick = expand;
+  this.childNodes[1].innerHTML = 
+    this.childNodes[1].innerHTML =='expand_more' ?'expand_less':'expand_more';
   // change the style to display none 
-  document.getElementById(foldTarget).style.display = 'none';
+  document.getElementById(foldTarget).style.display =
+    document.getElementById(foldTarget).style.display ? null:'none';
 }
 
 
@@ -22,6 +13,6 @@ function fold() {
   'use strict';
   var btns = document.getElementsByClassName('expand-collapse-btn');
   [...btns].forEach((el)=>{
-    el.onclick = fold;
+    el.onclick = toggle;
   });
 }());
