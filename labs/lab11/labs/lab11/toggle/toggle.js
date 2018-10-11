@@ -1,18 +1,25 @@
 
 
-function hide() {
-    var hideEls = document.getElementsByClassName('hide');
-    console.log(hideEls);
-    [...hideEls].forEach((el)=>{
-        el.remove();
-    });
-    // remove it every 2s 
-    window.setTimeout(hide, 2000);
+function toggle() {
+    var hideArr = [...document.getElementsByClassName('hide')];
+    console.log(hideArr);
+    // inital show is called 
+    show();
+    function show(){
+        // console.log('imhere');
+        hideArr.forEach((el)=>el.classList.remove('hide'));
+        window.setTimeout(hide, 2000);
+    }
+    
+    function hide(){
+        hideArr.forEach((el)=> el.classList.add('hide'));
+        window.setTimeout(show, 2000);
+    }
 }
 
 
 (function() {
    'use strict';
    // write your js here.
-   hide();
+   toggle();
 }());
