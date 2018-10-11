@@ -8,12 +8,15 @@ class Fireball{
     this.ball = document.createElement('img');
     this.ball.src = 'imgs/fireball.png';
     // the original positon 
-    this.ball.style.bottom = bottom;
-    this.ball.style.left = left;
+    this.ball.style.bottom = `${bottom}px`;
+    console.log(bottom);
+    this.ball.style.left = `${left}px`;
     // the fireball's style 
     this.ball.style.position = 'absolute';
     this.ball.style.width = '75px';
     this.ball.style.height = '65px';
+
+    this.ball.style.bottom = bottom + 'px';
 
     // get the current postion 
     this.startLeft = left;
@@ -28,14 +31,13 @@ class Fireball{
   refreshPos(){
     // every second move for 200px 
     let offset =(Date.now() - this.startTime )* 200/1000;
-    // console.log(offset);
-    this.ball.style.left= addpx(this.startLeft, offset);
-    console.log(this.ball.style.left);
     if(offset > 1000){
       // the bullet has range of 1000px 
       this.ball.remove();
     }
     else{
+      // console.log(this.ball.style.transform );
+      this.ball.style.transform = `translateX(${offset}px)`;
       requestAnimationFrame(()=> this.refreshPos());
     }
   }
@@ -47,10 +49,20 @@ class Ghost {
     this.theGhost = el;
     this.slowMove = true;
     // reset the original position 
-    this.theGhost.style.left = '10px';
-    this.theGhost.style.bottom  = '120px';
-    console.log(el.style);
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.refreshPos();
+    // console.log(el.style);
   }
+  set x(offset){
+    this.offsetX += offset; 
+    this.refreshPos();
+  }
+  set y(offset){
+    this.offsetY += offset;
+    this.refreshPos();
+  }
+
   getMoveSpeed(){
     // fast move double the speed 
     return this.slowMove? 50:75;
@@ -59,31 +71,26 @@ class Ghost {
     // switch the move speed 
     this.slowMove = this.slowMove? false: true;
   }
-
+  refreshPos(){
+    this.theGhost.style.transform = 
+      `translate(${this.offsetX}px,${this.offsetY}px)`;
+  }
   left(){
-    this.theGhost.style.left  = addpx(
-      this.theGhost.style.left, - this.getMoveSpeed()
-    );
+    this.x = - this.getMoveSpeed();
   }
   right(){
-    this.theGhost.style.left  = addpx(
-      this.theGhost.style.left, this.getMoveSpeed()
-    );
+    this.x = this.getMoveSpeed();
   }
   down(){
-    this.theGhost.style.bottom  = addpx(
-      this.theGhost.style.bottom, - this.getMoveSpeed()
-    );
+    this.y = this.getMoveSpeed();
   }
   up(){
-    this.theGhost.style.bottom  = addpx(
-      this.theGhost.style.bottom, this.getMoveSpeed()
-    );
+    this.y = - this.getMoveSpeed();
   }
   shoot(){
     new Fireball(
-      addpx(this.theGhost.style.left,100), 
-      addpx(this.theGhost.style.bottom,-15)
+      8 + this.offsetX + 75,
+      118 - this.offsetY -10
     );
   }
 }
@@ -113,8 +120,6 @@ function keyEventListener(e) {
       ghost.shoot();
       break;
     default:
-      // console.log('I got '+ e.keyCode);
-      // don't handle normal situation 
       break;
   }
 }
