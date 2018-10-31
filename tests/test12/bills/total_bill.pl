@@ -9,5 +9,5 @@ while (<>){
     }
 }
 
-print $total,"\n";
+printf "\$%.2f\n", $total;
 
