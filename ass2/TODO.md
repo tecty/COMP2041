@@ -1,0 +1,12 @@
+- [x] Profile
+- [x] Update Profile
+- [x] User Pages (Link to user profile)
+- [x] Follow
+- [x] Update and Delete Post
+- [x] Comments
+- [x] Live Update
+- [x] Delete Update Post
+- [ ] Infinite Scroll
+- [ ] Push Notification
+- [ ] Offline Access
+- [ ] Fragment Base URL Routing

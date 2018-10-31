@@ -1,0 +1,10 @@
+18/10/18     16:00   18:15   subset 0 
+22/10/18     17:00   19:15   subset 1 with a try of routing 
+22/10/27     17:18   19:31   subset 1 is finally finishe, finished routing
+22/10/27     21:09   00:29   liking and partial of comment
+22/10/28     00:49   02:34   post creation is finished
+22/10/28     14:27   16:59   Modify router logic and deprecate legacy codes 
+22/10/28     17:23   19:50   Profile page and update of Profile
+22/10/28     20:46   22:40   Like and user link, router parameter passing, Update and delete of post 
+22/10/28     23:00   00:40   Comment a post, realtime update is finished
+22/10/29     02:05   02:42   Infinite scroll and hash routing 
