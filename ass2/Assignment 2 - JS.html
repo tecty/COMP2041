@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>
+
+Assignment 2 - JS
+
+</title>
+
+
+
+
+<!-- <link href="/~cs2041/18s2/flask.cgi/static/bootstrap.min.css" rel="stylesheet"> -->
+<link rel="stylesheet" href="./Assignment 2 - JS_files/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link href="./Assignment 2 - JS_files/course.css" rel="stylesheet">
+<!-- <script type="text/javascript" src="/~cs2041/18s2/flask.cgi/static/jquery.min.js"></script> -->
+<!-- <script type="text/javascript" src="/~cs2041/18s2/flask.cgi/static/bootstrap.min.js"></script> -->
+<script src="./Assignment 2 - JS_files/jquery-3.3.1.min.js"></script>
+<script src="./Assignment 2 - JS_files/popper.min.js"></script>
+<script src="./Assignment 2 - JS_files/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script type="text/javascript" src="./Assignment 2 - JS_files/course.js"></script>
+
+<!-- prism code-highligting -->
+<link href="./Assignment 2 - JS_files/prism.css" rel="stylesheet">
+<!-- defer loading of prism.js script until DOM is loaded, as per PR #26 and https://stackoverflow.com/a/24070373 -->
+<script type="text/javascript" src="./Assignment 2 - JS_files/prism.js" defer=""></script>
+
+<link rel="canonical" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/">
+</head>
+<body class="container">
+
+
+
+
+<div id="heading" class="row">
+
+
+<div class="col-3 text-left">
+<a class="heading_link" target="_blank" id="left_heading_link" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/">COMP[29]041 18s2</a>
+</div>
+
+<div class="col-6 text-center">
+
+
+Assignment 2 - JS
+
+
+</div>
+
+<div class="col-3 text-right">
+<a class="heading_link" target="_blank" id="right_heading_link" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/">COMP[29]041 18s2</a>
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="introduction">Introduction<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#introduction" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>JavaScript is used increasingly to provide a native-like application experience in the web. One
+major avenue of this has been in the use of Single Page Applications or SPAs. SPAs
+are generated, rendered, and updated using JavaScript. Because SPAs don’t require a user
+to navigate away from a page to do anything, they retain a degree of user and application state.</p>
+<p>There are millions of websites that utilise SPAs in part of, or all of their web applications.</p>
+<p>The assignment intends to teach students to build a simple SPA which can fetch dynamic data from a HTTP/S API.
+Your task will be to provide an implemention of an SPA that can provide a number of key features.</p>
+<p>Some of the skills/concepts this assignment aims to test (and build upon):</p>
+<ul>
+<li>Simple event handling (buttons)</li>
+<li>Advanced Mouse Events (Swipe)</li>
+<li>Fetching data from an API</li>
+<li>Infinite scroll</li>
+<li>CSS Animations</li>
+<li>Web Workers</li>
+<li>Push Notifications (Polling)</li>
+<li>Offline Support</li>
+<li>Routing (URL fragment based routing)</li>
+</ul>
+<h2 id="api">API<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#api" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>The backend server will be where you’ll be getting your data. Don’t touch the code in the backend; although we’ve provided the source,
+it’s meant to be a black box. Final testing will be done with our own backend. Use the instructions provided in the <code class="highlighter-rouge">backend/README.m</code>d
+to get it started.</p>
+<p>For the full docs on the API, start the backend server and navigate to the root (<code class="highlighter-rouge">localhost:5000</code>). You’ll see
+all the endpoints, descriptions and expected responses.</p>
+<h2 id="a-working-product">A Working Product<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#a-working-product" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Your site should be compatible with ‘modern’ Chrome, Safari, and Mozilla browsers.
+We will assume your browser has JavaScript enabled, and supports ES6 syntax.</p>
+<h2 id="getting-started">Getting Started<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#getting-started" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Clone the gitlab repository using the instructions below. It has a code, full documentation, and a  working server you’ll need for
+developing your frontend application.</p>
+<p>Please read the relevant docs for setup in the folders <code class="highlighter-rouge">backend/</code> and <code class="highlighter-rouge">frontend/</code> of the provided repository.
+Each folder outlines basic steps to get started. There are also some comments provided in the frontend source code.</p>
+<h2 id="milestones">Milestones<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#milestones" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Level 0 focuses on the basic user interface and interaction building of the site.
+There is no need to implement any integration with the backend for this level.</p>
+<h2 id="level-0">Level 0<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#level-0" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p><strong>Login</strong>
+The site presents a login form and a user can log in with pre-defined hard coded credentials.
+You can use the provided users.json so you can create a internal non persistent list of users that you check against.</p>
+<p>Once logged in, the user is presented with the home page which for now can be a blank page with a simple “Not Yet implemented” message.</p>
+<p><strong>Registration</strong>
+An option to register for “Instacram” is presented on the login page allowing the user to sign up to the service.
+This for now updates the internal state object described above.</p>
+<p><strong>Feed Interface</strong></p>
+<p>The application should present a “feed” of user content on the home page derived from the sample feed.json provided.
+The posts should be displayed in reverse chronological order (most recent posts first). You can hardcode how this works for
+this milestone.</p>
+<p>Although this is not a graphic design exercise you should produce pages with a common and somewhat distinctive look-and-feel. You may find CSS useful for this.</p>
+<p>Each post must include:</p>
+<ol>
+<li>who the post was made by</li>
+<li>when it was posted</li>
+<li>The image itself</li>
+<li>How many likes it has (or none)</li>
+<li>The post description text</li>
+<li>How many comments the post has</li>
+</ol>
+<h2 id="level-1">Level 1<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#level-1" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Level 1 focuses on fetching data from the API.</p>
+<p><strong>Login</strong>
+The site presents a login form and verifies the provided credentials with the backend (<code class="highlighter-rouge">POST /login</code>). Once logged in, the user can see the home page.</p>
+<p><strong>Registration</strong>
+An option to register for “Instacram” is presented allowing the user to sign up to the service. The user information is POSTed to the backend to create the user in the database. (<code class="highlighter-rouge">POST /signup</code>)</p>
+<p><strong>Feed Interface</strong>
+The content shown in the user’s feed is sourced from the backend. (<code class="highlighter-rouge">GET /user/feed</code>)</p>
+<h2 id="level-2">Level 2<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#level-2" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Level 2 focuses on a richer UX and will require some backend interaction.</p>
+<p><strong>Show Likes</strong>
+Allow an option for a user to see a list of all users who have liked a post.
+Possibly a modal but the design is up to you.</p>
+<p><strong>Show Comments</strong>
+Allow an option for a user to see all the comments on a post.
+Same as above.</p>
+<p><strong>Like user generated content</strong>
+A logged in user can like a post on their feed and trigger an API request (<code class="highlighter-rouge">PUT /post/like</code>)
+For now it’s ok if the like doesn’t show up until the page is refreshed.</p>
+<p><strong>Post new content</strong>
+Users can upload and post new content from a modal or seperate page via (<code class="highlighter-rouge">POST /post</code>)</p>
+<p><strong>Pagination</strong>
+Users can page between sets of results in the feed using the position token with (<code class="highlighter-rouge">GET user/feed</code>).
+Note users can ignore this if they properly implement Level 3’s Infinite Scroll.</p>
+<p><strong>Profile</strong>
+Users can see their own profile information such as username, number of posts, sum of likes they received on all their posts, etc.
+You may choose to utilise the information from the api in more creative ways such as displaying their most liked post etc.
+Get this information from (<code class="highlighter-rouge">GET /user</code>)</p>
+<h2 id="level-3">Level 3<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#level-3" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Level 3 focuses on more advanced features that will take time to implement and will
+involve a more rigorously designed app to execute.</p>
+<p><strong>Infinite Scroll</strong>
+Instead of pagination, users can infinitely scroll through results. For infinite scroll to be
+properly implemented you need to progressively load posts as you scroll.</p>
+<p><strong>Comments</strong>
+Users can write comments on “posts” via (<code class="highlighter-rouge">POST post/comment</code>)</p>
+<p><strong>Live Update</strong>
+If a user likes a post or comments on a post, the posts likes and comments should
+update without requiring a page reload/refresh.</p>
+<p><strong>Update Profile</strong>
+Users can update their personal profile via (<code class="highlighter-rouge">PUT /user</code>) E.g:</p>
+<ul>
+<li>Update email address</li>
+<li>Update password</li>
+<li>Update name</li>
+</ul>
+<p><strong>User Pages</strong>
+Let a user click on a user’s name/picture from a post and see a page with the users name, and other info.
+The user should also see on this page all posts made by that person.
+The user should be able to see their own page as well.</p>
+<p>This can be done as a modal or as a seperate page (URL fragmentation can be implemented if desired.)</p>
+<p><strong>Follow</strong>
+Let a user follow/unfollow another user to add/remove their posts to their feed via (<code class="highlighter-rouge">PUT user/follow</code>)
+Add a list of everyone a user follows in their profile page.
+Add just the count of followers / follows to everyones public user page
+</p>
+<p>
+  To allow users to find other users implement some functionality to check if a username exists and allow the user to follow them.
+  This may be as simple as a text box in the navbar which signals when a inputted username is wrong or if it's right gives you a option
+  to follow the user.
+  You do not need to implement anything more advanced such as searching etc.
+</p>
+<p><strong>Delete/Update Post</strong>
+Let a user update a post they made or delete it via (<code class="highlighter-rouge">DELETE /post</code>) or (<code class="highlighter-rouge">PUT /post</code>)</p>
+<h2 id="level-4">Level 4<a aria-label="Anchor" class="anchorjs-link " data-anchorjs-icon="" href="https://cgi.cse.unsw.edu.au/~cs2041/18s2/assignments/ass2/index.html#level-4" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p><strong>Slick UI</strong>
+The user interface looks good, is performant, makes logical sense, and is usable.</p>
+<p><strong>Push Notifications</strong>
+Users can receive push notifications when a user they follow posts an image.</p>
+<p><strong>Offline Access</strong>
+Users can access the “Instacram” at all times by using Web Workers to cache the page (and previous content) locally.</p>
+<p><strong>Fragment based URL routing</strong>
+Users can access different pages using URL fragments:</p>
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code>/#profile=me
+/#feed
+/#profile=janecitizen</code></pre>
+</div>
+</div>
+<h3>Recording Assignment work on gitlab.cse.unsw.edu.au</h3>
+
+It is a requirement of this assignment you store all  work on
+the assignment <b>as you complete it</b> in a repository at gitlab.cse.unsw.edu.au.
+<p>
+Don't panic this is easy to do and will ensure you have a complete backup of all work on
+your assignment and can return to its state at any stage.
+</p><p>
+It will also allow your tutor to check you are progressing on the assignment as
+they can access your gitlab repository
+
+</p><h3>Adding Your SSH Key to Gitlab</h3>
+
+You need to add your CSE ssh key to your gitlab.cse.unsw.edu.au account.
+Here is how you do that:
+
+<ol class="separated_list">
+<li>
+First print your CSE ssh key. If you have one, this command should should work.
+
+<pre class="command_line"><kbd class="shell">cat ~/.ssh/id_rsa.pub</kbd>
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAyNSzIDylSPAAGLzUXdw359UhO+tlN6wWprSBc9gu6t3IQ1rvHhPoD6wcRXnonY6ytb00GpS4XRFuhCghx2JNVkXFykJYt3XNr1xkPItMmXr/DRIYrtxTs5sn9el3hHZIgELY8jJZpgIo303kgnF0MsB7XpqCzg7Iv6JGkv7aEoYC/MNr07hXE8iQjYIHDMdO9HxGI80GyMqb1hF+RSpQTNvXQvH56juu9VXt5OwJjOqSVa4SfsEICqdn+3k9w8Z4EaD93Eeog3hz0RoTrme8h/sJenXydJ0w9ZOs0By4fjqKFYPsYEs1K6SHma+kPByZM9COgKHZwOZHH1m24HOITQ== z5555555@williams</pre>
+</li><li>
+
+If you couldn't print an ssh key with the above command, you need to generate a new ssh key.
+You can do it like this (just hit return for each question).
+
+<pre class="command_line"><kbd class="shell">ssh-keygen</kbd>
+Generating public/private rsa key pair.
+Enter file in which to save the key (/import/kamen/3/z5555555/.ssh/id_rsa):
+Created directory '/import/kamen/3/z5555555/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /import/kamen/3/z5555555/.ssh/id_rsa.
+Your public key has been saved in /import/kamen/3/z5555555/.ssh/id_rsa.pub.
+The key fingerprint is:
+b8:02:31:8b:bf:f5:56:fa:b0:1c:36:89:ad:e1:cb:ad z5555555@williams
+The key's randomart image is:
+...
+</pre>
+</li><li>
+Now add your ssh key to gitlab:
+
+</li><li>
+Go to <a href="https://gitlab.cse.unsw.edu.au/profile/keys/">https://gitlab.cse.unsw.edu.au/profile/keys/</a>
+</li><li>
+In the field labelled <b>UNSW Username</b> enter your zid (e.g. z5555555)
+</li><li>
+In the field labelled <b>Password</b> enter your zpass
+</li><li>
+Click on <span class="btn btn-success">Sign in</span>
+</li><li>
+Cut-and-paste your ssh-key (the entire 200+ character line printed by <code>cat ~/.ssh/id_rsa.pub</code>) into the "<b>Key</b>" field.
+<p>
+Don't cut-and paste z5555555's ssh key above - cut-and-paste your ssh-key!
+</p></li><li>
+At this point, your screen should look something like this:
+<p>
+<img src="./Assignment 2 - JS_files/Add_SSH_Keys_Settings.png" style="border:thin solid;border-radius:10px;">
+</p><p>
+</p></li><li>
+click the green <span class="btn btn-success">Add key</span> button
+</li><p></p><p></p><p></p></ol>
+<p>
+
+A repository has been created for your assignment on <code>gitlab.cse.unsw.edu.au</code>.
+</p><p>
+You need to add your CSE ssh key to your  <code>gitlab.cse.unsw.edu.au</code>.
+</p><p>
+After you have done that create a git repository for the assignment in your CSE account.
+</p><p>
+These commands will create a copy of the gitlab repository in your CSE account.
+</p><p>
+Make sure you replace <i>5555555</i> below by your student number!
+
+</p><h3>Setting Up Your Own Git Repository</h3>
+
+You should first clone the  gitlab.cse.unsw.edu.au repository for this assignment
+<pre class="command_line"><kbd class="shell">mkdir -m 700 -p ~/ass2</kbd>
+<kbd class="shell">cd ~/ass2</kbd>
+<kbd class="shell">git clone gitlab@gitlab.cse.unsw.EDU.AU:z5555555/18s2-comp2041-ass2 .</kbd>
+Cloning into '.'...
+....
+</pre>
+
+If the git clone above fails - redo the instructions above  for adding your
+ssh key to gitlab.
+<p>
+And if that fail try with a https url instead (again replacing 5555555 with your zid) -
+and supplying your zid/zpass when requested:
+
+</p><pre class="command_line"><kbd class="shell">git clone https://gitlab.cse.unsw.edu.au/z5555555/18s2-comp2041-ass2.git .</kbd>
+Username for 'https://gitlab.cse.unsw.edu.au': <kbd>z5555555</kbd>
+Password for 'https://z5555555@gitlab.cse.unsw.edu.au':
+</pre>
+<h3>Pushing Your work to gitlab.cse.unsw.edu.au</h3>
+
+Every time you complete some work on the assignment you should commit to your
+git rep and push this to gitlab, for example:
+
+<pre class="command_line"><kbd class="shell">vi frontend/main.js</kbd>
+<kbd class="shell">git commit -a -m 'bugs in subset 0 fixed'</kbd>
+<kbd class="shell">git push</kbd>
+....
+<kbd class="shell">vi frontend/my.js</kbd>
+<kbd class="shell">git add frontend/my.js</kbd>
+<kbd class="shell">git commit -a -m 'initial version of subset 1'</kbd>
+<kbd class="shell">git push</kbd>
+</pre>
+<h2>Assumptions/Clarifications</h2>
+
+It is a requirement of the assignment that when you work on the assignment for
+more than a few minutes you push the work to <code>gitlab.cse.unsw.edu</code> (see above).
+<p>
+You must implement this assignment in Javascript.
+</p><p>
+You may use small amounts (&lt; 10 lines) of general purpose code (not
+specific to the assignment) obtained from a site such as Stack Overflow or other publically available resources.
+You should attribute clearly the source of this code in a comment with it.
+</p><p>
+You can not otherwise use code written by another person.
+</p><p>
+Do not use NPM to install libraries other than as indicated in the specifcation.
+</p><p>
+You can not, for example, use the popular Javascript framework such as <a href="https://angular.io/">Angular</a> or <a href="https://reactjs.org/">React</a>.
+</p><p>
+You are permitted to use CSS from external sources as long as it properly attributed.
+</p><p>
+For example, you are permitted to use the popular <a href="https://getbootstrap.com/">Bootstrap</a> CSS framework.
+</p><p>
+Some Bootstrap functionality relies on accompanying Javascript.  You are permitted to include this Javascript.
+</p><p>
+The  Javascript accompanying Bootstrap requires the popular general purpose Javascrpt library <a href="https://jquery.com/">jQuery</a>.  You are permitted to include <b>jQuery</b> so bootstrap can use it.  However you are not permitted to use <b>jQuery</b> in the code you write for the assignment.
+</p><p>
+
+This is an individual assignment. The work you submit must be your own work and only your
+work apart from the exception above.  Joint work is not permitted.
+</p><p>
+You should follow  discussion about the assignment in the
+<a href="https://piazza.com/class/jk0w2d2ezx775h">course forum</a>.
+All questions about the assignment should be posted there unless they concern your private circumstances.
+This allows all students to see all answers to questions.
+
+
+
+</p><h2>Diary</h2>
+You must keep a record of your work on this assignment as you did for assignment in an ASCII file
+The entries should include date, starting &amp; finishing time, and a brief (one or two line) description of
+the work carried out.
+For example:
+
+<table class="table table-bordered">
+<tbody><tr><th>Date</th><th>Start</th><th>Stop</th><th>Activity</th><th>Comments
+</th></tr><tr><td>15/10</td><td>16:00</td><td>17:30</td><td>coding</td><td>implemented creation of accounts
+</td></tr><tr><td>20/10</td><td>20:00</td><td>10:30</td><td>debugging</td><td>found bug in handling of posts
+</td></tr></tbody></table>
+
+Include these notes in the files you submit as an ASCII file named diary.txt.
+<p>
+Some students choose to store this information in git commit messages
+and use a script to generate  <code>diary.txt</code> from <code>git log</code> before they submit.
+You are welcome to do this.
+</p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+
+
+
+
+
+
+
+
+
+
+<h2>Attribution of Work</h2>
+
+This is an individual assignment. The work you submit must be your own work and only your
+work apart from any exceptions explicitly included in the assignment specification above.
+<p>
+Joint work is not permitted.
+</p><p>
+You are only permitted to request help with the assignment
+in the course forum, help sessions or from course lecturers or tutors.
+</p><p>
+Do not provide or show your assignment work to any other person (including by posting it on the forum)
+apart from the teaching staff of COMP[29]041.
+
+</p><p>
+The work you submit must otherwise be entirely your own work.  Submission of work partially or completely derived
+from any other person or jointly written with any other person is not permitted.
+The penalties for such an offence may include negative marks,
+automatic failure of the course and possibly other academic discipline.
+Assignment submissions will be examined both automatically and manually
+for such submissions.
+</p><p>
+We are required to inform scholarship authorities if students holding scholarships
+are involved in an incident of plagiarism or other misconduct, and this may result in a loss of the scholarship.
+</p><p>
+Plagiarism or other misconduct can also result in loss of student visas.
+</p><p>
+If you knowingly provide or show your assignment work to another person for any
+reason, and work derived from it is submitted you may be penalized, even
+if the work was submitted without your knowledge or consent.  This may
+apply even if your work is submitted by a third party unknown to you.
+</p><p>
+Note, you will not be penalized if your work is
+taken without your consent or knowledge.
+
+
+
+</p><h2>Submission of Work</h2>
+
+<b>give</b> doesn't allow submission of a directory hierarchy, so you'll need to submit your
+work as a tar file.  You can do that like this:
+
+<pre class="command_line"><kbd class="shell">tar -Jcf files.tar --exclude node_modules frontend </kbd>
+<kbd class="shell">give cs2041 ass2_instacram diary.txt files.tar</kbd>
+</pre>
+
+You can't submit the backend because you are not permitted to change the backend.
+Your frontend will be run with the backend you have been given.
+
+Please do <i>not</i> include the folder <code> node_modules </code> in this tar as the
+folder contains package information and is usually quite large.
+
+<p>
+Unlike the last assignment you don't need to run give everytime you work on the assignment,
+you do need to run <b>git push</b> very time your work on the assignment, so your repo on <b>gitlab.cse.unsw.edu.au</b> is updated.
+</p><p>
+You may still run give multiple times, only the final submitted version of your assignment will be marked.
+
+
+
+
+</p><h2>Assessment</h2>
+
+Originally assignments 1 &amp; 2 were both intended to contribute 15 marks to your final mark.
+<p>
+Assignment 2 has been reduced in scope because it is late being released.  Given this, and the large
+amount of work most students did on assignment 1, instead assignment 1 will contribute 20 marks
+to your final mark and assignment 2 will contribute 10 marks.
+</p><p>
+However to ensure students can not be disadvantaged by this late change, we will also calculate your
+final mark with the original assignment weighting (15 marks each) and if this result in a better overall
+mark for you we will use the original assignment weighting.
+</p><p>
+Assignment 2 marking occurs in peer assessment sessions.
+Details of the peer assessment sessions will be announced in week 13.
+Your must attend one  peer assessment sessions.
+</p><p>
+80% of the marks for assignment 2 will come from your code against a specified set of operations and assessed
+by fellow students.
+You will be present to assist in determining what features are and are not
+working, you will also be able to indicate any extra features you have implemented.
+</p><p>
+20% of the marks for assignment 2  will be awarded on the basis of clarity,
+commenting, elegance and style of your code.  In other words, your fellow students will assess how
+easy it is for a human to read and understand your program.
+</p><p>
+Here is an indicative marking scheme .
+</p><p>
+</p><table class="table table-bordered table-striped">
+<tbody><tr><td>100%</td><td>Elegant Javascript with an excellent implementation of levels 0-4) features
+</td></tr><tr><td>HD++%</td><td>Very well written Javascript which implements levels 0-3 successfully
+</td></tr><tr><td>HD (85+)</td><td>Well written Javascript which implements most of levels 0-3 successfully
+</td></tr><tr><td>DN (75+)</td><td>Readable Javascript which implements of levels 0-2 successfully
+</td></tr><tr><td>CR (65+)</td><td>Reasonably readable code which implements level 0-1 successfully
+</td></tr><tr><td>PS (55+)</td><td>Reasonably readable code which implements level 0 successfully
+</td></tr><tr><td>45%</td><td>Major progress on the assignment with some things working/almost working
+</td></tr><tr><td>-70%</td><td>Knowingly supplying  work to any other person which is subsequently submitted by another student.
+</td></tr><tr><td>0 FL for COMP2041/9041</td><td>Submitting any other person's work with their consent.  This includes joint work.
+</td></tr><tr><td>academic misconduct</td><td>Submitting another person's work without their consent.
+</td></tr></tbody></table>
+<p>
+The lecturer may vary the assessment scheme after inspecting
+the assignment submissions but its likely to be broadly similar to the above.
+
+
+
+
+
+</p><h2>Due Date</h2>
+
+This assignment is tentatively due  Sunday 28 October 23:59:59
+<p>
+If your assignment is submitted after this date, each hour it is late reduces
+the maximum mark it can achieve by 0.5% per hour for 24 hours, then 2% per hour after that.
+For example if an assignment worth 84% was submitted
+20 hours late, the late submission would have no effect.
+If the same assignment was submitted 30 hours late it would be awarded
+76%, the maximum mark it can achieve at that time.
+
+
+
+
+
+
+
+</p><footer class="mt-3 container text-center no-print">
+<p class="text-muted">
+<strong>COMP[29]041 18s2: Software Construction</strong>
+is brought to you by <br>
+the <a href="https://www.cse.unsw.edu.au/">School of Computer Science and Engineering</a>
+at the <a href="https://www.unsw.edu.au/">University of New South Wales</a>, Sydney.<br>
+For all enquiries, please email the class account at
+<a href="mailto:@cse.unsw.edu.au">cs2041@cse.unsw.edu.au</a><br>
+
+<small>CRICOS Provider 00098G</small>
+</p>
+
+
+
+</footer>
+
+
+
+
+
+</body></html>
