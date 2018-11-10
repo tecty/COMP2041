@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for file in $@; do
+    
+    filename=`echo $file | sed "s/\.gz$//g" `
+    echo ===== $filename =====
+    zcat $file 
+done
+
+
